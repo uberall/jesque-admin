@@ -1,0 +1,18 @@
+@import "failure";
+
+.clickable {
+  cursor: pointer;
+}
+
+.pagination {
+  li:not(.disabled) li:not(.break) {
+    cursor: pointer;
+  }
+  li.break {
+    a {
+      color: $pagination-disabled-color;
+      background: $pagination-disabled-bg;
+    }
+    cursor: not-allowed;
+  }
+}

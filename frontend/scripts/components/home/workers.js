@@ -1,13 +1,15 @@
 import React from "react";
 import {assign, map, sortBy} from "lodash";
 import FromNow from "../common/from-now";
-import Config from "../../tools/config"
+import Config from "../../tools/config";
+import FilterButtonGroup from "../common/filter-button-group";
+import BaseComponent from "../base-component";
 const bindThis = require('../../tools/bindThis')
 const cx = require('classnames')
 
 const STATES = ["IDLE", "PAUSED", "WORKING"]
 
-export default class WorkerList extends React.Component {
+export default class WorkerList extends BaseComponent {
 
   constructor(props) {
     super(props)
@@ -15,7 +17,7 @@ export default class WorkerList extends React.Component {
       status: Config.get('homeWorkerStatus'),
       query: ""
     }
-    bindThis(this, "onStatusFilterChange", "getWorkerRows", "doesWorkerMatchStatus", "doesWorkerMatchQuery", "onQueryChange")
+    this.bindThiz("onStatusFilterChange", "getWorkerRows", "doesWorkerMatchStatus", "doesWorkerMatchQuery", "onQueryChange")
   }
 
   onStatusFilterChange(status) {
@@ -43,7 +45,7 @@ export default class WorkerList extends React.Component {
     }).reverse()
     workers = sortBy(workers, (w)=> {
       let d
-      if(w.status) {
+      if (w.status) {
         d = new Date(w.status.runAt)
       } else {
         d = new Date()
@@ -74,12 +76,14 @@ export default class WorkerList extends React.Component {
   render() {
     return (
       <div>
-        <div className="row">
-          <div className="col-sm-6">
-            <input className="form-control" placeholder="Search for host or pid" type="text" value={this.state.query} onChange={(e)=>{this.onQueryChange(e.target.value)}}/>
+        <div className="filter-form">
+          <div className="filter">
+            <input className="form-control" placeholder="Search for host or pid" type="text" value={this.state.query} onChange={(e)=> {
+              this.onQueryChange(e.target.value)
+            }}/>
           </div>
-          <div className="col-sm-6">
-            <FilterButtonGroup onChange={this.onStatusFilterChange} current={this.state.status}/>
+          <div className="filter">
+            <FilterButtonGroup onChange={this.onStatusFilterChange} current={this.state.status} filters={STATES}/>
           </div>
         </div>
         <div className="row">
@@ -100,24 +104,6 @@ export default class WorkerList extends React.Component {
             </table>
           </div>
         </div>
-      </div>
-    )
-  }
-}
-
-class FilterButtonGroup extends React.Component {
-
-  getFilterButtons() {
-    return map(STATES, (state) => {
-      let buttonClasses = cx('btn', {"btn-success": this.props.current === state, "btn-default": this.props.current !== state})
-      return (<button key={state} type="button" className={buttonClasses} onClick={()=>{this.props.onChange(state)}}>{state}</button>)
-    })
-  }
-
-  render() {
-    return (
-      <div className="btn-group" role="group" aria-label="Worker State Filter">
-        {this.getFilterButtons()}
       </div>
     )
   }

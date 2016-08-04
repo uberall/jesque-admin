@@ -8,9 +8,11 @@ export default class BaseComponent extends React.Component {
 
   bindThiz(...methods) {
     each(methods, (m)=> {
-      // console.log(`binding ${m}`)
-      if (this[m]) {
-        this[m] = this[m].bind(this)
+      let method = this[m];
+      if (method && typeof method === 'function') {
+        this[m] = method.bind(this)
+      } else {
+        console.error(`${m} is not a function on ${this.constructor.name}`)
       }
     })
   }

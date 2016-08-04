@@ -4,6 +4,8 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
+import {HOME} from "./constants/paths";
+import {JOB_FAILED} from "./constants/paths";
 var RouterMixin = require('react-mini-router').RouterMixin;
 
 var JesqueAdminApp = React.createClass({
@@ -18,12 +20,14 @@ var JesqueAdminApp = React.createClass({
   },
 
   render: function () {
-    return <div>
-      <Navbar />
-      <div className="container-fluid">
-        {this.renderCurrentRoute()}
+    return (
+      <div className="jesque-container">
+        <Navbar />
+        <div className="jesque-content">
+          {this.renderCurrentRoute()}
+        </div>
       </div>
-    </div>
+    )
   },
 
   queueDetails: (name, page) => {
@@ -31,17 +35,19 @@ var JesqueAdminApp = React.createClass({
   },
 
   home: function () {
+    window.currentPath = HOME;
     return <HomeView />;
   },
 
   notFound: function (path) {
     return (
-      <div class="not-found">
+      <div className="not-found">
         Page Not Found: {path}
       </div>);
   },
 
   failedJobs: function (page) {
+    window.currentPath = JOB_FAILED;
     try {
       page = parseInt(page)
     } catch (ignore) {

@@ -13,8 +13,6 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
 
     def failed() {
         sanitizeParams()
-        log.info params.max
-        log.info params.offset
         render([
                 list : jesqueFailureService.getFailures(params.getLong("offset"), params.getLong("max")),
                 total: jesqueFailureService.count

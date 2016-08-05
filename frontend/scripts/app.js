@@ -4,9 +4,8 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
-import {HOME} from "./constants/paths";
-import {JOB_FAILED} from "./constants/paths";
-var RouterMixin = require('react-mini-router').RouterMixin;
+import {HOME, JOB_FAILED} from "./constants/paths";
+const RouterMixin = require('react-mini-router').RouterMixin;
 
 var JesqueAdminApp = React.createClass({
   mixins: [RouterMixin],
@@ -19,10 +18,27 @@ var JesqueAdminApp = React.createClass({
     '/queues/:name/:page': 'queueDetails'
   },
 
+  componentDidMount: function () {
+    window.setError = function (error) {
+      alert(error)
+    }
+  },
+
+  getInitialState: function () {
+    return {autoReload: true}
+  },
+
+  changeAutoReload: function (reload) {
+    this.setState({autoReload: reload})
+  },
+
   render: function () {
+    const {autoReload} = this.state;
     return (
       <div className="jesque-container">
-        <Navbar />
+        <div className="jesque-sidebar">
+          <Navbar autoReload={autoReload} changeAutoReload={this.changeAutoReload}/>
+        </div>
         <div className="jesque-content">
           {this.renderCurrentRoute()}
         </div>
@@ -31,19 +47,12 @@ var JesqueAdminApp = React.createClass({
   },
 
   queueDetails: (name, page) => {
-    return <QueueDetails name={name} page={parseInt(page) || 1}/>
+    return <QueueDetails name={name} page={parseInt(page) || 1} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
   },
 
   home: function () {
     window.currentPath = HOME;
-    return <HomeView />;
-  },
-
-  notFound: function (path) {
-    return (
-      <div className="not-found">
-        Page Not Found: {path}
-      </div>);
+    return <HomeView autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
   failedJobs: function (page) {
@@ -53,8 +62,16 @@ var JesqueAdminApp = React.createClass({
     } catch (ignore) {
       page = 1
     }
-    return <FailedList page={page}/>;
+    return <FailedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
+
+  notFound: function (path) {
+    return (
+      <div className="not-found">
+        Page Not Found: {path}
+      </div>);
+  },
+
 
 });
 

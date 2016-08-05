@@ -36,8 +36,7 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
 
     def clear() {
         jesqueFailureService.clear()
-
-        redirect(action: 'failed')
+        render([success: true] as JSON)
     }
 
     def triggers() {

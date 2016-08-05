@@ -2,7 +2,6 @@ import React from "react";
 import BaseComponent from "../base-component";
 import {times} from "lodash";
 import ReactPaginate from "react-paginate";
-const navigate = require('react-mini-router').navigate;
 let cx = require('classnames');
 
 export default class Pager extends BaseComponent {
@@ -12,7 +11,7 @@ export default class Pager extends BaseComponent {
   }
 
   render() {
-    const {pages, current, target, onPageChange, disabled} = this.props;
+    const {pages, current, onPageChange, disabled} = this.props;
     return (
       <nav>
         <ReactPaginate
@@ -27,13 +26,7 @@ export default class Pager extends BaseComponent {
           disabledClassName="disabled"
           activeClassName="active"
           clickCallback={(pageObject)=> {
-            let page = pageObject.selected;
-            if ((current - 1) !== page) {
-              navigate(`${target}/${page + 1}`);
-              if (typeof onPageChange === 'function') {
-                onPageChange(page)
-              }
-            }
+            onPageChange(pageObject.selected)
           }}
         />
       </nav>

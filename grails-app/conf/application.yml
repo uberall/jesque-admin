@@ -101,6 +101,7 @@ grails:
         timeout: 2000
     jesque:
         enabled: true
+        monitoring: true
         pruneWorkersOnStartup: true
         createWorkersOnStartup: true
         schedulerThreadActive: true

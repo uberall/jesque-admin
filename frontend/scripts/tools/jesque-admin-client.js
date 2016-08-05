@@ -1,29 +1,46 @@
-import superagent from "superagent/lib/client";
-
+const querystring = require('querystring')
 
 export default class JesqueAdminClient {
 
-  get(target, id, data, success, error) {
-    let path = this.getPath(target)
-    if (id) {
-      path = `${path}/${id}`
-    }
-    return new Promise((resolve, reject)=> {
-      superagent
-        .get(path)
-        .set('Accept', 'application/json')
-        .query(data)
-        .end((err, res)=> {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(JSON.parse(res.text))
-          }
-        })
+  get(target, id, query) {
+    let path = this.buildPath(target, id, query);
+    return fetch(path, {
+      method: 'GET',
+      credentials: "same-origin",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      cache: false
+    }).then((res)=> {
+      return res.json()
     })
   }
 
-  getPath(target) {
-    return window.AppConfig.links[target]
+  delete(target, id, query) {
+    let path = this.buildPath(target, id, query)
+    return fetch(path, {
+      method: 'DELETE',
+      credentials: "same-origin",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      cache: false
+    }).then((res)=> {
+      return res.json()
+    })
   }
+
+  buildPath(target, id, query) {
+    let path = window.AppConfig.links[target];
+    if (id) {
+      path = `${path}/${id}`
+    }
+    if(query) {
+      path = `${path}?${querystring.stringify(query)}`
+    }
+    return path
+  }
+
 }

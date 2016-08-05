@@ -1,8 +1,9 @@
 export default class LinkInfo {
-  constructor(path, name, text) {
+  constructor(path, name, text, monitoring) {
     this.path = path;
     this.name = name;
     this.text = text;
+    this.monitoring = monitoring
   }
 
   get text() {
@@ -27,6 +28,14 @@ export default class LinkInfo {
 
   set path(path) {
     this._path = path
+  }
+
+  get monitoring() {
+    return this._monitoring
+  }
+
+  set monitoring(monitoring) {
+    this._monitoring = monitoring
   }
 
 }

@@ -13,7 +13,9 @@
             overview: "${g.createLink(controller: 'jesqueAdmin', action: 'overview')}",
             queues: "${g.createLink(controller: 'jesqueAdminQueue', action: 'list')}",
             failed: "${g.createLink(controller: 'jesqueAdminJob', action: 'failed')}",
-        }
+        },
+        isMonitoringEnabled: ${grailsApplication.config.grails.jesque.monitoring == true},
+        knownJobs: ${raw((grailsApplication.jesqueJobClasses.clazz.simpleName as grails.converters.JSON).toString())}
     }
 </script>
 <g:if test="${grails.util.Environment.developmentMode}">

@@ -17,7 +17,7 @@ class JesqueFailureService {
         failureDao.remove(id)
     }
 
-    def clear() {
+    void clear() {
         failureDao.clear()
     }
 

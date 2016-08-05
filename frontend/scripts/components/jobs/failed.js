@@ -7,6 +7,7 @@ import FailureDetails from "./failure-details";
 import Pager from "../common/pager";
 import FilterButtonGroup from "../common/filter-button-group";
 const cx = require('classnames');
+const navigate = require('react-mini-router').navigate;
 
 export default class FailedList extends BaseComponent {
 
@@ -19,28 +20,88 @@ export default class FailedList extends BaseComponent {
       loading: false,
       total: 0,
       selected: null,
-      max: 25
+      max: 25,
+      currentPage: props.page
     }
-    this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange');
+    this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'changePage', 'resetToFirstPage');
+  }
+
+  componentDidMount() {
+    this.startAutoUpdate();
     this.doUpdate()
   }
 
-  doUpdate(page) {
-    this.setState(assign(this.state, {loading: true}))
-    if (page === undefined) {
-      page = this.props.page || 1;
+  componentWillUnmount() {
+    this.stopAutoUpdate()
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.autoReload != this.props.autoReload) {
+      if (props.autoReload) {
+        this.doUpdate()
+        this.startAutoUpdate()
+      } else {
+        this.stopAutoUpdate()
+      }
     }
-    this.client.get('failed', null, {max: this.state.max, offset: page * this.state.max})
-      .then((resp) => {
-        this.setState(assign(this.state, {list: resp.list, total: resp.total, loading: false}))
-      }).catch((err)=> {
-      console.error(err)
-      this.setState(assign(this.state, {loading: false}))
-    })
+    this.changePage(props.page - 1)
+  }
+
+  startAutoUpdate() {
+    this._interval = setInterval(this.doUpdate, 5000);
+    this.props.changeAutoReload(true);
+  }
+
+  stopAutoUpdate() {
+    this.props.changeAutoReload(false);
+    if (this._interval) {
+      clearInterval(this._interval)
+    }
+  }
+
+  doUpdate() {
+    if (!this.state.loading) {
+      let {currentPage, max} = this.state;
+      this.setState(assign(this.state, {loading: true}));
+      this.client.get('failed', null, {max: max, offset: (currentPage - 1) * max})
+        .then((resp) => {
+          if (resp.list.length === 0 && currentPage !== 1) {
+            console.log("no items received and not on first page, returning to first page");
+            this.setState(assign(this.state, {loading: false}));
+            setTimeout(this.resetToFirstPage, 100)
+          } else {
+            this.setState(assign(this.state, {list: resp.list, total: resp.total, loading: false}))
+          }
+        }).catch((err)=> {
+        this.stopAutoUpdate();
+        window.setError(err);
+        this.setState(assign(this.state, {loading: false}))
+      })
+    }
+  }
+
+  changePage(page) {
+    page++;
+    if (page < 1) {
+      page = 1
+    }
+    if (page !== this.state.currentPage) {
+      this.setState(assign(this.state, {currentPage: page}));
+      setTimeout(()=> {
+        this.doUpdate();
+        navigate(`/jobs/failed/${page}`, false);
+      }, 100)
+    } else {
+      console.log("no actual page change detected, skipping")
+    }
+  }
+
+  resetToFirstPage() {
+    this.changePage(0)
   }
 
   getMaxPages() {
-    let {total, max} = this.state
+    let {total, max} = this.state;
     return Math.ceil(total / max)
   }
 
@@ -49,7 +110,7 @@ export default class FailedList extends BaseComponent {
   }
 
   getTableBody(somethingSelected) {
-    const {list, selected} = this.state
+    const {list, selected} = this.state;
     return map(list, (failure)=> {
       let cols = []
       cols.push(<td key={`${failure.failedAt}-${failure.queue}-date`}><FromNow date={new Date(failure.failedAt)}/></td>);
@@ -78,13 +139,22 @@ export default class FailedList extends BaseComponent {
   onMaxChange(max) {
     if (this.state.max !== max) {
       this.setState(assign(this.state, {max: max}));
-      this.doUpdate(this.props.page)
+      setTimeout(this.resetToFirstPage, 100)
     }
+  }
+
+  clearAll() {
+    this.client.delete('failed', null, {})
+      .then(() => {
+        this.doUpdate(1)
+      }).catch((err)=> {
+      console.error(err)
+    })
   }
 
   render() {
     let somethingSelected = !!this.state.selected;
-    let headers = []
+    let headers = [];
     headers.push(<th key="header-When">When</th>);
     headers.push(<th key="header-Job">Job</th>);
     headers.push(<th key="header-Exception">Exception</th>);
@@ -95,7 +165,14 @@ export default class FailedList extends BaseComponent {
     return (
       <div className="failed-list">
         <div className="table-container">
-          <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
+          <div className="filter-form">
+            <div className="filter">
+              <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
+            </div>
+            <div className="filter">
+              <button className="btn btn-danger pull-right" onClick={this.clearAll}><i className="fa fa-trash"></i> Clear all</button>
+            </div>
+          </div>
           <table className="table">
             <thead>
             <tr>
@@ -108,10 +185,10 @@ export default class FailedList extends BaseComponent {
           </table>
           <Pager
             pages={this.getMaxPages()}
-            current={this.props.page}
+            current={this.state.currentPage}
             target={`/jobs/failed`}
-            onPageChange={this.doUpdate.bind(this)}
             disabled={this.state.loading}
+            onPageChange={this.changePage}
           />
         </div>
         {this.getSelectedView()}

@@ -1,6 +1,6 @@
 import LinkInfo from "../tools/path-info";
 
-export const JOB_LIST = new LinkInfo('/jobs', 'jobsList', 'List');
+export const JOB_LIST = new LinkInfo('/jobs', 'jobsList', 'List', true);
 export const JOB_FAILED = new LinkInfo('/jobs/failed/1', 'jobsFailed', 'Failed');
 export const JOB_ENQUEUE = new LinkInfo('/jobs/enqueue', 'jobsEnqueue', 'Enqueue');
 export const JOB_SCHEDULED = new LinkInfo('/jobs/scheduled', 'jobsScheduled', 'Scheduled');

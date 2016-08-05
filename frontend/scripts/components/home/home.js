@@ -18,6 +18,38 @@ export default class HomeView extends BaseComponent {
     this.client = new JesqueAdminClient()
   }
 
+  componentDidMount() {
+    this.startAutoUpdate();
+    this.doUpdate()
+  }
+
+  componentWillUnmount() {
+    this.stopAutoUpdate()
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.autoReload != this.props.autoReload) {
+      if (props.autoReload) {
+        this.doUpdate();
+        this.startAutoUpdate()
+      } else {
+        this.stopAutoUpdate()
+      }
+    }
+  }
+
+  startAutoUpdate() {
+    this._interval = setInterval(this.doUpdate, 2000);
+    this.props.changeAutoReload(true);
+  }
+
+  stopAutoUpdate() {
+    this.props.changeAutoReload(false);
+    if (this._interval) {
+      clearInterval(this._interval)
+    }
+  }
+
   doUpdate() {
     this.client.get('overview', null, {})
       .then((json) => {
@@ -26,15 +58,6 @@ export default class HomeView extends BaseComponent {
       .catch((err)=> {
         throw(err)
       })
-  }
-
-  componentDidMount() {
-    this.doUpdate()
-    this.intervalid = setInterval(this.doUpdate, 2500)
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.intervalid)
   }
 
   render() {

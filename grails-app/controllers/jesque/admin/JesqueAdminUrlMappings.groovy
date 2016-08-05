@@ -8,6 +8,7 @@ class JesqueAdminUrlMappings {
         "/jesqueAdmin/api/overview"(controller: 'jesqueAdmin', action: 'overview')
         "/jesqueAdmin/api/queues"(controller: 'jesqueAdminQueue', action: 'list')
         "/jesqueAdmin/api/queues/$name"(controller: 'jesqueAdminQueue', action: 'details')
-        "/jesqueAdmin/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'failed')
+        "/jesqueAdmin/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'failed', method: "GET")
+        "/jesqueAdmin/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'clear', method: "DELETE")
     }
 }

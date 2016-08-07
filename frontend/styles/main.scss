@@ -43,10 +43,17 @@ $fa-font-path: "~font-awesome/fonts";
   flex-flow: wrap;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   .filter {
     flex: 1;
     margin-left: 3px;
     min-width: 250px;
+    label {
+      font-size: 1.2em;
+      input {
+        margin-right: 5px;
+      }
+    }
   }
   .filter:nth-child(first)   {
     margin-left: 0;

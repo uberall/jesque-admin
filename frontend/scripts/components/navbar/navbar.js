@@ -34,10 +34,6 @@ export default class Navbar extends React.Component {
           </a>
         </li>
         {this.getLinks(JOB_LINKS, true)}
-        <NavbarItem
-          submenu={false}
-          pathInfo={QUEUE_LIST}
-        />
         <li className="disabled">
           <a>
             Workers

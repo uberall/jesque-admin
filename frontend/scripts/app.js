@@ -46,7 +46,7 @@ var JesqueAdminApp = React.createClass({
     )
   },
 
-  queueDetails: (name, page) => {
+  queueDetails: function (name, page) {
     return <QueueDetails name={name} page={parseInt(page) || 1} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
   },
 

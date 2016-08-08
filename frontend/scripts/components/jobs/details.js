@@ -5,6 +5,7 @@ import {assign, map} from "lodash";
 import Pager from "../common/pager";
 import FilterButtonGroup from "../common/filter-button-group";
 import FormatedDate from "../common/formated-date";
+import JobListDetails from "./job-list-details";
 const navigate = require('react-mini-router').navigate;
 const cx = require('classnames')
 
@@ -20,10 +21,11 @@ export default class JobDetails extends BaseComponent {
       loading: false,
       total: 0,
       max: 25,
-      currentPage: props.page
+      currentPage: props.page,
+      selectedJob: null
     };
 
-    this.bindThiz('doUpdate', 'getMaxPages', 'changePage', 'resetToFirstPage', 'onMaxChange');
+    this.bindThiz('doUpdate', 'getMaxPages', 'changePage', 'resetToFirstPage', 'onMaxChange', 'selectJob', 'getTableHeaders');
   }
 
   componentDidMount() {
@@ -97,6 +99,10 @@ export default class JobDetails extends BaseComponent {
     }
   }
 
+  selectJob(job) {
+    this.setState(assign(this.state, {selectedJob: job}))
+  }
+
   doUpdate() {
     if (!this.state.loading) {
       let {currentPage, max} = this.state;
@@ -119,19 +125,46 @@ export default class JobDetails extends BaseComponent {
   }
 
   getTableBody() {
+    let selected = this.state.selectedJob;
+    let selectedKey = "";
+    if (selected) {
+      selectedKey = `${selected.start}-${selected.end}-${selected.runtime}`;
+    }
     return map(this.state.list, (job)=> {
+      let cols = [];
+      let key = `${job.start}-${job.end}-${job.runtime}`;
+      cols.push(<td key={`${key}-queue`}>{job.queue}</td>);
+      cols.push(<td key={`${key}-start`}><FormatedDate date={new Date(job.start)} format="l LTS"/></td>);
+      if (!this.state.selectedJob) {
+        cols.push(<td key={`${key}-end`}><FormatedDate date={new Date(job.end)} format="l LTS"/></td>);
+      }
+      cols.push(<td key={`${key}-runtime`}>{job.runtime}</td>);
+      if (!this.state.selectedJob) {
+        cols.push(<td key={`${key}-args`}>{job.args.join(",")}</td>);
+      }
+
       return (
-        <tr className={cx({danger: !job.success})} key={`${job.start}-${job.end}-${job.runtime}`}>
-          <td>{job.queue}</td>
-          <td><FormatedDate date={new Date(job.start)} format="l LTS"/></td>
-          <td><FormatedDate date={new Date(job.end)} format="l LTS"/></td>
-          <td>{job.runtime}</td>
-          <td>
-            <pre>{JSON.stringify(job.args)}</pre>
-          </td>
+        <tr className={cx("clickable", {danger: !job.success, info: selectedKey === key})} key={key} onClick={()=> {
+          this.selectJob(job)
+        }}>
+          {cols}
         </tr>
       )
     })
+  }
+
+  getTableHeaders() {
+    let heads = [];
+    heads.push(<th key="head-queue">Queue</th>);
+    heads.push(<th key="head-start">Start</th>);
+    if (!this.state.selectedJob) {
+      heads.push(<th key="head-end">End</th>);
+    }
+    heads.push(<th key="head-runtime">Runtime</th>);
+    if (!this.state.selectedJob) {
+      heads.push(<th key="head-arguments">Arguments</th>);
+    }
+    return heads
   }
 
   render() {
@@ -150,11 +183,7 @@ export default class JobDetails extends BaseComponent {
           <table className="table table-condensed">
             <thead>
             <tr>
-              <th>Queue</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Runtime</th>
-              <th>Arguments</th>
+              {this.getTableHeaders()}
             </tr>
             </thead>
             <tbody>
@@ -169,9 +198,9 @@ export default class JobDetails extends BaseComponent {
             onPageChange={this.changePage}
           />
         </div>
-        <div className="details-container">
-
-        </div>
+        <JobListDetails job={this.state.selectedJob} close={()=> {
+          this.selectJob(null)
+        }}/>
       </div>
     )
   }

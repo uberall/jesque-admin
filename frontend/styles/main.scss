@@ -61,3 +61,9 @@ $fa-font-path: "~font-awesome/fonts";
     margin-left: 0;
   }
 }
+
+tr.info.danger {
+  td {
+    background-color: darken($alert-danger-bg, 15%) !important;
+  }
+}

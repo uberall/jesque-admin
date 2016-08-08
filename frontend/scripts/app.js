@@ -4,7 +4,10 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
-import {HOME, JOB_FAILED} from "./constants/paths";
+import {HOME, JOB_FAILED, JOBS_LIST} from "./constants/paths";
+import JobsList from "./components/jobs/list";
+import JobDetails from "./components/jobs/details";
+
 const RouterMixin = require('react-mini-router').RouterMixin;
 
 var JesqueAdminApp = React.createClass({
@@ -13,9 +16,11 @@ var JesqueAdminApp = React.createClass({
   routes: {
     '/': 'home',
     '/404': 'notFound',
-    '/jobs/failed/:page': 'failedJobs',
     '/queues/:name': 'queueDetails',
-    '/queues/:name/:page': 'queueDetails'
+    '/queues/:name/:page': 'queueDetails',
+    '/jobs/failed/:page': 'failedJobs',
+    '/jobs/:page': 'jobsList',
+    '/jobs/details/:name/:page': 'jobsDetails',
   },
 
   componentDidMount: function () {
@@ -63,6 +68,26 @@ var JesqueAdminApp = React.createClass({
       page = 1
     }
     return <FailedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+  },
+
+  jobsList: function (page) {
+    window.currentPath = JOBS_LIST;
+    try {
+      page = parseInt(page)
+    } catch (ignore) {
+      page = 1
+    }
+    return <JobsList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+  },
+
+  jobsDetails: function (name, page) {
+    window.currentPath = JOBS_LIST;
+    try {
+      page = parseInt(page)
+    } catch (ignore) {
+      page = 1
+    }
+    return <JobDetails job={name} page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
   notFound: function (path) {

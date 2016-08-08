@@ -29,7 +29,7 @@ export default class FailureDetails extends React.Component {
           <dt>Queue</dt>
           <dd>{failure.queue}</dd>
           <dt>Time</dt>
-          <dd><FormatDate date={new Date(failure.failedAt)}/></dd>
+          <dd><FormatedDate date={new Date(failure.failedAt)}/></dd>
           <dt>Exception</dt>
           <dd>{failure.throwableString}</dd>
           <dt>Message</dt>

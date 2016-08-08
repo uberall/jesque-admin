@@ -101,7 +101,9 @@ grails:
         timeout: 2000
     jesque:
         enabled: true
-        monitoring: true
+        statistics:
+          enabled: true
+          max: 100
         pruneWorkersOnStartup: true
         createWorkersOnStartup: true
         schedulerThreadActive: true
@@ -109,15 +111,15 @@ grails:
         startPaused: false
         autoFlush: true
         custom:
-#          jobExceptionHandler:
-#            clazz: jesque.admin.CustomWorkerExceptionHandler
           worker:
-            clazz: jesque.admin.CustomWorkerImpl
-#          listener:
-#            clazz: jesque.admin.CustomWorkerListener
+            clazz: jesque.admin.JesqueJobStatisticsCollectingWorkerImpl
         workers:
             testJobPool:
                 workers: 2
-                queueNames: TestJobQueue
+                queueNames:
+                    - TestJobQueue
+                    - TestJobQueue2
+                    - TestJobQueue3
+                    - TestJobQueue4
                 jobTypes:
                     - jesque.admin.TestJob

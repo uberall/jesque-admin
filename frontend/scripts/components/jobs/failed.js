@@ -139,7 +139,13 @@ export default class FailedList extends BaseComponent {
   onMaxChange(max) {
     if (this.state.max !== max) {
       this.setState(assign(this.state, {max: max}));
-      setTimeout(this.resetToFirstPage, 100)
+      let func;
+      if (this.state.currentPage === 1) {
+        func = this.doUpdate
+      } else {
+        func = this.resetToFirstPage
+      }
+      setTimeout(func, 100)
     }
   }
 

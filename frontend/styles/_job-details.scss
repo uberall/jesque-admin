@@ -1,0 +1,39 @@
+ul.stacktrace {
+  list-style: none;
+  font-family: monospace;
+  font-size: 9pt;
+  margin-left: 2px;
+}
+
+.job-details {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: row;
+  transition: all ease-in-out 0.3s;
+  .table-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 350px;
+  }
+
+  .details-container {
+    flex: 0.001;
+    max-width: 0;
+    margin-left: 5px;
+    transition: all ease-in-out 0.3s;
+    &.visible {
+      background: lighten($jumbotron-bg, 5%);
+      border: 2px solid darken($jumbotron-bg, 5%);
+      border-radius: $border-radius-base;
+      padding: 3px;
+      flex: 2;
+      max-width: 66%;
+      min-width: 500px;
+      transition: all ease-in-out 0.3s;
+    }
+  }
+  dl {
+      margin-bottom: 0;
+  }
+}

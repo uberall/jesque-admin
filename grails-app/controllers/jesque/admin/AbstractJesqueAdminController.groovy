@@ -12,6 +12,7 @@ abstract class AbstractJesqueAdminController {
     JesqueQueuesService jesqueQueuesService
     JesqueFailureService jesqueFailureService
     JesqueWorkersService jesqueWorkersService
+    JesqueStatisticsService jesqueStatisticsService
     JesqueService jesqueService
     JesqueScheduledService jesqueScheduledService
     GrailsApplication grailsApplication
@@ -24,6 +25,11 @@ abstract class AbstractJesqueAdminController {
             model.status.toString()
         }
         render model as JSON
+    }
+
+    protected void renderNotFound() {
+        response.status = HttpStatus.NOT_FOUND.value()
+        jsonRender([error: HttpStatus.NOT_FOUND.toString()])
     }
 
     def beforeInterceptor = {

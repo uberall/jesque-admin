@@ -12,7 +12,7 @@ class TestJob {
     }
 
     def perform() {
-        def random = RandomUtils.nextInt(10000)
+        def random = RandomUtils.nextInt(1000)
         sleep(random)
         if (random % 5 == 0) {
             throw new Exception("slepped for $random which is divisble by 5!")

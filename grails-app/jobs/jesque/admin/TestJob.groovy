@@ -9,8 +9,8 @@ class TestJob {
         cron queue: 'TestJobQueue2', name: 'TestJobTrigger2', cronExpression: '0/30 * * * * ? *'
     }
 
-    def perform() {
-        def random = RandomUtils.nextInt(1000)
+    def perform(random = RandomUtils.nextInt(1000)) {
+        log.warn("sleeping for $random")
         sleep(random)
         if (random % 5 == 0) {
             throw new Exception("slepped for $random which is divisble by 5!")

@@ -28,4 +28,5 @@ class JesqueAdminStatisticsController extends AbstractJesqueAdminController {
             ])
         }
     }
+
 }

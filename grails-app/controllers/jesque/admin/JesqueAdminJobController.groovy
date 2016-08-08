@@ -19,10 +19,6 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         ] as JSON)
     }
 
-    def manual() {
-        [jobs: QueueConfiguration.jobTypes.keySet().sort()]
-    }
-
     def requeue(long id) {
         jesqueFailureService.requeue(id.toLong())
         redirect(action: 'failed')
@@ -75,21 +71,9 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
     }
 
     def enqueue() {
-        def clazz = QueueConfiguration.jobTypes.get(params.jobName)
-        def list = []
-        params.getList('attrib[]').grep().each { def value ->
-            if (value.toString().isNumber()) {
-                list.add(value as Long)
-            } else if (value instanceof String && value.toLowerCase() in BOOLEAN_VALUES) {
-                list.add(value.toBoolean())
-            } else
-                list.add(value)
-        }
-
-        jesqueService.enqueue(QueueConfiguration.getQueueName(clazz), "$params.jobName", list)
-
-        flash.success = true
-        render(view: 'manual', model: [selectedJob: params.jobName, jobs: QueueConfiguration.jobTypes.keySet().sort()])
+        def json = request.JSON
+        jesqueService.enqueue(json.queue, json.job, json.args)
+        jsonRender([success: true])
     }
 
     def apiFailedCount() {

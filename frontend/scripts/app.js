@@ -7,6 +7,7 @@ import FailedList from "./components/jobs/failed";
 import {HOME, JOB_FAILED, JOBS_LIST} from "./constants/paths";
 import JobsList from "./components/jobs/list";
 import JobDetails from "./components/jobs/details";
+import JobManual from "./components/jobs/manual";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
 
@@ -19,6 +20,7 @@ var JesqueAdminApp = React.createClass({
     '/queues/:name': 'queueDetails',
     '/queues/:name/:page': 'queueDetails',
     '/jobs/failed/:page': 'failedJobs',
+    '/jobs/enqueue/': 'enqueueJob',
     '/jobs/:page': 'jobsList',
     '/jobs/details/:name/:page': 'jobsDetails',
   },
@@ -88,6 +90,10 @@ var JesqueAdminApp = React.createClass({
       page = 1
     }
     return <JobDetails job={name} page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+  },
+
+  enqueueJob: function () {
+    return <JobManual />
   },
 
   notFound: function (path) {

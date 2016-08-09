@@ -4,10 +4,11 @@ import BaseComponent from "../base-component";
 import {map, assign} from "lodash";
 import FromNow from "../common/from-now";
 import FailureDetails from "./failure-details";
-import Pager from "../common/pager";
 import FilterButtonGroup from "../common/filter-button-group";
+import Pager from "../common/pager";
 const cx = require('classnames');
 const navigate = require('react-mini-router').navigate;
+const SweetAlert = require('react-swal');
 
 export default class FailedList extends BaseComponent {
 
@@ -21,9 +22,10 @@ export default class FailedList extends BaseComponent {
       total: 0,
       selected: null,
       max: 25,
-      currentPage: props.page
+      currentPage: props.page,
+      confirmClearAll: false
     }
-    this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'changePage', 'resetToFirstPage');
+    this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'changePage', 'resetToFirstPage', 'getClearAllAlert');
   }
 
   componentDidMount() {
@@ -152,10 +154,34 @@ export default class FailedList extends BaseComponent {
   clearAll() {
     this.client.delete('failed', null, {})
       .then(() => {
+        this.setState(assign(this.state, {confirmClearAll: false}))
+        this.selectFailure(null)
         this.doUpdate(1)
       }).catch((err)=> {
       console.error(err)
     })
+  }
+
+  getClearAllAlert() {
+    if (this.state.confirmClearAll === false) {
+      return ""
+    }
+
+    return (<SweetAlert
+      isOpen={true}
+      type="warning"
+      title="Are you sure?"
+      text={`This will delete all failed Jobs!`}
+      confirmButtonText="Yes"
+      cancelButtonText="No"
+      callback={(confirmed)=> {
+        if (confirmed) {
+          this.clearAll()
+        } else {
+          this.setState(assign(this.state, {confirmClearAll: false}))
+        }
+      }}
+    />)
   }
 
   render() {
@@ -167,7 +193,6 @@ export default class FailedList extends BaseComponent {
     if (!somethingSelected) {
       headers.push(<th key="header-Message">Message</th>);
     }
-
     return (
       <div className="failed-list">
         <div className="table-container">
@@ -176,7 +201,15 @@ export default class FailedList extends BaseComponent {
               <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
             </div>
             <div className="filter">
-              <button className="btn btn-danger pull-right" onClick={this.clearAll}><i className="fa fa-trash"></i> Clear all</button>
+              <button
+                className="btn btn-danger pull-right"
+                onClick={()=> {
+                  this.setState(assign(this.state, {confirmClearAll: true}))
+                }}
+              >
+                <i className="fa fa-trash"></i> Clear all
+              </button>
+              {this.getClearAllAlert()}
             </div>
           </div>
           <table className="table">

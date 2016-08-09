@@ -1,15 +1,10 @@
 package jesque.admin
 
 import grails.converters.JSON
-import org.springframework.http.HttpStatus
 
 class JesqueAdminJobController extends AbstractJesqueAdminController {
 
     private static final BOOLEAN_VALUES = ['true', 'false']
-
-    def index() {
-        [jobs: jesqueManagerService.doneJobList]
-    }
 
     def failed() {
         sanitizeParams()
@@ -36,7 +31,24 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
     }
 
     def triggers() {
-        [scheduledJobs: jesqueScheduledService.all.sort { it.trigger.nextFireTime.millis }]
+        jsonRender([list: jesqueScheduledService.all.sort { it.trigger.nextFireTime.millis }.collect {
+            [name          : it.name,
+             cronExpression: it.cronExpression,
+             args          : it.args,
+             jesqueJobName : it.jesqueJobName,
+             jesqueJobQueue: it.jesqueJobQueue,
+             trigger       : [
+                     jobName     : it.trigger.jobName,
+                     nextFireTime: it.trigger.nextFireTime.millis,
+                     state       : it.trigger.state.toString(),
+                     acquiredBy  : it.trigger.acquiredBy,
+             ]]
+        }])
+    }
+
+    def deleteTrigger(String name) {
+        jesqueScheduledService.delete(name)
+        jsonRender([success: true])
     }
 
     def retryAll() {
@@ -45,25 +57,6 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         }
 
         redirect(action: 'failed')
-    }
-
-    def details() {
-        sanitizeParams()
-        params.sort = params.sort ?: 'start'
-        params.order = params.order ?: 'desc'
-        def list = jesqueManagerService.getJobListByName(params.id, params.getInt("max"), params.getInt("offset"), params.sort, params.order)
-        [list: list]
-    }
-
-    def apiGet(long id) {
-        def tempList = jesqueFailureService.getFailures(id, 1)
-        def failure = [:]
-        if (tempList) {
-            failure = tempList.first()
-        } else {
-            response.status = HttpStatus.NOT_FOUND.value()
-        }
-        jsonRender([failure: failure])
     }
 
     def delayed() {
@@ -80,8 +73,5 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         jsonRender([count: jesqueFailureService.count])
     }
 
-    def apiDeleteTrigger() {
-        jesqueScheduledService.delete(params.name)
-        jsonRender([success: "OK"])
-    }
+
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import FormatDate from "../common/formated-date";
+import FormatedDate from "../common/formated-date";
 import _ from "lodash";
 const cx = require('classnames')
 

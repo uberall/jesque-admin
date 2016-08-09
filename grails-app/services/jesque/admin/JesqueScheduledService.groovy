@@ -15,7 +15,7 @@ class JesqueScheduledService {
         scheduledJobDaoService.getAll()
     }
 
-    def delete(String name) {
+    void delete(String name) {
         scheduledJobDaoService.delete(name)
     }
 

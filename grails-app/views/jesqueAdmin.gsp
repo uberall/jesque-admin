@@ -13,6 +13,7 @@
             overview: "${g.createLink(controller: 'jesqueAdmin', action: 'overview')}",
             queues: "${g.createLink(controller: 'jesqueAdminQueue', action: 'list')}",
             failed: "${g.createLink(controller: 'jesqueAdminJob', action: 'failed')}",
+            triggers: "${g.createLink(controller: 'jesqueAdminJob', action: 'triggers')}",
             jobs: "${g.createLink(controller: 'jesqueAdminStatistics', action: 'jobs')}",
         },
         isMonitoringEnabled: ${grailsApplication.config.grails.jesque.statistics?.enabled == true},

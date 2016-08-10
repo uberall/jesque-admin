@@ -11,6 +11,8 @@ class JesqueScheduledService {
     ScheduledJobDaoService scheduledJobDaoService
     def redisService
 
+    private static final String DELAYED_BASE_KEY = "resque:delayed"
+
     def getAll() {
         scheduledJobDaoService.getAll()
     }
@@ -19,21 +21,28 @@ class JesqueScheduledService {
         scheduledJobDaoService.delete(name)
     }
 
-    def getScheduledJobs() {
+    def getDelayedQueues() {
+        redisService.smembers('resque:delayed:queues')
+    }
+
+    def getDelayedJobs(String queue, long offset, long max) {
         def jobs = []
+        String key = getDelayedKey(queue)
         redisService.withRedis { Jedis jedis ->
-            jedis.smembers("resque:delayed:queues").collect { queueName ->
-                jedis.zrevrange("resque:delayed:$queueName", 0, Long.MAX_VALUE).each { time ->
-                    jedis.lrange("resque:delayed:$queueName:$time", 0, jedis.llen("resque:delayed:$queueName:$time")).each { jobString ->
-                        def job = JSON.parse(jobString)
-                        job.time = time
-                        job.queue = queueName
-                        jobs << job
-                    }
+            // each queue has a zset of times that it has jobs to do for
+            jedis.zrevrange(key, offset, offset + (max - 1)).each { time ->
+                jedis.lrange("$key:$time", 0, jedis.llen("$key:$time")).each { jobString ->
+                    def job = JSON.parse(jobString)
+                    job.time = time
+                    jobs << job
                 }
             }
         }
-        jobs.sort{it.time}
+        jobs.sort { it.time }
+    }
+
+    String getDelayedKey(String queue) {
+        "$DELAYED_BASE_KEY:$queue"
     }
 
 }

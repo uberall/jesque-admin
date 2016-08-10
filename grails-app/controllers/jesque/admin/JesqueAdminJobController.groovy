@@ -4,8 +4,6 @@ import grails.converters.JSON
 
 class JesqueAdminJobController extends AbstractJesqueAdminController {
 
-    private static final BOOLEAN_VALUES = ['true', 'false']
-
     def failed() {
         sanitizeParams()
         render([
@@ -59,8 +57,18 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         redirect(action: 'failed')
     }
 
+    def delayedQueues() {
+
+    }
+
     def delayed() {
-        [jobs: jesqueScheduledService.scheduledJobs]
+        sanitizeParams()
+        jsonRender(
+                [
+                        list  : jesqueScheduledService.getDelayedJobs(params.getLong("offset"), params.getLong("max")),
+                        queues: jesqueScheduledService.delayedQueues
+                ]
+        )
     }
 
     def enqueue() {

@@ -4,13 +4,13 @@ import BaseComponent from "../base-component";
 import {map, assign} from "lodash";
 import FromNow from "../common/from-now";
 import FailureDetails from "./failure-details";
-import FilterButtonGroup from "../common/filter-button-group";
 import Pager from "../common/pager";
 const cx = require('classnames');
 const navigate = require('react-mini-router').navigate;
 const SweetAlert = require('react-swal');
 
-export default class FailedList extends BaseComponent {
+
+export default class DelayedList extends BaseComponent {
 
   constructor(props) {
     super(props);
@@ -20,10 +20,8 @@ export default class FailedList extends BaseComponent {
       list: null,
       loading: false,
       total: 0,
-      selected: null,
       max: 25,
-      currentPage: props.page,
-      confirmClearAll: false
+      currentPage: props.page
     }
     this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'changePage', 'resetToFirstPage', 'getClearAllAlert');
   }
@@ -65,7 +63,7 @@ export default class FailedList extends BaseComponent {
     if (!this.state.loading) {
       let {currentPage, max} = this.state;
       this.setState(assign(this.state, {loading: true}));
-      this.client.get('failed', null, {max: max, offset: (currentPage - 1) * max})
+      this.client.get('delayed', null, {max: max, offset: (currentPage - 1) * max})
         .then((resp) => {
           if (resp.list.length === 0 && currentPage !== 1) {
             console.log("no items received and not on first page, returning to first page");
@@ -91,7 +89,7 @@ export default class FailedList extends BaseComponent {
       this.setState(assign(this.state, {currentPage: page}));
       setTimeout(()=> {
         this.doUpdate();
-        navigate(`/jobs/failed/${page}`, false);
+        navigate(`/jobs/delayed/${page}`, false);
       }, 100)
     } else {
       console.log("no actual page change detected, skipping")
@@ -131,13 +129,6 @@ export default class FailedList extends BaseComponent {
     })
   }
 
-  getSelectedView() {
-    return <FailureDetails failure={this.state.selected} onClose={()=> {
-      this.selectFailure(null)
-    }}
-    />
-  }
-
   onMaxChange(max) {
     if (this.state.max !== max) {
       this.setState(assign(this.state, {max: max}));
@@ -151,39 +142,6 @@ export default class FailedList extends BaseComponent {
     }
   }
 
-  clearAll() {
-    this.client.delete('failed', null, {})
-      .then(() => {
-        this.setState(assign(this.state, {confirmClearAll: false}))
-        this.selectFailure(null)
-        this.doUpdate(1)
-      }).catch((err)=> {
-      console.error(err)
-    })
-  }
-
-  getClearAllAlert() {
-    if (this.state.confirmClearAll === false) {
-      return ""
-    }
-
-    return (<SweetAlert
-      isOpen={true}
-      type="warning"
-      title="Are you sure?"
-      text={`This will delete all failed Jobs!`}
-      confirmButtonText="Yes"
-      cancelButtonText="No"
-      callback={(confirmed)=> {
-        if (confirmed) {
-          this.clearAll()
-        } else {
-          this.setState(assign(this.state, {confirmClearAll: false}))
-        }
-      }}
-    />)
-  }
-
   render() {
     let somethingSelected = !!this.state.selected;
     let headers = [];
@@ -194,44 +152,26 @@ export default class FailedList extends BaseComponent {
       headers.push(<th key="header-Message">Message</th>);
     }
     return (
-      <div className="failed-list">
-        <div className="table-container">
-          <div className="filter-form">
-            <div className="filter">
-              <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
-            </div>
-            <div className="filter">
-              <button
-                className="btn btn-danger pull-right"
-                onClick={()=> {
-                  this.setState(assign(this.state, {confirmClearAll: true}))
-                }}
-              >
-                <i className="fa fa-trash"></i> Clear all
-              </button>
-              {this.getClearAllAlert()}
-            </div>
-          </div>
-          <table className="table">
-            <thead>
-            <tr>
-              {headers}
-            </tr>
-            </thead>
-            <tbody>
-            {this.getTableBody(somethingSelected)}
-            </tbody>
-          </table>
-          <Pager
-            pages={this.getMaxPages()}
-            current={this.state.currentPage}
-            target={`/jobs/failed`}
-            disabled={this.state.loading}
-            onPageChange={this.changePage}
-          />
-        </div>
-        {this.getSelectedView()}
+      <div className="delayed-list">
+        <table className="table">
+          <thead>
+          <tr>
+            {headers}
+          </tr>
+          </thead>
+          <tbody>
+          {this.getTableBody()}
+          </tbody>
+        </table>
+        <Pager
+          pages={this.getMaxPages()}
+          current={this.state.currentPage}
+          target={`/jobs/failed`}
+          disabled={this.state.loading}
+          onPageChange={this.changePage}
+        />
       </div>
     )
   }
+
 }

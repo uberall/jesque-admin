@@ -4,11 +4,12 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
-import {HOME, JOB_FAILED, JOBS_LIST} from "./constants/paths";
+import {HOME, JOB_FAILED, JOBS_LIST, JOB_DELAYED, JOB_ENQUEUE, JOB_TRIGGERS} from "./constants/paths";
 import JobsList from "./components/jobs/list";
 import JobDetails from "./components/jobs/details";
 import JobManual from "./components/jobs/manual";
 import Triggers from "./components/jobs/triggers";
+import DelayedList from "./components/jobs/delayed";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
 
@@ -20,9 +21,10 @@ var JesqueAdminApp = React.createClass({
     '/404': 'notFound',
     '/queues/:name': 'queueDetails',
     '/queues/:name/:page': 'queueDetails',
-    '/jobs/failed/:page': 'failedJobs',
     '/jobs/enqueue/': 'enqueueJob',
     '/jobs/triggers/': 'triggers',
+    '/jobs/delayed/:page': 'delayedJobs',
+    '/jobs/failed/:page': 'failedJobs',
     '/jobs/:page': 'jobsList',
     '/jobs/details/:name/:page': 'jobsDetails',
   },
@@ -74,6 +76,17 @@ var JesqueAdminApp = React.createClass({
     return <FailedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
+  delayedJobs: function (page) {
+    window.currentPath = JOB_DELAYED;
+    try {
+      page = parseInt(page)
+    } catch (ignore) {
+      page = 1
+    }
+
+    return <DelayedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+  },
+
   jobsList: function (page) {
     window.currentPath = JOBS_LIST;
     try {
@@ -95,6 +108,7 @@ var JesqueAdminApp = React.createClass({
   },
 
   enqueueJob: function () {
+    window.currentPath = JOB_ENQUEUE;
     return <JobManual />
   },
 
@@ -106,6 +120,7 @@ var JesqueAdminApp = React.createClass({
   },
 
   triggers: function () {
+    window.currentPath = JOB_TRIGGERS;
     return <Triggers autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
   },
 

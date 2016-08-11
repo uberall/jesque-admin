@@ -12,6 +12,7 @@ import Triggers from "./components/jobs/triggers";
 import DelayedList from "./components/jobs/delayed";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
+const navigate = require('react-mini-router').navigate;
 
 var JesqueAdminApp = React.createClass({
   mixins: [RouterMixin],
@@ -32,6 +33,10 @@ var JesqueAdminApp = React.createClass({
   componentDidMount: function () {
     window.setError = function (error) {
       alert(error)
+    }
+
+    window.doNavigate = function (linkInfo) {
+      navigate(linkInfo.path)
     }
   },
 

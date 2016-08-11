@@ -196,8 +196,10 @@ export default class JobManual extends BaseComponent {
             <label htmlFor="args">Arguments</label>
             {this.getArgumentInputs()}
           </div>
-          <button type="reset" className="btn btn-danger" onClick={this.reset}>Reset</button>
-          <button type="submit" className="btn btn-success">Enqueue</button>
+          <div className="btn-group">
+            <button type="reset" className="btn btn-danger" onClick={this.reset}>Reset</button>
+            <button type="submit" className="btn btn-success">Enqueue</button>
+          </div>
         </form>
       </div>
     )

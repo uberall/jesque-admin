@@ -3,19 +3,22 @@ import {assign, map, slice} from "lodash";
 import BaseComponent from "../base-component";
 import Pager from "../common/pager";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
+import {HOME} from "../../constants/paths";
 
-const MAX = 25
+const SweetAlert = require('react-swal');
+const MAX = 25;
 
 export default class QueueDetails extends BaseComponent {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       queue: null,
-      page: props.page
-    }
+      page: props.page,
+      confirmDelete: false
+    };
 
-    this.client = new JesqueAdminClient()
-    this.bindThiz('getPager', 'getTableRows', 'changePage')
+    this.client = new JesqueAdminClient();
+    this.bindThiz('getPager', 'getTableRows', 'changePage', 'updateState', 'getDeleteAlert', 'doDelete')
 
   }
 
@@ -31,11 +34,11 @@ export default class QueueDetails extends BaseComponent {
   }
 
   getTableRows() {
-    let from = ((this.state.page - 1) * MAX)
-    let to = from + MAX
-    let i = 0
+    let from = ((this.state.page - 1) * MAX);
+    let to = from + MAX;
+    let i = 0;
     return map(slice(this.state.queue.jobs, from, to), (job)=> {
-      i++
+      i++;
       return <QueueDetailsListRow job={job} key={`${job.className}-${JSON.stringify(job.args)}-${i}`}/>
     })
   }
@@ -56,7 +59,7 @@ export default class QueueDetails extends BaseComponent {
   }
 
   componentDidMount() {
-    this.doUpdate()
+    this.doUpdate();
     this.intervalid = setInterval(()=> {
       this.doUpdate()
     }, 5000)
@@ -64,6 +67,40 @@ export default class QueueDetails extends BaseComponent {
 
   componentWillUnmount() {
     clearInterval(this.intervalid)
+  }
+
+  doDelete() {
+    this.client.delete('queues', this.props.name, {})
+      .then((json) => {
+        window.doNavigate(HOME)
+      })
+  }
+
+  getDeleteAlert() {
+    if (this.state.confirmDelete === false) {
+      return ""
+    } else {
+      return (<SweetAlert
+        isOpen={true}
+        type="warning"
+        title="Are you sure?"
+        text={`This will delete this queue!`}
+        confirmButtonText="Yes"
+        cancelButtonText="No"
+        callback={(confirmed)=> {
+          if (confirmed) {
+            this.doDelete()
+          } else {
+            this.updateState({confirmDelete: false})
+          }
+        }}
+      />)
+    }
+  }
+
+
+  updateState(add) {
+    this.setState(assign(this.state, add))
   }
 
   render() {
@@ -77,6 +114,11 @@ export default class QueueDetails extends BaseComponent {
             <div className="page-header">
               <h1>{this.state.queue.name}
               </h1>
+              <button className="btn btn danger" onClick={()=> {
+                this.updateState({confirmDelete: true});
+              }}>Delete
+              </button>
+              {this.getDeleteAlert()}
             </div>
           </div>
         </div>

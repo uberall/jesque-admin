@@ -4,11 +4,6 @@ import org.springframework.http.HttpStatus
 
 class JesqueAdminQueueController extends AbstractJesqueAdminController {
 
-    def index() {
-        def list = jesqueQueuesService.queueInfos
-        [list: list.sort { it1, it2 -> it1.name <=> it2.name }]
-    }
-
     def details(String name) {
         def queue = jesqueQueuesService.getQueueInfo(name, 0, 1000)
         if(!queue) {
@@ -19,9 +14,9 @@ class JesqueAdminQueueController extends AbstractJesqueAdminController {
         }
     }
 
-    def remove() {
-        jesqueQueuesService.removeQueue(params.id)
-        redirect(controller: 'jesqueManagerQueue', action: 'index')
+    def remove(String name) {
+        jesqueQueuesService.removeQueue(name)
+        jsonRender([success: true])
     }
 
     def list() {

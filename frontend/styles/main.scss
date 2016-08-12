@@ -5,7 +5,6 @@ $fa-font-path: "~font-awesome/fonts";
 @import "failure";
 @import "sidebar";
 @import "content";
-@import "home";
 @import "job-details";
 
 
@@ -68,4 +67,8 @@ tr.info.danger {
   td {
     background-color: darken($alert-danger-bg, 15%) !important;
   }
+}
+
+.row {
+  margin-right: 0 !important;
 }

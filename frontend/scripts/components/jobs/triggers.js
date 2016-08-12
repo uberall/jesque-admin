@@ -82,20 +82,25 @@ export default class Triggers extends BaseComponent {
 
   render() {
     return (
-      <table className="table table-condensed table-striped">
-        <thead>
-        <tr>
-          <th>Job</th>
-          <th>Queue</th>
-          <th>Cron Expression</th>
-          <th>Next Fire Time</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {this.getTableBody()}
-        </tbody>
-      </table>
+      <div>
+        <div className="page-header">
+          <h3>Job Triggers</h3>
+        </div>
+        <table className="table table-condensed table-striped">
+          <thead>
+          <tr>
+            <th>Job</th>
+            <th>Queue</th>
+            <th>Cron Expression</th>
+            <th>Next Fire Time</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          {this.getTableBody()}
+          </tbody>
+        </table>
+      </div>
     )
   }
 }

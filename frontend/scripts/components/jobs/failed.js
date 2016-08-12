@@ -196,6 +196,9 @@ export default class FailedList extends BaseComponent {
     return (
       <div className="failed-list">
         <div className="table-container">
+          <div className="page-header">
+            <h3>Failed Jobs</h3>
+          </div>
           <div className="filter-form">
             <div className="filter">
               <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>

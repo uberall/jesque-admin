@@ -121,6 +121,9 @@ export default class JobsList extends BaseComponent {
     }
     return (
       <div className="jobs-list">
+        <div className="page-header">
+          <h3>Jobs</h3>
+        </div>
         <table className="table">
           <tbody>
           {this.getTableBody()}

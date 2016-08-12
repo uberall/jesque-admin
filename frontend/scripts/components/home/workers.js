@@ -76,6 +76,9 @@ export default class WorkerList extends BaseComponent {
   render() {
     return (
       <div>
+        <div className="page-header">
+          <h3>Worker</h3>
+        </div>
         <div className="filter-form">
           <div className="filter">
             <input className="form-control" placeholder="Search for host or pid" type="text" value={this.state.query} onChange={(e)=> {

@@ -71,6 +71,9 @@ export default class QueueList extends BaseComponent {
 
     return (
       <div className="queue-list">
+        <div className="page-header">
+          <h3>Queues</h3>
+        </div>
         <div className="filter-form">
           <div className="filter">
             <input className="form-control" placeholder="Search for Queue name" type="text" value={this.state.query} onChange={(e)=> {

@@ -170,6 +170,9 @@ export default class JobManual extends BaseComponent {
     const {jobs, queues, selectedJob, selectedQueue, args, loading} = this.state;
     return (
       <div className="job-manual">
+        <div className="page-header">
+          <h3>Enqueue Job Manually</h3>
+        </div>
         {this.getAlert()}
         <form onSubmit={this.onFormSubmit} className={cx({disabled: loading})}>
           <div className="form-group">

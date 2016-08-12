@@ -62,9 +62,9 @@ export default class HomeView extends BaseComponent {
 
   render() {
     return (
-      <div className="home-component">
-        <div className="queues"><QueueList queues={this.state.queues} failed={this.state.failed}/></div>
-        <div className="workers"><WorkerList workers={this.state.workers}/></div>
+      <div className="row">
+        <div className="col-lg-6 queues"><QueueList queues={this.state.queues} failed={this.state.failed}/></div>
+        <div className="col-lg-6 workers"><WorkerList workers={this.state.workers}/></div>
       </div>
     )
   }

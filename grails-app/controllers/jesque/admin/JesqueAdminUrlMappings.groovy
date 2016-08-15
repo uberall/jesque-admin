@@ -17,5 +17,7 @@ class JesqueAdminUrlMappings {
         "/jesqueAdmin/api/jobs/triggers"(controller: 'jesqueAdminJob', action: 'triggers', method: "GET")
         "/jesqueAdmin/api/jobs/triggers/$name"(controller: 'jesqueAdminJob', action: 'deleteTrigger', method: "DELETE")
         "/jesqueAdmin/api/jobs/$job"(controller: 'jesqueAdminStatistics', action: 'list', method: "GET")
+        "/jesqueAdmin/api/workers"(controller: 'jesqueAdminWorker', action: 'list', method: 'GET')
+        "/jesqueAdmin/api/workers"(controller: 'jesqueAdminWorker', action: 'manual', method: 'POST')
     }
 }

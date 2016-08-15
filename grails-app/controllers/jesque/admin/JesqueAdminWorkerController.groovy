@@ -4,12 +4,13 @@ import net.greghaines.jesque.meta.WorkerInfo
 
 class JesqueAdminWorkerController extends AbstractJesqueAdminController {
 
-    def index() {
+    def list() {
+        jsonRender([list: jesqueWorkersService.allWorkers])
     }
 
-//    def manual() {
-//        [queues: QueueConfiguration.queueNames.sort()]
-//    }
+    def manual() {
+
+    }
 
     def startWorker() {
         //TODO: FIXME

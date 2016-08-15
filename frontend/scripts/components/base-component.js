@@ -1,9 +1,10 @@
 import React from "react";
-import {each} from "lodash";
-
+import {each, assign} from "lodash";
 export default class BaseComponent extends React.Component {
   constructor(props) {
     super(props)
+
+    this.bindThiz('assignState')
   }
 
   bindThiz(...methods) {
@@ -15,6 +16,10 @@ export default class BaseComponent extends React.Component {
         console.error(`${m} is not a function on ${this.constructor.name}`)
       }
     })
+  }
+
+  assignState(updates) {
+    this.setState(assign(this.state, updates))
   }
 
 }

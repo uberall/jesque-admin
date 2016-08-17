@@ -67,7 +67,7 @@ After restarting your App you should find a list menu item under "jobs" in jesqu
 # Development
 
 If you want to extend jesque-admin or help developing it further simply start by:
-# Run the bootRun target (or grails run-app whatever you prefer)
-# Run npm i in the root folder of this plugin
-# Run npm run devel
-# in jesqueAdmin.gsp switch to the script tag that is pointing to your local webpack server
+1. Run the bootRun target (or grails run-app whatever you prefer)
+2. Run npm i in the root folder of this plugin
+3. Run npm run devel
+4. in jesqueAdmin.gsp switch to the script tag that is pointing to your local webpack server (do not forget to switch that back before doing a PR)

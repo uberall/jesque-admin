@@ -11,14 +11,14 @@ buildscript {
     }
 }
 
-version "0.1"
-group "jesque.admin"
+version "0.2"
+group "org.grails.plugins"
 
-apply plugin:"eclipse"
-apply plugin:"idea"
-apply plugin:"org.grails.grails-plugin"
-apply plugin:"org.grails.grails-plugin-publish"
-apply plugin:"org.grails.grails-gsp"
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "org.grails.grails-plugin"
+apply plugin: "org.grails.grails-plugin-publish"
+apply plugin: "org.grails.grails-gsp"
 
 ext {
     grailsVersion = project.grailsVersion
@@ -69,13 +69,13 @@ grailsPublish {
     // TODO: Provide values here
     user = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
     key = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
-    githubSlug = 'foo/bar'
+    githubSlug = 'peh/jesque-admin'
     license {
         name = 'Apache-2.0'
     }
-    title = "My Plugin"
-    desc = "Full plugin description"
-    developers = [johndoe:"John Doe"]
+    title = "Jesque Admin"
+    desc = "Admin UI for the Grails Jesque Plugin"
+    developers = [peh: "Philipp Eschenbach"]
     portalUser = ""
-    portalPassword = ""    
+    portalPassword = ""
 }

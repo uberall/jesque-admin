@@ -112,7 +112,7 @@ grails:
         autoFlush: true
         custom:
           worker:
-            clazz: jesque.admin.JesqueJobStatisticsCollectingWorkerImpl
+            clazz: JesqueJobStatisticsCollectingWorkerImpl
         workers:
             testJobPool:
                 workers: 2
@@ -122,4 +122,4 @@ grails:
                     - TestJobQueue3
                     - TestJobQueue4
                 jobTypes:
-                    - jesque.admin.TestJob
+                    - TestJob

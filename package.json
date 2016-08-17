@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devel": "node dev-server.js"
+    "devel": "node dev-server.js",
+    "package": "NODE_ENV=production node node_modules/webpack/bin/webpack.js --config=webpack.prod.config.js"
   },
   "author": "Philipp Eschenbach <philipp@errbuddy.net> (https://errbuddy.net)",
   "license": "ISC",

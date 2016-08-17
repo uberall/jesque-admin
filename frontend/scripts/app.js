@@ -4,13 +4,14 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
-import {HOME, JOB_FAILED, JOBS_LIST, JOB_DELAYED, JOB_ENQUEUE, JOB_TRIGGERS, WORKER_LIST} from "./constants/paths";
+import {HOME, JOB_FAILED, JOBS_LIST, JOB_DELAYED, JOB_ENQUEUE, JOB_TRIGGERS, WORKER_LIST, WORKER_MANUAL} from "./constants/paths";
 import JobsList from "./components/jobs/list";
 import JobDetails from "./components/jobs/details";
 import JobManual from "./components/jobs/manual";
 import Triggers from "./components/jobs/triggers";
 import DelayedList from "./components/jobs/delayed";
 import WorkerList from "./components/workers/list";
+import WorkerManual from "./components/workers/manual";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
 const navigate = require('react-mini-router').navigate;
@@ -30,6 +31,7 @@ var JesqueAdminApp = React.createClass({
     '/jobs/:page': 'jobsList',
     '/jobs/details/:name/:page': 'jobsDetails',
     '/workers': 'workerList',
+    '/workers/start': 'workerManual',
   },
 
   componentDidMount: function () {
@@ -134,6 +136,11 @@ var JesqueAdminApp = React.createClass({
   workerList: function () {
     window.currentPath = WORKER_LIST;
     return <WorkerList autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} selectable={true}/>;
+  },
+
+  workerManual: function () {
+    window.currentPath = WORKER_MANUAL;
+    return <WorkerManual />
   },
 
 

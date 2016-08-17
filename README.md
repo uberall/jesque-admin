@@ -67,6 +67,7 @@ After restarting your App you should find a list menu item under "jobs" in jesqu
 # Development
 
 If you want to extend jesque-admin or help developing it further simply start by:
+
 1. Run the bootRun target (or grails run-app whatever you prefer)
 2. Run npm i in the root folder of this plugin
 3. Run npm run devel

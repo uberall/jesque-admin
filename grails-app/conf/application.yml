@@ -118,8 +118,5 @@ grails:
                 workers: 2
                 queueNames:
                     - TestJobQueue
-                    - TestJobQueue2
-                    - TestJobQueue3
-                    - TestJobQueue4
                 jobTypes:
                     - TestJob

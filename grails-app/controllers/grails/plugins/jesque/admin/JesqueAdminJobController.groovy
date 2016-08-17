@@ -13,11 +13,13 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
     }
 
     def requeue(long id) {
+        // TODO: not yet supported in FE
         jesqueFailureService.requeue(id.toLong())
         redirect(action: 'failed')
     }
 
     def remove(long id) {
+        // TODO: not yet supported in FE
         jesqueFailureService.remove(id.toLong())
 
         redirect(action: 'failed')
@@ -50,15 +52,12 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
     }
 
     def retryAll() {
+        // TODO: not yet supported in FE
         jesqueFailureService.count.times {
             jesqueFailureService.requeue(it)
         }
 
         redirect(action: 'failed')
-    }
-
-    def delayedQueues() {
-
     }
 
     def delayed() {
@@ -76,10 +75,5 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         jesqueService.enqueue(json.queue, json.job, json.args)
         jsonRender([success: true])
     }
-
-    def apiFailedCount() {
-        jsonRender([count: jesqueFailureService.count])
-    }
-
 
 }

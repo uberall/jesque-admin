@@ -1,6 +1,6 @@
-package grails.plugins.jesque.admin
+package jesque.test
 
-class JesqueAdminUrlMappings {
+class UrlMappings {
 
     static mappings = {
 

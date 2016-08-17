@@ -11,7 +11,7 @@ buildscript {
     }
 }
 
-version "0.2"
+version "0.1.5"
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
@@ -35,6 +35,10 @@ dependencyManagement {
         mavenBom "org.grails:grails-bom:$grailsVersion"
     }
     applyMavenExclusions false
+}
+
+jar {
+    exclude "jesque/test/**/**"
 }
 
 dependencies {
@@ -69,6 +73,7 @@ grailsPublish {
     // TODO: Provide values here
     user = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
     key = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
+    userOrg = 'uberall'
     githubSlug = 'peh/jesque-admin'
     license {
         name = 'Apache-2.0'
@@ -76,6 +81,5 @@ grailsPublish {
     title = "Jesque Admin"
     desc = "Admin UI for the Grails Jesque Plugin"
     developers = [peh: "Philipp Eschenbach"]
-    portalUser = ""
-    portalPassword = ""
+    portalUser = "peschenbach"
 }

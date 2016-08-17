@@ -1,4 +1,4 @@
-package grails.plugins.jesque.admin
+package jesque.test
 
 import org.apache.commons.lang.math.RandomUtils
 import org.joda.time.DateTime

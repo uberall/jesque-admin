@@ -6,7 +6,7 @@ class JesqueAdminGrailsPlugin extends Plugin {
 
     def grailsVersion = "3.0.0 > *"
     def pluginExcludes = [
-        "grails-app/jobs/**"
+        "**/jesque/test/**"
     ]
 
     def title = "Jesque Admin" // Headline display name of the plugin

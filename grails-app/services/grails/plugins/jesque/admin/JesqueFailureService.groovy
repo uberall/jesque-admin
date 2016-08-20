@@ -1,10 +1,8 @@
 package grails.plugins.jesque.admin
 
-import grails.transaction.Transactional
 import net.greghaines.jesque.JobFailure
 import net.greghaines.jesque.meta.dao.FailureDAO
 
-@Transactional
 class JesqueFailureService {
 
     FailureDAO failureDao

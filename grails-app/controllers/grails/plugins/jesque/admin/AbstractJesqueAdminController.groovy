@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus
 
 abstract class AbstractJesqueAdminController {
 
-    JesqueConfigService jesqueConfigService
-    JesqueAdminService jesqueAdminService
     JesqueQueuesService jesqueQueuesService
     JesqueFailureService jesqueFailureService
     JesqueWorkersService jesqueWorkersService
@@ -25,18 +23,6 @@ abstract class AbstractJesqueAdminController {
         response.status = model.status.value()
         model.status = model.status.name()
         render model as JSON
-    }
-
-    protected void renderNotFound() {
-        response.status = HttpStatus.NOT_FOUND.value()
-        jsonRender([error: HttpStatus.NOT_FOUND.toString()])
-    }
-
-    def beforeInterceptor = {
-        if (!grailsApplication.config.grails.jesque.enabled) {
-            render "Jesque is disabled!"
-            return false
-        }
     }
 
     protected void sanitizeParams() {

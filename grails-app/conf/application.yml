@@ -119,4 +119,4 @@ grails:
                 queueNames:
                     - TestJobQueue
                 jobTypes:
-                    - TestJob
+                    - jesque.test.TestJob

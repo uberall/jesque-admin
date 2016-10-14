@@ -4,9 +4,13 @@ class JesqueAdminStatisticsController extends AbstractJesqueAdminController {
 
     def jobs() {
         sanitizeParams()
-        def list = jesqueStatisticsService.jobNames
-        int offset = params.getInt('offset')
-        int max = params.getInt('max')
+        List list = grailsApplication.jesqueJobClasses
+        if(list) {
+            list = list.shortName
+        }
+
+        int offset = params.getInt('offset', 0)
+        int max = params.getInt('max', 100)
         jsonRender([
                 list : list.subList(offset, Math.min((offset + max), list.size())),
                 total: list.size()

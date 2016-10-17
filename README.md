@@ -9,7 +9,7 @@ Just add jesque-admin to your dependencies
 ```
 dependencies {
     ...
-    compile 'org.grails.plugins:jesque-admin:0.1.8'
+    compile 'org.grails.plugins:jesque-admin:0.1.9'
 }
 ```
 

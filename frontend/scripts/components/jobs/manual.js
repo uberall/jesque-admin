@@ -2,6 +2,7 @@ import React from "react";
 import BaseComponent from "../base-component";
 import {assign, map, clone, each} from "lodash";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
+import {Creatable} from "react-select";
 const ReactSelect = require('react-select');
 const cx = require('classnames');
 
@@ -104,11 +105,15 @@ export default class JobManual extends BaseComponent {
   }
 
   queueSelected(queue) {
-    let selected = null;
+    let queues = JSON.parse(JSON.stringify(this.state.queues)) // quick and dirty copy to maintain immutability
+    let selectedQueue = null;
     if (queue) {
-      selected = queue.value;
+      selectedQueue = queue.value;
     }
-    this.setState(assign(this.state, {selectedQueue: selected}))
+    if (selectedQueue && queues.indexOf(selectedQueue) == -1) {
+      queues.push(selectedQueue)
+    }
+    this.setState(assign(this.state, {selectedQueue, queues}))
   }
 
   onArgumentChange(i, text) {
@@ -187,13 +192,14 @@ export default class JobManual extends BaseComponent {
           </div>
           <div className="form-group">
             <label htmlFor="queues">Queue</label>
-            <ReactSelect
+            <Creatable
               name="queues"
               clearable={true}
               value={selectedQueue}
               disabled={!selectedJob || loading}
               options={this.buildReactSelectOptions(queues)}
-              onChange={this.queueSelected}/>
+              onChange={this.queueSelected}
+            />
           </div>
           <div className="form-group">
             <label htmlFor="args">Arguments</label>

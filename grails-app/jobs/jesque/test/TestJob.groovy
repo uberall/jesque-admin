@@ -10,11 +10,10 @@ class TestJob {
     static queue = 'TestJobQueue'
 
     static triggers = {
-        cron queueName: 'TestJobQueue', name: 'TestJobTrigger', cronExpression: '0/10 * * * * ? *'
-        cron queueName: 'TestJobQueue2', name: 'TestJobTrigger2', cronExpression: '0/30 * * * * ? *'
+        cron queueName: 'TestJobQueue', name: 'TestJobTrigger', cronExpression: '0/45 * * * * ? *'
     }
 
-    def perform(random = RandomUtils.nextInt(1000)) {
+    def perform(random = RandomUtils.nextInt(60000)) {
         log.warn("sleeping for $random")
         sleep(random)
         jesqueService.enqueueAt(DateTime.now().plusSeconds(random), queue, TestJob)

@@ -10,12 +10,14 @@ class JesqueAdminWorkerController extends AbstractJesqueAdminController {
 
     def manual() {
         def worker = request.JSON
-        def clazz
-        clazz = grailsApplication.jesqueJobClasses.find { it.shortName == worker.job }
-        if (!clazz) {
-            jsonRender([status: HttpStatus.BAD_REQUEST, message: "no such jobClass $worker.job"])
+        def clazzes
+        clazzes = grailsApplication.jesqueJobClasses.findAll { it.shortName in worker.jobs }
+        if (!clazzes) {
+            jsonRender([status: HttpStatus.BAD_REQUEST, message: "no job found for classes $worker.jobs"])
         } else {
-            jesqueService.startWorker(worker.queue, worker.job, clazz.clazz)
+            def classMap = clazzes.collectEntries { [(it.clazz.simpleName): it.clazz] }
+
+            jesqueService.startWorker(worker.queue as String, classMap)
             jsonRender()
         }
     }

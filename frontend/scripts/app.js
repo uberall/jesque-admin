@@ -103,7 +103,7 @@ var JesqueAdminApp = React.createClass({
     } catch (ignore) {
       page = 1
     }
-    return <JobsList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <JobsList page={page} jobs={window.AppConfig.knownJobs} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
   jobsDetails: function (name, page) {
@@ -140,7 +140,7 @@ var JesqueAdminApp = React.createClass({
 
   workerManual: function () {
     window.currentPath = WORKER_MANUAL;
-    return <WorkerManual />
+    return <WorkerManual jobs={window.AppConfig.knownJobs}/>
   },
 
 

@@ -6,8 +6,7 @@ const ReactSelect = require('react-select');
 const cx = require('classnames');
 
 const DEFAULT_STATE = {
-  jobs: [],
-  selectedJob: null,
+  selectedJobs: null,
   queues: null,
   selectedQueue: null,
   loading: true,
@@ -22,7 +21,7 @@ export default class WorkerManual extends BaseComponent {
     this.client = new JesqueAdminClient();
 
     this.state = clone(DEFAULT_STATE);
-    this.bindThiz('getJobs', 'getQueues', 'jobSelected', 'queueSelected', 'reset', 'onFormSubmit', 'getAlert')
+    this.bindThiz('getQueues', 'jobSelected', 'queueSelected', 'reset', 'onFormSubmit', 'getAlert')
   }
 
   componentDidMount() {
@@ -30,20 +29,7 @@ export default class WorkerManual extends BaseComponent {
   }
 
   reset() {
-    this.setState(clone(DEFAULT_STATE));
-    setTimeout(this.getJobs, 200);
-
-  }
-
-  getJobs() {
-    this.setState(assign(this.state, {loading: true}));
-    this.client.get('jobs', null, {max: 500, offset: 0})
-      .then((resp) => {
-        this.setState(assign(this.state, {jobs: resp.list}));
-        this.getQueues();
-      }).catch((err)=> {
-      window.setError(err);
-    })
+    this.setState(clone(DEFAULT_STATE), this.getQueues);
   }
 
   getQueues() {
@@ -65,7 +51,7 @@ export default class WorkerManual extends BaseComponent {
   onFormSubmit(e) {
     e.preventDefault();
     this.setState(assign(this.state, {loading: true}));
-    this.client.post('workers', null, {job: this.state.selectedJob, queue: this.state.selectedQueue})
+    this.client.post('workers', null, {jobs: this.state.selectedJobs, queue: this.state.selectedQueue})
       .then((resp) => {
         if (resp.status === 'OK') {
           this.setState(assign(this.state, {loading: false, success: true}));
@@ -83,12 +69,9 @@ export default class WorkerManual extends BaseComponent {
     })
   }
 
-  jobSelected(job) {
-    let selected = null;
-    if (job) {
-      selected = job.value;
-    }
-    this.setState(assign(this.state, {selectedJob: selected}))
+  jobSelected(jobs) {
+    let jobsSelected = map(jobs, "value");
+    this.setState(assign(this.state, {selectedJobs: jobsSelected}))
   }
 
   queueSelected(queue) {
@@ -114,11 +97,12 @@ export default class WorkerManual extends BaseComponent {
   }
 
   render() {
-    const {jobs, queues, selectedJob, selectedQueue, loading} = this.state;
+    const jobs = this.props.jobs
+    const {queues, selectedJobs, selectedQueue, loading} = this.state;
     return (
       <div className="job-manual">
         <div className="page-header">
-          <h3>Enqueue Job Manually</h3>
+          <h3>Start Worker Manually</h3>
         </div>
         {this.getAlert()}
         <form onSubmit={this.onFormSubmit} className={cx({disabled: loading})}>
@@ -127,10 +111,12 @@ export default class WorkerManual extends BaseComponent {
             <ReactSelect
               name="jobs"
               clearable={true}
-              value={selectedJob}
+              value={selectedJobs}
               options={this.buildReactSelectOptions(jobs)}
               onChange={this.jobSelected}
-              disabled={loading}/>
+              disabled={loading}
+              multi={true}
+            />
           </div>
           <div className="form-group">
             <label htmlFor="queues">Queue</label>
@@ -138,7 +124,7 @@ export default class WorkerManual extends BaseComponent {
               name="queues"
               clearable={true}
               value={selectedQueue}
-              disabled={!selectedJob || loading}
+              disabled={!selectedJobs || loading}
               options={this.buildReactSelectOptions(queues)}
               onChange={this.queueSelected}/>
           </div>

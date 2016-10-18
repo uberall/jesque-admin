@@ -13181,7 +13181,7 @@
 	    } catch (ignore) {
 	      page = 1;
 	    }
-	    return _react2.default.createElement(_list2.default, { page: page, autoReload: this.state.autoReload, changeAutoReload: this.changeAutoReload });
+	    return _react2.default.createElement(_list2.default, { page: page, jobs: window.AppConfig.knownJobs, autoReload: this.state.autoReload, changeAutoReload: this.changeAutoReload });
 	  },
 
 	  jobsDetails: function jobsDetails(name, page) {
@@ -13220,7 +13220,7 @@
 
 	  workerManual: function workerManual() {
 	    window.currentPath = _paths.WORKER_MANUAL;
-	    return _react2.default.createElement(_manual4.default, null);
+	    return _react2.default.createElement(_manual4.default, { jobs: window.AppConfig.knownJobs });
 	  }
 
 	});
@@ -65705,8 +65705,7 @@
 	var cx = __webpack_require__(333);
 
 	var DEFAULT_STATE = {
-	  jobs: [],
-	  selectedJob: null,
+	  selectedJobs: null,
 	  queues: null,
 	  selectedQueue: null,
 	  loading: true,
@@ -65725,7 +65724,7 @@
 	    _this.client = new _jesqueAdminClient2.default();
 
 	    _this.state = (0, _clone3.default)(DEFAULT_STATE);
-	    _this.bindThiz('getJobs', 'getQueues', 'jobSelected', 'queueSelected', 'reset', 'onFormSubmit', 'getAlert');
+	    _this.bindThiz('getQueues', 'jobSelected', 'queueSelected', 'reset', 'onFormSubmit', 'getAlert');
 	    return _this;
 	  }
 
@@ -65737,26 +65736,12 @@
 	  }, {
 	    key: "reset",
 	    value: function reset() {
-	      this.setState((0, _clone3.default)(DEFAULT_STATE));
-	      setTimeout(this.getJobs, 200);
-	    }
-	  }, {
-	    key: "getJobs",
-	    value: function getJobs() {
-	      var _this2 = this;
-
-	      this.setState((0, _assign3.default)(this.state, { loading: true }));
-	      this.client.get('jobs', null, { max: 500, offset: 0 }).then(function (resp) {
-	        _this2.setState((0, _assign3.default)(_this2.state, { jobs: resp.list }));
-	        _this2.getQueues();
-	      }).catch(function (err) {
-	        window.setError(err);
-	      });
+	      this.setState((0, _clone3.default)(DEFAULT_STATE), this.getQueues);
 	    }
 	  }, {
 	    key: "getQueues",
 	    value: function getQueues() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      this.setState((0, _assign3.default)(this.state, { loading: true }));
 	      this.client.get('queues', null, { max: 500, offset: 0 }).then(function (resp) {
@@ -65766,7 +65751,7 @@
 	            queues.push(queue.name);
 	          }
 	        });
-	        _this3.setState((0, _assign3.default)(_this3.state, { queues: queues, loading: false }));
+	        _this2.setState((0, _assign3.default)(_this2.state, { queues: queues, loading: false }));
 	      }).catch(function (err) {
 	        window.setError(err);
 	      });
@@ -65774,18 +65759,18 @@
 	  }, {
 	    key: "onFormSubmit",
 	    value: function onFormSubmit(e) {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      e.preventDefault();
 	      this.setState((0, _assign3.default)(this.state, { loading: true }));
-	      this.client.post('workers', null, { job: this.state.selectedJob, queue: this.state.selectedQueue }).then(function (resp) {
+	      this.client.post('workers', null, { jobs: this.state.selectedJobs, queue: this.state.selectedQueue }).then(function (resp) {
 	        if (resp.status === 'OK') {
-	          _this4.setState((0, _assign3.default)(_this4.state, { loading: false, success: true }));
+	          _this3.setState((0, _assign3.default)(_this3.state, { loading: false, success: true }));
 	        } else {
-	          _this4.setState((0, _assign3.default)(_this4.state, { loading: false, success: false, errorMessage: resp.message }));
+	          _this3.setState((0, _assign3.default)(_this3.state, { loading: false, success: false, errorMessage: resp.message }));
 	        }
 	      }).catch(function () {
-	        _this4.setState((0, _assign3.default)(_this4.state, { loading: false, success: false }));
+	        _this3.setState((0, _assign3.default)(_this3.state, { loading: false, success: false }));
 	      });
 	    }
 	  }, {
@@ -65797,12 +65782,9 @@
 	    }
 	  }, {
 	    key: "jobSelected",
-	    value: function jobSelected(job) {
-	      var selected = null;
-	      if (job) {
-	        selected = job.value;
-	      }
-	      this.setState((0, _assign3.default)(this.state, { selectedJob: selected }));
+	    value: function jobSelected(jobs) {
+	      var jobsSelected = (0, _map3.default)(jobs, "value");
+	      this.setState((0, _assign3.default)(this.state, { selectedJobs: jobsSelected }));
 	    }
 	  }, {
 	    key: "queueSelected",
@@ -65833,10 +65815,10 @@
 	  }, {
 	    key: "render",
 	    value: function render() {
+	      var jobs = this.props.jobs;
 	      var _state = this.state;
-	      var jobs = _state.jobs;
 	      var queues = _state.queues;
-	      var selectedJob = _state.selectedJob;
+	      var selectedJobs = _state.selectedJobs;
 	      var selectedQueue = _state.selectedQueue;
 	      var loading = _state.loading;
 
@@ -65849,7 +65831,7 @@
 	          _react2.default.createElement(
 	            "h3",
 	            null,
-	            "Enqueue Job Manually"
+	            "Start Worker Manually"
 	          )
 	        ),
 	        this.getAlert(),
@@ -65867,10 +65849,12 @@
 	            _react2.default.createElement(ReactSelect, {
 	              name: "jobs",
 	              clearable: true,
-	              value: selectedJob,
+	              value: selectedJobs,
 	              options: this.buildReactSelectOptions(jobs),
 	              onChange: this.jobSelected,
-	              disabled: loading })
+	              disabled: loading,
+	              multi: true
+	            })
 	          ),
 	          _react2.default.createElement(
 	            "div",
@@ -65884,7 +65868,7 @@
 	              name: "queues",
 	              clearable: true,
 	              value: selectedQueue,
-	              disabled: !selectedJob || loading,
+	              disabled: !selectedJobs || loading,
 	              options: this.buildReactSelectOptions(queues),
 	              onChange: this.queueSelected })
 	          ),

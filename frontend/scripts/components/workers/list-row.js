@@ -19,7 +19,7 @@ export default class WorkerListRow extends BaseComponent {
     const cols = [
       (<td key={`${baseKey}-host`}>{host}</td>),
       (<td key={`${baseKey}-pid`}>{pid}</td>),
-      (<td key={`${baseKey}-state`}>{state.name}</td>),
+      (<td key={`${baseKey}-state`}>{state}</td>),
     ];
     if (!selected) {
       cols.push(<td key={`${baseKey}-job`}>{job}</td>);

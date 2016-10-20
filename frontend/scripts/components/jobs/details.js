@@ -19,7 +19,7 @@ export default class JobDetails extends BaseComponent {
     this.state = {
       list: null,
       loading: false,
-      total: 0,
+      total: -1,
       max: 25,
       currentPage: props.page,
       selectedJob: null
@@ -173,34 +173,39 @@ export default class JobDetails extends BaseComponent {
       return <div>loading</div>
     }
     return (
-      <div className="job-details">
-        <div className="table-container">
-          <div className="filter-form">
-            <div className="filter">
-              <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
-            </div>
-          </div>
-          <table className="table table-condensed">
-            <thead>
-            <tr>
-              {this.getTableHeaders()}
-            </tr>
-            </thead>
-            <tbody>
-            {this.getTableBody()}
-            </tbody>
-          </table>
-          <Pager
-            pages={this.getMaxPages()}
-            current={this.state.currentPage}
-            target={`/jobs/details/${this.props.job}/`}
-            disabled={this.state.loading}
-            onPageChange={this.changePage}
-          />
+      <div>
+        <div className="page-header">
+          <h3>{this.props.job}</h3>
         </div>
-        <JobListDetails job={this.state.selectedJob} close={()=> {
-          this.selectJob(null)
-        }}/>
+        <div className="job-details">
+          <div className="table-container">
+            <div className="filter-form">
+              <div className="filter">
+                <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
+              </div>
+            </div>
+            <table className="table table-condensed">
+              <thead>
+              <tr>
+                {this.getTableHeaders()}
+              </tr>
+              </thead>
+              <tbody>
+              {this.getTableBody()}
+              </tbody>
+            </table>
+            <Pager
+              pages={this.getMaxPages()}
+              current={this.state.currentPage}
+              target={`/jobs/details/${this.props.job}/`}
+              disabled={this.state.loading}
+              onPageChange={this.changePage}
+            />
+          </div>
+          <JobListDetails job={this.state.selectedJob} close={()=> {
+            this.selectJob(null)
+          }}/>
+        </div>
       </div>
     )
   }

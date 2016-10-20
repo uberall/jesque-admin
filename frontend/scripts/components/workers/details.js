@@ -10,7 +10,7 @@ export default class WorkerDetails extends React.Component {
       return <div></div>
     } else {
       let workingRows = [];
-      if (worker.state && worker.state.name === 'WORKING') {
+      if (worker.state === 'WORKING') {
         workingRows.push(<dt key="working-job-label">Job</dt>)
         workingRows.push(<dd key="working-job-value">{worker.status.payload.className}</dd>)
         workingRows.push(<dt key="working-args-label">Args</dt>)

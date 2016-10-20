@@ -41,7 +41,7 @@ export default class WorkerList extends BaseComponent {
       return <tr></tr>
     }
     let workers = sortBy(this.props.workers, (w)=> {
-      return w.state.name
+      return w.state
     }).reverse()
     workers = sortBy(workers, (w)=> {
       let d
@@ -60,7 +60,7 @@ export default class WorkerList extends BaseComponent {
   }
 
   doesWorkerMatchStatus(worker) {
-    return this.state.status === null || worker.state.name === this.state.status
+    return this.state.status === null || worker.state === this.state.status
   }
 
   doesWorkerMatchQuery(worker) {
@@ -125,7 +125,7 @@ class WorkerListRow extends React.Component {
       <tr>
         <td>{host}</td>
         <td>{pid}</td>
-        <td>{state.name}</td>
+        <td>{state}</td>
         <td>{job}</td>
         <td>{since}</td>
       </tr>

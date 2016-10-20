@@ -120,3 +120,4 @@ grails:
                     - TestJobQueue
                 jobTypes:
                     - jesque.test.TestJob
+                    - jesque.test.AnotherTestJobtJob

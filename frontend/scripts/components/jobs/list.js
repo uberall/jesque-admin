@@ -4,6 +4,7 @@ import JesqueAdminClient from "../../tools/jesque-admin-client";
 import {assign, map} from "lodash";
 import Pager from "../common/pager";
 const navigate = require('react-mini-router').navigate;
+const cx = require('classnames')
 
 export default class JobsList extends BaseComponent {
 
@@ -17,6 +18,7 @@ export default class JobsList extends BaseComponent {
       loading: false,
       total: 0,
       max: 25,
+      query: "",
       currentPage: props.page
     };
 
@@ -83,9 +85,9 @@ export default class JobsList extends BaseComponent {
 
   doUpdate() {
     if (!this.state.loading) {
-      let {currentPage, max} = this.state;
+      let {currentPage, max, query} = this.state;
       this.setState(assign(this.state, {loading: true}));
-      this.client.get('jobs', null, {max: max, offset: (currentPage - 1) * max})
+      this.client.get('jobs', null, {max: max, offset: (currentPage - 1) * max, query: query})
         .then((resp) => {
           if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
             console.log("no items received and not on first page, returning to first page");
@@ -103,15 +105,23 @@ export default class JobsList extends BaseComponent {
   }
 
   getTableBody() {
-    return map(this.state.list, (name)=> {
+    return map(this.state.list, (job)=> {
       return (
-        <tr key={name} className="clickable" onClick={()=>{
-          navigate(`/jobs/details/${name}/1`)
+        <tr key={job.name} className={cx({"clickable": job.jobs > 0})} onClick={()=> {
+          if (job.jobs > 0) {
+            navigate(`/jobs/details/${job.name}/1`)
+          }
         }}>
-          <td>{name}</td>
+          <td>{job.name}</td>
+          <td>{job.jobs}</td>
         </tr>
       )
     })
+  }
+
+  onQueryChange(query) {
+    this.setState(assign(this.state, {query}));
+    this.doUpdate()
   }
 
   render() {
@@ -123,6 +133,13 @@ export default class JobsList extends BaseComponent {
       <div className="jobs-list">
         <div className="page-header">
           <h3>Jobs</h3>
+        </div>
+        <div className="filter-form">
+          <div className="filter">
+            <input className="form-control" placeholder="Search" type="text" value={this.state.query || ""} onChange={(e)=> {
+              this.onQueryChange(e.target.value)
+            }}/>
+          </div>
         </div>
         <table className="table">
           <tbody>

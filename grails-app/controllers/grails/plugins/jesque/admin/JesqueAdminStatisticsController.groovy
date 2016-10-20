@@ -4,16 +4,26 @@ class JesqueAdminStatisticsController extends AbstractJesqueAdminController {
 
     def jobs() {
         sanitizeParams()
-        List list = grailsApplication.jesqueJobClasses
-        if(list) {
-            list = list.shortName
+        List classes = grailsApplication.jesqueJobClasses
+        List<String> jobNameList = []
+        if (classes) {
+            jobNameList.addAll(classes.shortName.sort())
+        }
+
+        if (params.query) {
+            jobNameList = jobNameList.findAll { it.toLowerCase().indexOf("$params.query".toLowerCase()) > -1 }
         }
 
         int offset = params.getInt('offset', 0)
         int max = params.getInt('max', 100)
+        jobNameList = jobNameList.subList(offset, Math.min((offset + max), jobNameList.size()))
+
+        List jobs = jobNameList.collect { it ->
+            [name: it, jobs: jesqueStatisticsService.getStatisticCount(it)]
+        }
         jsonRender([
-                list : list.subList(offset, Math.min((offset + max), list.size())),
-                total: list.size()
+                list : jobs,
+                total: jobNameList.size()
         ])
     }
 
@@ -22,15 +32,11 @@ class JesqueAdminStatisticsController extends AbstractJesqueAdminController {
         int offset = params.getInt('offset')
         int max = params.getInt('max')
         def total = jesqueStatisticsService.getStatisticCount(job)
-        if (!total) {
-            renderNotFound()
-        } else {
-            def list = jesqueStatisticsService.getStatistics(job, offset, max)
-            jsonRender([
-                    list : list,
-                    total: total
-            ])
-        }
+        def list = jesqueStatisticsService.getStatistics(job, offset, max)
+        jsonRender([
+                list : list,
+                total: total
+        ])
     }
 
 }

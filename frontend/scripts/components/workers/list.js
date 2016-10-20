@@ -83,7 +83,7 @@ export default class WorkerList extends BaseComponent {
   }
 
   doesWorkerMatchStatus(worker) {
-    return this.state.status === null || worker.state.name === this.state.status
+    return this.state.status === null || worker.state === this.state.status
   }
 
   doesWorkerMatchQuery(worker) {
@@ -135,7 +135,7 @@ export default class WorkerList extends BaseComponent {
       return <tr></tr>
     }
     let workers = sortBy(list, (w)=> {
-      return w.state.name
+      return w.state
     }).reverse();
     workers = sortBy(workers, (w)=> {
       const date = w.status ? new Date(w.status.runAt) : new Date();

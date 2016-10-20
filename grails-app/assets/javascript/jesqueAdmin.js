@@ -40304,7 +40304,7 @@
 	        return _react2.default.createElement("tr", null);
 	      }
 	      var workers = (0, _sortBy3.default)(this.props.workers, function (w) {
-	        return w.state.name;
+	        return w.state;
 	      }).reverse();
 	      workers = (0, _sortBy3.default)(workers, function (w) {
 	        var d = void 0;
@@ -40324,7 +40324,7 @@
 	  }, {
 	    key: "doesWorkerMatchStatus",
 	    value: function doesWorkerMatchStatus(worker) {
-	      return this.state.status === null || worker.state.name === this.state.status;
+	      return this.state.status === null || worker.state === this.state.status;
 	    }
 	  }, {
 	    key: "doesWorkerMatchQuery",
@@ -40469,7 +40469,7 @@
 	        _react2.default.createElement(
 	          "td",
 	          null,
-	          state.name
+	          state
 	        ),
 	        _react2.default.createElement(
 	          "td",
@@ -60032,6 +60032,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var navigate = __webpack_require__(323).navigate;
+	var cx = __webpack_require__(333);
 
 	var JobsList = function (_BaseComponent) {
 	  _inherits(JobsList, _BaseComponent);
@@ -60048,6 +60049,7 @@
 	      loading: false,
 	      total: 0,
 	      max: 25,
+	      query: "",
 	      currentPage: props.page
 	    };
 
@@ -60136,9 +60138,10 @@
 	          var _state2 = _this3.state;
 	          var currentPage = _state2.currentPage;
 	          var max = _state2.max;
+	          var query = _state2.query;
 
 	          _this3.setState((0, _assign3.default)(_this3.state, { loading: true }));
-	          _this3.client.get('jobs', null, { max: max, offset: (currentPage - 1) * max }).then(function (resp) {
+	          _this3.client.get('jobs', null, { max: max, offset: (currentPage - 1) * max, query: query }).then(function (resp) {
 	            if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
 	              console.log("no items received and not on first page, returning to first page");
 	              _this3.setState((0, _assign3.default)(_this3.state, { loading: false }));
@@ -60157,23 +60160,38 @@
 	  }, {
 	    key: "getTableBody",
 	    value: function getTableBody() {
-	      return (0, _map3.default)(this.state.list, function (name) {
+	      return (0, _map3.default)(this.state.list, function (job) {
 	        return _react2.default.createElement(
 	          "tr",
-	          { key: name, className: "clickable", onClick: function onClick() {
-	              navigate("/jobs/details/" + name + "/1");
+	          { key: job.name, className: cx({ "clickable": job.jobs > 0 }), onClick: function onClick() {
+	              if (job.jobs > 0) {
+	                navigate("/jobs/details/" + job.name + "/1");
+	              }
 	            } },
 	          _react2.default.createElement(
 	            "td",
 	            null,
-	            name
+	            job.name
+	          ),
+	          _react2.default.createElement(
+	            "td",
+	            null,
+	            job.jobs
 	          )
 	        );
 	      });
 	    }
 	  }, {
+	    key: "onQueryChange",
+	    value: function onQueryChange(query) {
+	      this.setState((0, _assign3.default)(this.state, { query: query }));
+	      this.doUpdate();
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
+	      var _this4 = this;
+
 	      var list = this.state.list;
 
 	      if (!list) {
@@ -60193,6 +60211,17 @@
 	            "h3",
 	            null,
 	            "Jobs"
+	          )
+	        ),
+	        _react2.default.createElement(
+	          "div",
+	          { className: "filter-form" },
+	          _react2.default.createElement(
+	            "div",
+	            { className: "filter" },
+	            _react2.default.createElement("input", { className: "form-control", placeholder: "Search", type: "text", value: this.state.query || "", onChange: function onChange(e) {
+	                _this4.onQueryChange(e.target.value);
+	              } })
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -60292,7 +60321,7 @@
 	    _this.state = {
 	      list: null,
 	      loading: false,
-	      total: 0,
+	      total: -1,
 	      max: 25,
 	      currentPage: props.page,
 	      selectedJob: null
@@ -60523,48 +60552,61 @@
 	      }
 	      return _react2.default.createElement(
 	        "div",
-	        { className: "job-details" },
+	        null,
 	        _react2.default.createElement(
 	          "div",
-	          { className: "table-container" },
+	          { className: "page-header" },
+	          _react2.default.createElement(
+	            "h3",
+	            null,
+	            this.props.job
+	          )
+	        ),
+	        _react2.default.createElement(
+	          "div",
+	          { className: "job-details" },
 	          _react2.default.createElement(
 	            "div",
-	            { className: "filter-form" },
+	            { className: "table-container" },
 	            _react2.default.createElement(
 	              "div",
-	              { className: "filter" },
-	              _react2.default.createElement(_filterButtonGroup2.default, { current: this.state.max, onChange: this.onMaxChange, filters: [10, 25, 50] })
-	            )
-	          ),
-	          _react2.default.createElement(
-	            "table",
-	            { className: "table table-condensed" },
-	            _react2.default.createElement(
-	              "thead",
-	              null,
+	              { className: "filter-form" },
 	              _react2.default.createElement(
-	                "tr",
-	                null,
-	                this.getTableHeaders()
+	                "div",
+	                { className: "filter" },
+	                _react2.default.createElement(_filterButtonGroup2.default, { current: this.state.max, onChange: this.onMaxChange, filters: [10, 25, 50] })
 	              )
 	            ),
 	            _react2.default.createElement(
-	              "tbody",
-	              null,
-	              this.getTableBody()
-	            )
+	              "table",
+	              { className: "table table-condensed" },
+	              _react2.default.createElement(
+	                "thead",
+	                null,
+	                _react2.default.createElement(
+	                  "tr",
+	                  null,
+	                  this.getTableHeaders()
+	                )
+	              ),
+	              _react2.default.createElement(
+	                "tbody",
+	                null,
+	                this.getTableBody()
+	              )
+	            ),
+	            _react2.default.createElement(_pager2.default, {
+	              pages: this.getMaxPages(),
+	              current: this.state.currentPage,
+	              target: "/jobs/details/" + this.props.job + "/",
+	              disabled: this.state.loading,
+	              onPageChange: this.changePage
+	            })
 	          ),
-	          _react2.default.createElement(_pager2.default, {
-	            pages: this.getMaxPages(),
-	            current: this.state.currentPage,
-	            target: "/jobs/details/" + this.props.job + "/",
-	            disabled: this.state.loading,
-	            onPageChange: this.changePage
-	          })
-	        ),
-	        _react2.default.createElement(_jobListDetails2.default, { job: this.state.selectedJob, close: function close() {
-	            _this5.selectJob(null);
-	          } })
+	          _react2.default.createElement(_jobListDetails2.default, { job: this.state.selectedJob, close: function close() {
+	              _this5.selectJob(null);
+	            } })
+	        )
 	      );
 	    }
 	  }]);
@@ -65005,7 +65047,7 @@
 	  }, {
 	    key: "doesWorkerMatchStatus",
 	    value: function doesWorkerMatchStatus(worker) {
-	      return this.state.status === null || worker.state.name === this.state.status;
+	      return this.state.status === null || worker.state === this.state.status;
 	    }
 	  }, {
 	    key: "doesWorkerMatchQuery",
@@ -65088,7 +65130,7 @@
 	        return _react2.default.createElement("tr", null);
 	      }
 	      var workers = (0, _sortBy3.default)(list, function (w) {
-	        return w.state.name;
+	        return w.state;
 	      }).reverse();
 	      workers = (0, _sortBy3.default)(workers, function (w) {
 	        var date = w.status ? new Date(w.status.runAt) : new Date();
@@ -65451,7 +65493,7 @@
 	      ), _react2.default.createElement(
 	        "td",
 	        { key: baseKey + "-state" },
-	        state.name
+	        state
 	      )];
 	      if (!selected) {
 	        cols.push(_react2.default.createElement(
@@ -65548,7 +65590,7 @@
 	        return _react2.default.createElement("div", null);
 	      } else {
 	        var workingRows = [];
-	        if (worker.state && worker.state.name === 'WORKING') {
+	        if (worker.state === 'WORKING') {
 	          workingRows.push(_react2.default.createElement(
 	            "dt",
 	            { key: "working-job-label" },

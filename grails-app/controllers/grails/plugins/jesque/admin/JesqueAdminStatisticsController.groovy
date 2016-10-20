@@ -14,6 +14,7 @@ class JesqueAdminStatisticsController extends AbstractJesqueAdminController {
             jobNameList = jobNameList.findAll { it.toLowerCase().indexOf("$params.query".toLowerCase()) > -1 }
         }
 
+        def total = jobNameList.size()
         int offset = params.getInt('offset', 0)
         int max = params.getInt('max', 100)
         jobNameList = jobNameList.subList(offset, Math.min((offset + max), jobNameList.size()))
@@ -23,7 +24,7 @@ class JesqueAdminStatisticsController extends AbstractJesqueAdminController {
         }
         jsonRender([
                 list : jobs,
-                total: jobNameList.size()
+                total: total
         ])
     }
 

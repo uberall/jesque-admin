@@ -52,7 +52,7 @@
 
       &.submenu {
         a {
-          padding: #{$padding-base-horizontal/2} calc(#{$padding-base-vertical} * 2);
+          padding: #{$padding-base-horizontal/2} calc(#{$padding-base-vertical} * 4);
         }
       }
     }

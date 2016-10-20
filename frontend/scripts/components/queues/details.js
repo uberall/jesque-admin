@@ -23,7 +23,7 @@ export default class QueueDetails extends BaseComponent {
   }
 
   doUpdate() {
-    this.client.get('queues', this.props.name, {})
+    this.client.get('queues', encodeURIComponent(this.props.name), {})
       .then((json) => {
         this.setState(assign(this.state, {queue: json.queue}))
       })
@@ -70,7 +70,7 @@ export default class QueueDetails extends BaseComponent {
   }
 
   doDelete() {
-    this.client.delete('queues', this.props.name, {})
+    this.client.delete('queues', encodeURIComponent(this.props.name), {})
       .then((json) => {
         window.doNavigate(HOME)
       })

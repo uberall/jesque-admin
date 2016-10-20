@@ -118,7 +118,7 @@ var JesqueAdminApp = React.createClass({
 
   enqueueJob: function () {
     window.currentPath = JOB_ENQUEUE;
-    return <JobManual />
+    return <JobManual jobs={window.AppConfig.knownJobs}/>
   },
 
   notFound: function (path) {

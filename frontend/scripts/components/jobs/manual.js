@@ -7,7 +7,6 @@ const ReactSelect = require('react-select');
 const cx = require('classnames');
 
 const DEFAULT_STATE = {
-  jobs: [],
   selectedJob: null,
   queues: null,
   selectedQueue: null,
@@ -31,20 +30,8 @@ export default class JobManual extends BaseComponent {
   }
 
   reset() {
-    this.setState(clone(DEFAULT_STATE));
-    setTimeout(this.getJobs, 200);
+    this.setState(clone(DEFAULT_STATE), this.getQueues);
 
-  }
-
-  getJobs() {
-    this.setState(assign(this.state, {loading: true}));
-    this.client.get('jobs', null, {max: 500, offset: 0})
-      .then((resp) => {
-        this.setState(assign(this.state, {jobs: resp.list}));
-        this.getQueues();
-      }).catch((err)=> {
-      window.setError(err);
-    })
   }
 
   getQueues() {
@@ -172,7 +159,8 @@ export default class JobManual extends BaseComponent {
   }
 
   render() {
-    const {jobs, queues, selectedJob, selectedQueue, args, loading} = this.state;
+    const {queues, selectedJob, selectedQueue, args, loading} = this.state;
+    const jobs = this.props.jobs;
     return (
       <div className="job-manual">
         <div className="page-header">

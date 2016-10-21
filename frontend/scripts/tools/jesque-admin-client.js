@@ -18,7 +18,7 @@ export default class JesqueAdminClient {
   }
 
   delete(target, id, query) {
-    let path = this.buildPath(target, id, query)
+    let path = this.buildPath(target, id, query);
     return fetch(path, {
       method: 'DELETE',
       credentials: "same-origin",
@@ -50,10 +50,10 @@ export default class JesqueAdminClient {
 
   buildPath(target, id, query) {
     let path = window.AppConfig.links[target];
-    if (id) {
+    if (id !== undefined && id !== null) {
       path = `${path}/${id}`
     }
-    if(query) {
+    if (query) {
       path = `${path}?${querystring.stringify(query)}`
     }
     return path

@@ -7,8 +7,10 @@ cache:
 language: groovy
 jdk:
 - oraclejdk8
-install: true
-script: gradle clean install
+install: npm install
+script:
+  - npm run package
+  - gradle clean install
 env:
   global:
   - secure: eR/cYREdZ75hfUjbtdCWi3wL/BuL3Sp1bCPShPYTZhan/KCbpIaG3FR4/IhEN34jNsBgMpGZwW7rOx5eWhfCF+7VVNnDSvxw0imIKfDs+1WfNEE9gHtmgF/ogvPfKyEzF4kSL8Wd0pDA0l9/Os/D8NpTiOPqNzd6m05cd7onE0lUUbqsfURjEt47A1NZElfkKBS94T90U1DWsJH+0DZnGcRnLp2kKX7VdiU2Qz9VHJIzJvvpgRabE54KgJua4GUn75GdVpO8Nhmx0Bsif/QTbqefbdPRjaUFzuIEF1/tLEv5FsKAYLTxNq0x0K9d/DkXEGPFCdacfFcLwDnK8BftKWoNxbeMSo0+NVyMBKErqiGPn0e9wf4QmncTF1ZqxiuGftf3a670pM07Uh4d3bf2IU6FZPGF82T0pgrGL69l+IqKPCSLxhdtzGM1Gb68UUXjNnB0uc9vLoDWXZdckoEy/rmLJhs6Pq2G1U8ijT61npTpjPMcM3fy4YXfJQfyDsYkG0GciDGnibiV3sbrXPWOQD+Go7RGnp0kp60GQXVkexT4GcHwXys2RhFMp5ZuQ7QptlWcvzEEyhxO9/OZgjN+H3rJvLbpAW/CHgX1gpZHZt2VBl748zsdtOI9B0mLSDk5ib6wtL+ZKK9uNHx0GoMdEiqy+pXLdxVovYPHCt8kNBM=

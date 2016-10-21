@@ -6,7 +6,7 @@ cache:
   - "$HOME/.m2/repositories/"
 language: groovy
 jdk:
-- oraclejdk8
+  - oraclejdk8
 install: true
 script: "gradle bintrayUpload"
 env:

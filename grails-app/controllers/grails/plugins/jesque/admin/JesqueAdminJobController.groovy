@@ -1,33 +1,37 @@
 package grails.plugins.jesque.admin
 
 import grails.converters.JSON
+import net.greghaines.jesque.JobFailure
 
 class JesqueAdminJobController extends AbstractJesqueAdminController {
 
     def failed() {
         sanitizeParams()
+
+        long offset = params.getLong("offset", 0)
+        def list = jesqueFailureService.getFailures(offset, params.getLong("max"))
+        list.eachWithIndex { JobFailure entry, int i ->
+            entry.metaClass.id = offset + i
+        }
         render([
-                list : jesqueFailureService.getFailures(params.getLong("offset"), params.getLong("max")),
+                list : list,
                 total: jesqueFailureService.count
         ] as JSON)
     }
 
-    def requeue(long id) {
-        // TODO: not yet supported in FE
-        jesqueFailureService.requeue(id.toLong())
-        redirect(action: 'failed')
+    def retry(Long id) {
+        jesqueFailureService.requeue(id)
+        jsonRender([success: true])
     }
 
-    def remove(long id) {
-        // TODO: not yet supported in FE
-        jesqueFailureService.remove(id.toLong())
-
-        redirect(action: 'failed')
+    def remove(Long id) {
+        jesqueFailureService.remove(id)
+        jsonRender([success: true])
     }
 
     def clear() {
         jesqueFailureService.clear()
-        render([success: true] as JSON)
+        jsonRender([success: true])
     }
 
     def triggers() {

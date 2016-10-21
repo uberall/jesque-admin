@@ -6,6 +6,7 @@ import FromNow from "../common/from-now";
 import FailureDetails from "./failure-details";
 import FilterButtonGroup from "../common/filter-button-group";
 import Pager from "../common/pager";
+import FormatedDate from "../common/formated-date";
 const cx = require('classnames');
 const navigate = require('react-mini-router').navigate;
 const SweetAlert = require('react-swal');
@@ -111,19 +112,45 @@ export default class FailedList extends BaseComponent {
     this.setState(assign(this.state, {selected: failure}))
   }
 
+  getRetryComponent(failure) {
+    if (failure.retriedAt) {
+      return (
+        <span>
+          Retried: <FormatedDate date={new Date(failure.failedAt)}/>
+        </span>
+      )
+    }
+
+    return (
+      <button className="btn btn-xs btn-warning" onClick={()=> {
+        this.onRetryClicked(failure)
+      }}><i className="fa fa-undo"></i></button>
+    )
+  }
+
   getTableBody(somethingSelected) {
     const {list, selected} = this.state;
     return map(list, (failure)=> {
       let cols = [];
-      cols.push(<td key={`${failure.failedAt}-${failure.queue}-date`}><FromNow date={new Date(failure.failedAt)}/></td>);
-      cols.push(<td key={`${failure.failedAt}-${failure.queue}-class`}>{failure.payload.className}</td>)
-      cols.push(<td key={`${failure.failedAt}-${failure.queue}-throwable`}>{failure.throwableString}</td>)
+      cols.push(<td key={`${failure.id}-date`}><FromNow date={new Date(failure.failedAt)}/></td>);
+      cols.push(<td key={`${failure.id}-class`}>{failure.payload.className}</td>)
+      cols.push(<td key={`${failure.id}-throwable`}>{failure.throwableString}</td>)
       if (!somethingSelected) {
-        cols.push(<td key={`${failure.failedAt}-${failure.queue}-error`}>{failure.error}</td>)
+        cols.push(<td key={`${failure.id}-error`}>{failure.error}</td>)
+        cols.push(
+          <td key={`${failure.id}-actions`}>
+            <button className="btn btn-xs btn-danger" onClick={()=> {
+              this.onDeleteClicked(failure)
+            }}><i className="fa fa-trash"></i></button>
+            {this.getRetryComponent(failure)}
+          </td>
+        )
       }
       return (
-        <tr className={cx('clickable', {info: selected === failure})} key={failure.failedAt} onClick={()=> {
-          this.selectFailure(failure)
+        <tr className={cx('clickable', {info: selected && selected.id === failure.id})} key={failure.id} onClick={(e)=> {
+          if(e.target.nodeName != 'BUTTON' && e.target.nodeName != 'I') {
+            this.selectFailure(failure)
+          }
         }}>
           {cols}
         </tr>
@@ -149,6 +176,22 @@ export default class FailedList extends BaseComponent {
       }
       setTimeout(func, 100)
     }
+  }
+
+  onRetryClicked(failure) {
+    this.client.post('failed', failure.id, {})
+      .then(this.doUpdate)
+      .catch((err)=> {
+        throw err
+      })
+  }
+
+  onDeleteClicked(failure) {
+    this.client.delete('failed', failure.id, {})
+      .then(this.doUpdate)
+      .catch((err)=> {
+        throw err
+      })
   }
 
   clearAll() {
@@ -192,6 +235,7 @@ export default class FailedList extends BaseComponent {
     headers.push(<th key="header-Exception">Exception</th>);
     if (!somethingSelected) {
       headers.push(<th key="header-Message">Message</th>);
+      headers.push(<th key="header-Actions"></th>);
     }
     return (
       <div className="failed-list">

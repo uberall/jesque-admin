@@ -3,6 +3,7 @@ package grails.plugins.jesque.admin
 import grails.converters.JSON
 import groovy.util.logging.Log
 import net.greghaines.jesque.Job
+import net.greghaines.jesque.JobFailure
 import net.greghaines.jesque.WorkerStatus
 import net.greghaines.jesque.meta.QueueInfo
 import net.greghaines.jesque.meta.WorkerInfo
@@ -52,6 +53,26 @@ class JesqueAdminJsonMarhsaller {
                     className: job.className,
                     args     : job.args
             ]
+        }
+
+        JSON.registerObjectMarshaller(JobFailure) { JobFailure jobFailure ->
+            def result = [
+                    backtrace: jobFailure.backtrace,
+                    error: jobFailure.error,
+                    failedAt: jobFailure.failedAt,
+                    payload: jobFailure.payload,
+                    queue: jobFailure.queue,
+                    retriedAt: jobFailure.retriedAt,
+                    throwable: jobFailure.throwable,
+                    throwableString: jobFailure.throwableString,
+                    worker: jobFailure.worker
+            ]
+
+            if(jobFailure.hasProperty("id")) {
+                result.id = jobFailure.id
+            }
+
+            result
         }
     }
 }

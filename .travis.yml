@@ -7,7 +7,11 @@ cache:
 language: groovy
 jdk:
 - oraclejdk8
-install: npm install
+env:
+  - TRAVIS_NODE_VERSION="5.6.0"
+install:
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+  - npm install
 script:
   - npm run package
   - gradle clean install

@@ -68,7 +68,6 @@ After restarting your App you should find a list menu item under "jobs" in jesqu
 
 If you want to extend jesque-admin or help developing it further simply start by:
 
-1. Run `gradle bootRun` (or `grails run-app` or run the main method in Application.groovy whatever you prefer)
+1. Run `gradle bootRun -Djesque.admin.devel=true` (or `grails run-app` or run the main method in Application.groovy whatever you prefer)
 2. Run `npm i` in the root folder of this plugin
 3. Run `npm run devel`
-4. in jesqueAdmin.gsp switch to the script tag that is pointing to your local webpack server (do not forget to switch that back before doing a PR)

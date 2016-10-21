@@ -26,8 +26,12 @@
             knownJobs: ${raw((grailsApplication.jesqueJobClasses.clazz.simpleName as grails.converters.JSON).toString())}
         }
     </script>
-%{--<script type="application/javascript" src="http://localhost:3000/jesqueAdmin.js"></script>--}%
-    <asset:javascript src="jesqueAdmin.js"/>
+    <g:if test="${System.getProperty('jesque.admin.devel') == 'true'}">
+        <script type="application/javascript" src="http://localhost:3000/jesqueAdmin.js"></script>
+    </g:if>
+    <g:else>
+        <asset:javascript src="jesqueAdmin.js"/>
+    </g:else>
 </g:if>
 <g:else>
     <h1>Jesque is Disabled.</h1>

@@ -120,8 +120,9 @@ export default class JobsList extends BaseComponent {
   }
 
   onQueryChange(query) {
-    this.setState(assign(this.state, {query}));
-    this.doUpdate()
+    this.setState(assign(this.state, {query}), ()=> {
+      this.changePage(0)
+    });
   }
 
   render() {
@@ -136,7 +137,7 @@ export default class JobsList extends BaseComponent {
         </div>
         <div className="filter-form">
           <div className="filter">
-            <input className="form-control" placeholder="Search" type="text" value={this.state.query || ""} onChange={(e)=> {
+            <input className="form-control" placeholder="Search" type="text" value={this.state.query || ""} onChange={(e)=> {
               this.onQueryChange(e.target.value)
             }}/>
           </div>

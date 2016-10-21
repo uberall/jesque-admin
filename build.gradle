@@ -11,8 +11,8 @@ buildscript {
     }
 }
 
-version "0.3.3"
-     
+version "0.3.4"
+
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
@@ -83,4 +83,8 @@ grailsPublish {
     desc = "Admin UI for the Grails Jesque Plugin"
     developers = [peh: "Philipp Eschenbach"]
     portalUser = "peschenbach"
+}
+
+tasks.withType(JavaExec).each { task ->
+    task.systemProperties System.properties
 }

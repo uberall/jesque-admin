@@ -60184,13 +60184,16 @@
 	  }, {
 	    key: "onQueryChange",
 	    value: function onQueryChange(query) {
-	      this.setState((0, _assign3.default)(this.state, { query: query }));
-	      this.doUpdate();
+	      var _this4 = this;
+
+	      this.setState((0, _assign3.default)(this.state, { query: query }), function () {
+	        _this4.changePage(0);
+	      });
 	    }
 	  }, {
 	    key: "render",
 	    value: function render() {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var list = this.state.list;
 
@@ -60220,7 +60223,7 @@
 	            "div",
 	            { className: "filter" },
 	            _react2.default.createElement("input", { className: "form-control", placeholder: "Search", type: "text", value: this.state.query || "", onChange: function onChange(e) {
-	                _this4.onQueryChange(e.target.value);
+	                _this5.onQueryChange(e.target.value);
 	              } })
 	          )
 	        ),

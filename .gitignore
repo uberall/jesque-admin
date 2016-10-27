@@ -41,3 +41,7 @@ scripts/tunnel/settings.mk
 /*.png
 *.css.map
 *.js.map
+grails-app/assets/javascript/jesqueAdmin.js
+grails-app/assets/javascript/*.eot
+grails-app/assets/javascript/*.svg
+grails-app/assets/javascript/*.ttf

@@ -2,9 +2,6 @@ var path = require('path');
 var webpack = require('webpack');
 var buildPath = path.resolve(__dirname, 'grails-app', 'assets', 'javascript');
 var mainPath = path.resolve(__dirname, 'frontend', 'scripts', 'app.js');
-var Dashboard = require('webpack-dashboard');
-var DashboardPlugin = require('webpack-dashboard/plugin');
-var dashboard = new Dashboard();
 
 module.exports = {
   entry: [
@@ -19,14 +16,7 @@ module.exports = {
     filename: 'jesqueAdmin.js'
   },
   module: {
-    // preLoaders: [
-    //     {
-    //         test: /\.jsx|\.js?$/,
-    //         loaders: ['eslint', 'jscs'],
     include: /scripts/,
-    // exclude: /node_modules/
-    // }
-    // ],
     loaders: [
       {
         test: /\.js?$/,
@@ -57,7 +47,6 @@ module.exports = {
   },
 
   plugins: [
-    new DashboardPlugin(dashboard.setData),
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
       $: 'jquery'

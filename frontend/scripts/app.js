@@ -12,6 +12,7 @@ import Triggers from "./components/jobs/triggers";
 import DelayedList from "./components/jobs/delayed";
 import WorkerList from "./components/workers/list";
 import WorkerManual from "./components/workers/manual";
+import {assign} from "lodash";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
 const navigate = require('react-mini-router').navigate;
@@ -35,8 +36,12 @@ var JesqueAdminApp = React.createClass({
   },
 
   componentDidMount: function () {
-    window.setError = function (error) {
-      alert(error)
+    window.setError = error=> {
+      this.setState(assign(this.state, {
+          alert: error,
+          autoReload: false
+        }
+      ));
     };
 
     window.doNavigate = function (linkInfo) {
@@ -45,11 +50,37 @@ var JesqueAdminApp = React.createClass({
   },
 
   getInitialState: function () {
-    return {autoReload: true}
+    return {
+      autoReload: true,
+      alert: null
+    }
   },
 
   changeAutoReload: function (reload) {
     this.setState({autoReload: reload})
+  },
+
+  getAlert: function () {
+    const {alert} = this.state;
+    if (!alert) {
+      return ""
+    }
+    return (
+      <div className="alert alert-danger">
+        <button type="button"
+                className="close"
+                data-dismiss="alert"
+                aria-label="Close"
+                onClick={(e)=> {
+                  e.preventDefault();
+                  this.setState(assign(this.state, {alert: null}))
+                }}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        {JSON.stringify(alert)}
+      </div>
+    )
   },
 
   render: function () {
@@ -60,6 +91,7 @@ var JesqueAdminApp = React.createClass({
           <Navbar autoReload={autoReload} changeAutoReload={this.changeAutoReload}/>
         </div>
         <div className="jesque-content">
+          {this.getAlert()}
           {this.renderCurrentRoute()}
         </div>
       </div>

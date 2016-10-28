@@ -8,7 +8,6 @@ class JesqueWorkersService {
 
     WorkerInfoDAO workerInfoDao
 
-
     def getAllWorkers() {
         workerInfoDao.allWorkers
     }

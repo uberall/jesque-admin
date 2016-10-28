@@ -6,8 +6,9 @@ import Config from "../../tools/config";
 import WorkerListRow from "./list-row";
 import FilterButtonGroup from "../common/filter-button-group";
 import WorkerDetails from "./details";
-const cx = require("classnames");
 
+const cx = require("classnames");
+const SweetAlert = require('react-swal');
 const STATES = ["IDLE", "PAUSED", "WORKING"];
 
 export default class WorkerList extends BaseComponent {
@@ -25,9 +26,10 @@ export default class WorkerList extends BaseComponent {
       currentPage: props.page,
       confirmClearAll: false,
       status: Config.get('homeWorkerStatus'),
-      query: ""
+      query: "",
+      workerToDelete: null
     };
-    this.bindThiz('doUpdate', 'selectWorker', 'getSelectedView', 'getTableHeaders', 'getTableRows', 'onQueryChange', 'onStatusFilterChange', 'getDetailsView');
+    this.bindThiz('doUpdate', 'getTableHeaders', 'getTableRows', 'onQueryChange', 'onStatusFilterChange', 'resumeAll', 'pauseAll');
   }
 
   componentDidMount() {
@@ -108,6 +110,7 @@ export default class WorkerList extends BaseComponent {
       headers.push(<th key="table-header-job">Job</th>);
       headers.push(<th key="table-header-since">Since</th>);
       headers.push(<th key="table-header-queues">Queues</th>);
+      headers.push(<th key="table-header-actions"></th>);
     }
 
     return headers
@@ -148,23 +151,56 @@ export default class WorkerList extends BaseComponent {
           worker={worker}
           selected={selected}
           selectable={this.props.selectable}
-          onClick={(worker)=> {
+          onClick={() => {
             this.assignState({selected: worker})
+          }}
+          onDelete={()=> {
+            this.assignState({workerToDelete: worker})
           }}
         />
       }
     })
   }
 
-  getDetailsView() {
-    const {selected} = this.state;
-    if (!selected) {
+  getWorkerDeleteAlert() {
+    const {workerToDelete} = this.state;
+    if (!workerToDelete) {
       return ""
-    } else {
-      return (
-        <pre>{JSON.stringify(selected, 1, 1)}</pre>
-      )
     }
+
+    return <SweetAlert
+      isOpen={true}
+      type="error"
+      title="Are you sure?"
+      text={`This will delete ${workerToDelete.host}-${workerToDelete.pid} from the List! It will not stop the worker from working!`}
+      confirmButtonText="Yes"
+      cancelButtonText="No"
+      callback={(confirmed)=> {
+        if (confirmed) {
+          this.deleteWorker(workerToDelete)
+        } else {
+          this.assignState({workerToDelete: null})
+        }
+      }}
+    />
+  }
+
+  deleteWorker(worker) {
+    this.client.delete("workers", worker.name, {}).then(()=> {
+      this.assignState({workerToDelete: null, selected: null}, this.doUpdate)
+    })
+  }
+
+  pauseAll() {
+    this.client.get('workers', 'pause', {}).then(()=> {
+      this.doUpdate()
+    })
+  }
+
+  resumeAll() {
+    this.client.get('workers', 'resume', {}).then(()=> {
+      this.doUpdate()
+    })
   }
 
   render() {
@@ -173,6 +209,7 @@ export default class WorkerList extends BaseComponent {
       <div className="worker-list-container">
         <div className="page-header">
           <h3>Worker</h3>
+          {this.getWorkerDeleteAlert()}
         </div>
         <div className="filter-form">
           <div className="filter">
@@ -182,6 +219,12 @@ export default class WorkerList extends BaseComponent {
           </div>
           <div className="filter">
             <FilterButtonGroup onChange={this.onStatusFilterChange} current={status} filters={STATES}/>
+          </div>
+          <div className="filter">
+            <div className="btn-group pull-right">
+              <button className="btn btn-default" onClick={this.pauseAll}><i className="fa fa-pause"></i>&nbsp;Pause All</button>
+              <button className="btn btn-default" onClick={this.resumeAll}><i className="fa fa-play"></i>&nbsp;Resume All</button>
+            </div>
           </div>
         </div>
         <div className="worker-list-content">
@@ -198,9 +241,15 @@ export default class WorkerList extends BaseComponent {
             </table>
           </div>
           <div className={cx('details', {'visible': !!selected})}>
-            <WorkerDetails worker={selected} onClose={()=>{
-              this.assignState({selected: null})
-            }}/>
+            <WorkerDetails
+              worker={selected}
+              onClose={()=> {
+                this.assignState({selected: null})
+              }}
+              onDelete={()=> {
+                this.assignState({workerToDelete: selected})
+              }}
+            />
           </div>
         </div>
       </div>

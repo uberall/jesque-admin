@@ -5,7 +5,7 @@ import FormatedDate from "../common/formated-date";
 export default class WorkerDetails extends React.Component {
 
   render() {
-    const {worker, onClose} = this.props;
+    const {worker, onClose, onDelete} = this.props;
     if (!worker) {
       return <div></div>
     } else {
@@ -19,7 +19,10 @@ export default class WorkerDetails extends React.Component {
       const started = new Date(worker.started)
       return (
         <div>
-          <button className="btn btn-danger pull-right" onClick={onClose} style={{marginRight: 10}}><i className="fa fa-times"></i></button>
+          <div className="btn-group pull-right">
+            <button className="btn btn-danger" onClick={onDelete}><i className="fa fa-trash"></i></button>
+            <button className="btn btn-default" onClick={onClose}><i className="fa fa-times"></i></button>
+          </div>
           <dl>
             <dt>Host</dt>
             <dd>{worker.host}</dd>

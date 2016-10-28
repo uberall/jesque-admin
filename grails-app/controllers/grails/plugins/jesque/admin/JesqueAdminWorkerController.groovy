@@ -22,9 +22,20 @@ class JesqueAdminWorkerController extends AbstractJesqueAdminController {
         }
     }
 
-    def apiRemove() {
-        // TODO: not yet supported in FE
+    def remove() {
         jesqueWorkersService.removeWorker(params.name)
         jsonRender([success: 'OK'])
     }
+
+    def pause() {
+        jesqueService.pauseAllWorkersInCluster()
+        jsonRender([success: 'OK'])
+    }
+
+    def resume() {
+        jesqueService.resumeAllWorkersInCluster()
+        jsonRender([success: 'OK'])
+    }
+
+
 }

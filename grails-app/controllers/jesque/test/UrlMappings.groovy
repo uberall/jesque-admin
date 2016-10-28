@@ -21,5 +21,8 @@ class UrlMappings {
         "/jesque/api/jobs/$job"(controller: 'jesqueAdminStatistics', action: 'list', method: "GET")
         "/jesque/api/workers"(controller: 'jesqueAdminWorker', action: 'list', method: 'GET')
         "/jesque/api/workers"(controller: 'jesqueAdminWorker', action: 'manual', method: 'POST')
+        "/jesque/api/workers/$name"(controller: 'jesqueAdminWorker', action: 'remove', method: 'DELETE')
+        "/jesque/api/workers/pause"(controller: 'jesqueAdminWorker', action: 'pause', method: 'GET')
+        "/jesque/api/workers/resume"(controller: 'jesqueAdminWorker', action: 'resume', method: 'GET')
     }
 }

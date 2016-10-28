@@ -18,8 +18,8 @@ export default class BaseComponent extends React.Component {
     })
   }
 
-  assignState(updates) {
-    this.setState(assign(this.state, updates))
+  assignState(updates, cb) {
+    this.setState(assign(this.state, updates), cb)
   }
 
 }

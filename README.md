@@ -16,6 +16,7 @@ dependencies {
 # Usage
 
 Make sure that jesque is enabled. If you do not have the "default mapping for controllers" in your UrlMappings.groovy you will have to add mappings for jesque-admin to your UrlMappings.groovy
+This plugin does not expose any UrlMappings by itself for security reasons. Job payloads can hold sensitive data and having an "open" jesque-admin interface can lead to breaches.
 
 ```
 "/jesque/"(controller: 'jesqueAdmin', action: 'index')
@@ -26,6 +27,8 @@ Make sure that jesque is enabled. If you do not have the "default mapping for co
 "/jesque/api/jobs"(controller: 'jesqueAdminStatistics', action: 'jobs', method: "GET")
 "/jesque/api/jobs"(controller: 'jesqueAdminJob', action: 'enqueue', method: "POST")
 "/jesque/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'failed', method: "GET")
+"/jesque/api/jobs/failed/$id"(controller: 'jesqueAdminJob', action: 'retry', method: "POST")
+"/jesque/api/jobs/failed/$id"(controller: 'jesqueAdminJob', action: 'remove', method: "DELETE")
 "/jesque/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'clear', method: "DELETE")
 "/jesque/api/jobs/delayed"(controller: 'jesqueAdminJob', action: 'delayed', method: "GET")
 "/jesque/api/jobs/triggers"(controller: 'jesqueAdminJob', action: 'triggers', method: "GET")
@@ -33,6 +36,9 @@ Make sure that jesque is enabled. If you do not have the "default mapping for co
 "/jesque/api/jobs/$job"(controller: 'jesqueAdminStatistics', action: 'list', method: "GET")
 "/jesque/api/workers"(controller: 'jesqueAdminWorker', action: 'list', method: 'GET')
 "/jesque/api/workers"(controller: 'jesqueAdminWorker', action: 'manual', method: 'POST')
+"/jesque/api/workers/$name"(controller: 'jesqueAdminWorker', action: 'remove', method: 'DELETE')
+"/jesque/api/workers/pause"(controller: 'jesqueAdminWorker', action: 'pause', method: 'GET')
+"/jesque/api/workers/resume"(controller: 'jesqueAdminWorker', action: 'resume', method: 'GET')
 ```
 
 You can freely change "/jesque/api/" to whatever you want but i highly recommend not to change anything that comes after that.

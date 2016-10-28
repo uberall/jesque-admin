@@ -2,9 +2,6 @@ var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var config = require('./webpack.dev.config');
 
-config.devtool = 'eval-cheap-module-source-map';
-config.debug = true;
-
 new WebpackDevServer(webpack(config), {
     publicPath: config.output.publicPath,
     hot: true,

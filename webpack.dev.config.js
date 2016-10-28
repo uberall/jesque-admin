@@ -21,7 +21,7 @@ module.exports = {
       {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loaders: ['react-hot', 'babel?presets[]=es2015&presets[]=react&plugins[]=lodash']
+        loaders: ['react-hot', 'babel?presets[]=es2015&presets[]=react&plugins[]=lodash&sourceMap=inline']
       },
       {
         test: /\.eot(\?\S*)?$/,
@@ -45,7 +45,13 @@ module.exports = {
       }
     ]
   },
-
+  devtool: 'eval-cheap-module-source-map',
+  cache: true,
+  debug: true,
+  stats: {
+    colors: true,
+    reasons: true
+  },
   plugins: [
     new webpack.ProvidePlugin({
       jQuery: 'jquery',

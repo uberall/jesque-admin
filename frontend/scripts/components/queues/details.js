@@ -18,19 +18,19 @@ export default class QueueDetails extends BaseComponent {
     };
 
     this.client = new JesqueAdminClient();
-    this.bindThiz('getPager', 'getTableRows', 'changePage', 'updateState', 'getDeleteAlert', 'doDelete')
+    this.bindThiz('getPager', 'getTableRows', 'changePage', 'getDeleteAlert', 'doDelete')
 
   }
 
   doUpdate() {
     this.client.get('queues', encodeURIComponent(this.props.name), {})
       .then((json) => {
-        this.setState(assign(this.state, {queue: json.queue}))
+        this.assignState({queue: json.queue});
       })
   }
 
   changePage(page) {
-    this.setState(assign(this.state, {page: page}))
+    this.assignState({page: page});
   }
 
   getTableRows() {
@@ -60,13 +60,11 @@ export default class QueueDetails extends BaseComponent {
 
   componentDidMount() {
     this.doUpdate();
-    this.intervalid = setInterval(()=> {
-      this.doUpdate()
-    }, 5000)
+    this.startInterval(this.doUpdate, 1000)
   }
 
   componentWillUnmount() {
-    clearInterval(this.intervalid)
+    this.stopInterval()
   }
 
   doDelete() {
@@ -91,16 +89,11 @@ export default class QueueDetails extends BaseComponent {
           if (confirmed) {
             this.doDelete()
           } else {
-            this.updateState({confirmDelete: false})
+            this.assignState({confirmDelete: false})
           }
         }}
       />)
     }
-  }
-
-
-  updateState(add) {
-    this.setState(assign(this.state, add))
   }
 
   render() {
@@ -115,7 +108,7 @@ export default class QueueDetails extends BaseComponent {
               <h1>{this.state.queue.name}
               </h1>
               <button className="btn btn danger" onClick={()=> {
-                this.updateState({confirmDelete: true});
+                this.assignState({confirmDelete: true});
               }}>Delete
               </button>
               {this.getDeleteAlert()}

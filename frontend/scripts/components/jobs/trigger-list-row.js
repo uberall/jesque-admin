@@ -16,7 +16,7 @@ export default class TriggerListRow extends BaseComponent {
   }
 
   doDelete() {
-    this.setState({shouldConfirm: true});
+    this.assignState({shouldConfirm: true});
   }
 
   getAlert() {
@@ -33,10 +33,10 @@ export default class TriggerListRow extends BaseComponent {
                        confirmButtonText="Yes"
                        cancelButtonText="No"
                        callback={(confirmed)=> {
-                         if(confirmed) {
+                         if (confirmed) {
                            onDelete(trigger.name)
                          } else {
-                           this.setState({shouldConfirm: false})
+                           this.assignState({shouldConfirm: false});
                          }
                        }}
     />;

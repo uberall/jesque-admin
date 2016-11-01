@@ -5,52 +5,48 @@ import Config from "../../tools/config";
 import FilterButtonGroup from "../common/filter-button-group";
 import BaseComponent from "../base-component";
 const bindThis = require('../../tools/bindThis')
-const cx = require('classnames')
 
 const STATES = ["IDLE", "PAUSED", "WORKING"]
+const STATUS_CONFIG_KEY = "home.queues.empty";
 
 export default class WorkerList extends BaseComponent {
 
   constructor(props) {
     super(props)
     this.state = {
-      status: Config.get('homeWorkerStatus'),
+      status: Config.get(STATUS_CONFIG_KEY, null),
       query: ""
-    }
+    };
+
     this.bindThiz("onStatusFilterChange", "getWorkerRows", "doesWorkerMatchStatus", "doesWorkerMatchQuery", "onQueryChange")
   }
 
   onStatusFilterChange(status) {
-    let current = this.state.status
-    let newStatus
-    if (current === status) {
-      newStatus = null
-    } else {
-      newStatus = status
-    }
-    Config.set('homeWorkerStatus', newStatus)
-    this.setState(assign(this.state, {status: newStatus}))
+    let current = this.state.status;
+
+    let newStatus = current === status ? null : status;
+
+    this.assignState({status: newStatus}, ()=> {
+      Config.set(STATUS_CONFIG_KEY, newStatus);
+    });
   }
 
   onQueryChange(query) {
-    this.setState(assign(this.state, {query: query}))
+    this.assignState({query: query});
   }
 
   getWorkerRows() {
     if (!this.props.workers) {
       return <tr></tr>
     }
+
     let workers = sortBy(this.props.workers, (w)=> {
       return w.state
-    }).reverse()
+    }).reverse();
+
     workers = sortBy(workers, (w)=> {
-      let d
-      if (w.status) {
-        d = new Date(w.status.runAt)
-      } else {
-        d = new Date()
-      }
-      return d.getTime()
+      let runAt = w.status ? new Date(w.status.runAt) : new Date()
+      return runAt.getTime()
     })
     return map(workers, (worker)=> {
       if (this.doesWorkerMatchStatus(worker) && this.doesWorkerMatchQuery(worker)) {

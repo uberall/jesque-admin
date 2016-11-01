@@ -37,16 +37,14 @@ export default class Triggers extends BaseComponent {
   }
 
   startAutoUpdate(propagate) {
-    this._interval = setInterval(this.doUpdate, 5000);
+    this.startInterval(this.doUpdate, 5000);
     if (propagate) {
       this.props.changeAutoReload(true);
     }
   }
 
   stopAutoUpdate(propagate) {
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    this.stopInterval();
     if (propagate) {
       this.props.changeAutoReload(false);
     }
@@ -54,14 +52,14 @@ export default class Triggers extends BaseComponent {
 
   doUpdate() {
     if (!this.state.loading) {
-      this.setState(assign(this.state, {loading: true}));
+      this.assignState({loading: true});
       this.client.get('triggers', null, {})
         .then((resp) => {
-          this.setState(assign(this.state, {list: resp.list, total: resp.total, loading: false}))
+          this.assignState({list: resp.list, total: resp.total, loading: false});
         }).catch((err)=> {
         this.stopAutoUpdate();
         window.setError(err);
-        this.setState(assign(this.state, {loading: false}))
+        this.assignState({loading: false});
       })
     }
   }

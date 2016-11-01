@@ -47,15 +47,13 @@ export default class JobsList extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this._interval = setInterval(this.doUpdate, 5000);
+    this.startInterval(this.doUpdate, 1000);
     this.props.changeAutoReload(true);
   }
 
   stopAutoUpdate() {
     this.props.changeAutoReload(false);
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    this.stopInterval()
   }
 
   changePage(page) {
@@ -64,11 +62,10 @@ export default class JobsList extends BaseComponent {
       page = 1
     }
     if (page !== this.state.currentPage) {
-      this.setState(assign(this.state, {currentPage: page}));
-      setTimeout(()=> {
+      this.assignState({currentPage: page}, ()=> {
         this.doUpdate();
         navigate(`/jobs/${page}`, false);
-      }, 100)
+      });
     } else {
       console.log("no actual page change detected, skipping")
     }
@@ -86,21 +83,21 @@ export default class JobsList extends BaseComponent {
   doUpdate() {
     if (!this.state.loading) {
       let {currentPage, max, query} = this.state;
-      this.setState(assign(this.state, {loading: true}));
-      this.client.get('jobs', null, {max: max, offset: (currentPage - 1) * max, query: query})
-        .then((resp) => {
-          if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
-            console.log("no items received and not on first page, returning to first page");
-            this.setState(assign(this.state, {loading: false}));
-            setTimeout(this.resetToFirstPage, 100)
-          } else {
-            this.setState(assign(this.state, {list: resp.list, total: resp.total, loading: false}))
-          }
-        }).catch((err)=> {
-        this.stopAutoUpdate();
-        window.setError(err);
-        this.setState(assign(this.state, {loading: false}))
-      })
+      this.assignState({loading: true}, ()=> {
+        this.client.get('jobs', null, {max: max, offset: (currentPage - 1) * max, query: query})
+          .then((resp) => {
+            if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
+              console.log("no items received and not on first page, returning to first page");
+              this.assignState({loading: false}, this.resetToFirstPage);
+            } else {
+              this.assignState({list: resp.list, total: resp.total, loading: false});
+            }
+          }).catch(err=> {
+          this.stopAutoUpdate();
+          window.setError(err);
+          this.assignState({loading: false})
+        })
+      });
     }
   }
 
@@ -120,7 +117,7 @@ export default class JobsList extends BaseComponent {
   }
 
   onQueryChange(query) {
-    this.setState(assign(this.state, {query}), ()=> {
+    this.assignState({query}, ()=> {
       this.changePage(0)
     });
   }

@@ -39,21 +39,19 @@ export default class HomeView extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this._interval = setInterval(this.doUpdate, 2000);
+    this.startInterval(this.doUpdate, 2000);
     this.props.changeAutoReload(true);
   }
 
   stopAutoUpdate() {
     this.props.changeAutoReload(false);
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    this.stopInterval()
   }
 
   doUpdate() {
     this.client.get('overview', null, {})
       .then((json) => {
-        this.setState(assign(this.state, {queues: json.queues, workers: json.workers, failed: json.failed}))
+        this.assignState({queues: json.queues, workers: json.workers, failed: json.failed});
       })
       .catch((err)=> {
         throw(err)

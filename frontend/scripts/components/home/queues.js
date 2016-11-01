@@ -1,25 +1,28 @@
 import React from "react";
 import {assign, map, sortBy, filter} from "lodash";
 import BaseComponent from "../base-component";
-import FilterButtonGroup from "../common/filter-button-group";
+import Config from "../../tools/config";
 const cx = require("classnames");
 const bindThis = require('../../tools/bindThis')
 
 var navigate = require('react-mini-router').navigate;
 
+const EMPTY_QUEUE_CONFIG_KEY = "home.queues.empty";
+
 export default class QueueList extends BaseComponent {
 
   constructor(props) {
-    super(props)
+    super(props);
+
     this.state = {
       query: "",
-      empty: false
-    }
+      empty: Config.get(EMPTY_QUEUE_CONFIG_KEY, false)
+    };
     this.bindThiz("getQueueRows", "doesQueueMatchQuery", "onQueryChange", "onRowClick", "changeEmpty")
   }
 
   onQueryChange(query) {
-    this.setState(assign(this.state, {query: query}))
+    this.assignState({query: query});
   }
 
   onRowClick(queue) {
@@ -63,7 +66,9 @@ export default class QueueList extends BaseComponent {
   }
 
   changeEmpty() {
-    this.setState(assign(this.state, {empty: !this.state.empty}))
+    this.assignState({empty: !this.state.empty}, ()=> {
+      Config.set(EMPTY_QUEUE_CONFIG_KEY, this.state.empty)
+    })
   }
 
   render() {
@@ -82,7 +87,7 @@ export default class QueueList extends BaseComponent {
           </div>
           <div className="filter">
             <label htmlFor="empty">
-              <input id="empty" type="checkbox" checked={this.state.empty} onChange={(e)=>{
+              <input id="empty" type="checkbox" checked={this.state.empty} onChange={(e)=> {
                 this.changeEmpty(e.target.checked)
               }}/>
               Empty

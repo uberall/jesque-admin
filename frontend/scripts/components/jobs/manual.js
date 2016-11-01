@@ -22,7 +22,7 @@ export default class JobManual extends BaseComponent {
     this.client = new JesqueAdminClient();
 
     this.state = clone(DEFAULT_STATE);
-    this.bindThiz('getJobs', 'getQueues', 'jobSelected', 'queueSelected', 'getArgumentInputs', 'reset', 'onFormSubmit', 'getAlert')
+    this.bindThiz('getQueues', 'jobSelected', 'queueSelected', 'getArgumentInputs', 'reset', 'onFormSubmit', 'getAlert')
   }
 
   componentDidMount() {
@@ -31,11 +31,10 @@ export default class JobManual extends BaseComponent {
 
   reset() {
     this.setState(clone(DEFAULT_STATE), this.getQueues);
-
   }
 
   getQueues() {
-    this.setState(assign(this.state, {loading: true}));
+    this.assignState({loading: true});
     this.client.get('queues', null, {max: 500, offset: 0})
       .then((resp) => {
         let queues = [];
@@ -55,12 +54,12 @@ export default class JobManual extends BaseComponent {
     let args = map(this.state.args, (arg)=> {
       return this.guessValue(arg);
     });
-    this.setState(assign(this.state, {loading: true}));
+    this.assignState({loading: true});
     this.client.post('jobs', null, {job: this.state.selectedJob, queue: this.state.selectedQueue, args: args})
       .then((resp) => {
-        this.setState(assign(this.state, {loading: false, success: resp.success}));
+        this.assignState({loading: false, success: resp.success});
       }).catch(()=> {
-      this.setState(assign(this.state, {loading: false, success: false}));
+      this.assignState({loading: false, success: false});
     })
   }
 
@@ -100,7 +99,7 @@ export default class JobManual extends BaseComponent {
     if (selectedQueue && queues.indexOf(selectedQueue) == -1) {
       queues.push(selectedQueue)
     }
-    this.setState(assign(this.state, {selectedQueue, queues}))
+    this.assignState({selectedQueue, queues});
   }
 
   onArgumentChange(i, text) {

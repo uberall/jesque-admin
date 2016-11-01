@@ -50,15 +50,13 @@ export default class JobDetails extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this._interval = setInterval(this.doUpdate, 5000);
+    this.startInterval(this.doUpdate, 1000);
     this.props.changeAutoReload(true);
   }
 
   stopAutoUpdate() {
     this.props.changeAutoReload(false);
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    this.stopInterval();
   }
 
   changePage(page) {
@@ -67,11 +65,10 @@ export default class JobDetails extends BaseComponent {
       page = 1
     }
     if (page !== this.state.currentPage) {
-      this.setState(assign(this.state, {currentPage: page}));
-      setTimeout(()=> {
+      this.assignState({currentPage: page}, ()=> {
         this.doUpdate();
         navigate(`/jobs/details/${this.props.job}/${page}`, false);
-      }, 100)
+      });
     } else {
       console.log("no actual page change detected, skipping")
     }
@@ -88,39 +85,33 @@ export default class JobDetails extends BaseComponent {
 
   onMaxChange(max) {
     if (this.state.max !== max) {
-      this.setState(assign(this.state, {max: max}));
-      let func;
-      if (this.state.currentPage === 1) {
-        func = this.doUpdate
-      } else {
-        func = this.resetToFirstPage
-      }
-      setTimeout(func, 100)
+      let func = this.state.currentPage === 1 ? this.doUpdate : this.resetToFirstPage;
+      this.assignState({max: max}, func);
     }
   }
 
   selectJob(job) {
-    this.setState(assign(this.state, {selectedJob: job}))
+    this.assignState({selectedJob: job});
   }
 
   doUpdate() {
     if (!this.state.loading) {
       let {currentPage, max} = this.state;
-      this.setState(assign(this.state, {loading: true}));
-      this.client.get('jobs', this.props.job, {max: max, offset: (currentPage - 1) * max})
-        .then((resp) => {
-          if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
-            console.log("no items received and not on first page, returning to first page");
-            this.setState(assign(this.state, {loading: false}));
-            setTimeout(this.resetToFirstPage, 100)
-          } else {
-            this.setState(assign(this.state, {list: resp.list, total: resp.total, loading: false}))
-          }
-        }).catch((err)=> {
-        this.stopAutoUpdate();
-        window.setError(err);
-        this.setState(assign(this.state, {loading: false}))
-      })
+      this.assignState({loading: true}, ()=> {
+        this.client.get('jobs', this.props.job, {max: max, offset: (currentPage - 1) * max})
+          .then((resp) => {
+            if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
+              console.log("no items received and not on first page, returning to first page");
+              this.assignState({loading: false}, this.resetToFirstPage);
+            } else {
+              this.assignState({list: resp.list, total: resp.total, loading: false});
+            }
+          }).catch((err)=> {
+          this.stopAutoUpdate();
+          window.setError(err);
+          this.assignState({loading: false});
+        })
+      });
     }
   }
 
@@ -181,7 +172,7 @@ export default class JobDetails extends BaseComponent {
           <div className="table-container">
             <div className="filter-form">
               <div className="filter">
-                <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
+                <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
               </div>
             </div>
             <table className="table table-condensed">

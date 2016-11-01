@@ -2,8 +2,7 @@ import React from "react";
 import {each, assign} from "lodash";
 export default class BaseComponent extends React.Component {
   constructor(props) {
-    super(props)
-
+    super(props);
     this.bindThiz('assignState')
   }
 
@@ -18,8 +17,22 @@ export default class BaseComponent extends React.Component {
     })
   }
 
+  startInterval(fn, int) {
+    this._interval = setInterval(fn, int)
+  }
+
+  stopInterval() {
+    if (this._interval)
+      clearInterval(this._interval)
+  }
+
   assignState(updates, cb) {
-    this.setState(assign(this.state, updates), cb)
+    try {
+      this.setState(assign(this.state, updates), cb)
+    } catch(e) {
+      this.stopInterval();
+      throw e
+    }
   }
 
 }

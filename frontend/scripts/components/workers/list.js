@@ -53,15 +53,13 @@ export default class WorkerList extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this._interval = setInterval(this.doUpdate, 1000);
+    this.startInterval(this.doUpdate, 1000);
     this.props.changeAutoReload(true);
   }
 
   stopAutoUpdate() {
     this.props.changeAutoReload(false);
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    this.stopInterval()
   }
 
   doUpdate() {
@@ -85,16 +83,16 @@ export default class WorkerList extends BaseComponent {
   }
 
   doesWorkerMatchStatus(worker) {
-    return this.state.status === null || worker.state === this.state.status
+    return !this.state.status || worker.state === this.state.status
   }
 
   doesWorkerMatchQuery(worker) {
     if (this.state.query === "") {
       return true
     }
-    let q = this.state.query.toLowerCase()
-    let hostname = worker.host.toLowerCase()
-    let pid = worker.pid.toLowerCase()
+    let q = this.state.query.toLowerCase();
+    let hostname = worker.host.toLowerCase();
+    let pid = worker.pid.toLowerCase();
     return hostname.indexOf(q) > -1 || pid.indexOf(q) > -1
   }
 
@@ -140,10 +138,12 @@ export default class WorkerList extends BaseComponent {
     let workers = sortBy(list, (w)=> {
       return w.state
     }).reverse();
+
     workers = sortBy(workers, (w)=> {
       const date = w.status ? new Date(w.status.runAt) : new Date();
       return date.getTime()
     });
+
     return map(workers, (worker)=> {
       if (this.doesWorkerMatchStatus(worker) && this.doesWorkerMatchQuery(worker)) {
         return <WorkerListRow

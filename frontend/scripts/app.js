@@ -4,12 +4,11 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
-import {HOME, JOB_FAILED, JOBS_LIST, JOB_DELAYED, JOB_ENQUEUE, JOB_TRIGGERS, WORKER_LIST, WORKER_MANUAL} from "./constants/paths";
+import {HOME, JOB_FAILED, JOBS_LIST, JOB_ENQUEUE, JOB_TRIGGERS, WORKER_LIST, WORKER_MANUAL} from "./constants/paths";
 import JobsList from "./components/jobs/list";
 import JobDetails from "./components/jobs/details";
 import JobManual from "./components/jobs/manual";
 import Triggers from "./components/jobs/triggers";
-import DelayedList from "./components/jobs/delayed";
 import WorkerList from "./components/workers/list";
 import WorkerManual from "./components/workers/manual";
 import {assign} from "lodash";
@@ -27,7 +26,6 @@ var JesqueAdminApp = React.createClass({
     '/queues/:name/:page': 'queueDetails',
     '/jobs/enqueue/': 'enqueueJob',
     '/jobs/triggers/': 'triggers',
-    '/jobs/delayed/:page': 'delayedJobs',
     '/jobs/failed/:page': 'failedJobs',
     '/jobs/:page': 'jobsList',
     '/jobs/details/:name/:page': 'jobsDetails',
@@ -115,17 +113,6 @@ var JesqueAdminApp = React.createClass({
       page = 1
     }
     return <FailedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
-  },
-
-  delayedJobs: function (page) {
-    window.currentPath = JOB_DELAYED;
-    try {
-      page = parseInt(page)
-    } catch (ignore) {
-      page = 1
-    }
-
-    return <DelayedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
   jobsList: function (page) {

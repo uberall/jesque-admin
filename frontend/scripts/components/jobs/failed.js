@@ -19,13 +19,12 @@ export default class FailedList extends BaseComponent {
 
     this.state = {
       list: null,
-      loading: false,
       total: 0,
       selected: null,
       max: 25,
       currentPage: props.page,
       confirmClearAll: false
-    }
+    };
     this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'changePage', 'resetToFirstPage', 'getClearAllAlert');
   }
 
@@ -51,36 +50,29 @@ export default class FailedList extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this._interval = setInterval(this.doUpdate, 5000);
+    this.startInterval(this.doUpdate, 1000);
     this.props.changeAutoReload(true);
   }
 
   stopAutoUpdate() {
     this.props.changeAutoReload(false);
-    if (this._interval) {
-      clearInterval(this._interval)
-    }
+    this.stopInterval();
   }
 
   doUpdate() {
-    if (!this.state.loading) {
-      let {currentPage, max} = this.state;
-      this.setState(assign(this.state, {loading: true}));
-      this.client.get('failed', null, {max: max, offset: (currentPage - 1) * max})
-        .then((resp) => {
-          if (resp.list.length === 0 && currentPage !== 1) {
-            console.log("no items received and not on first page, returning to first page");
-            this.setState(assign(this.state, {loading: false}));
-            setTimeout(this.resetToFirstPage, 100)
-          } else {
-            this.setState(assign(this.state, {list: resp.list, total: resp.total, loading: false}))
-          }
-        }).catch((err)=> {
-        this.stopAutoUpdate();
-        window.setError(err);
-        this.setState(assign(this.state, {loading: false}))
-      })
-    }
+    let {currentPage, max} = this.state;
+    this.client.get('failed', null, {max: max, offset: (currentPage - 1) * max})
+      .then((resp) => {
+        if (resp.list.length === 0 && currentPage !== 1) {
+          console.log("no items received and not on first page, returning to first page");
+          this.resetToFirstPage();
+        } else {
+          this.assignState({list: resp.list, total: resp.total});
+        }
+      }).catch((err)=> {
+      this.stopAutoUpdate();
+      window.setError(err);
+    })
   }
 
   changePage(page) {
@@ -89,11 +81,10 @@ export default class FailedList extends BaseComponent {
       page = 1
     }
     if (page !== this.state.currentPage) {
-      this.setState(assign(this.state, {currentPage: page}));
-      setTimeout(()=> {
+      this.assignState({currentPage: page}, ()=> {
         this.doUpdate();
         navigate(`/jobs/failed/${page}`, false);
-      }, 100)
+      });
     } else {
       console.log("no actual page change detected, skipping")
     }
@@ -109,7 +100,7 @@ export default class FailedList extends BaseComponent {
   }
 
   selectFailure(failure) {
-    this.setState(assign(this.state, {selected: failure}))
+    this.assignState({selected: failure});
   }
 
   getRetryComponent(failure) {
@@ -134,9 +125,9 @@ export default class FailedList extends BaseComponent {
       let cols = [];
       cols.push(<td key={`${failure.id}-date`}><FromNow date={new Date(failure.failedAt)}/></td>);
       cols.push(<td key={`${failure.id}-class`}>{failure.payload.className}</td>)
-      cols.push(<td key={`${failure.id}-throwable`}>{failure.throwableString}</td>)
+      cols.push(<td key={`${failure.id}-throwable`} className="short">{failure.throwableString}</td>)
       if (!somethingSelected) {
-        cols.push(<td key={`${failure.id}-error`}>{failure.error}</td>)
+        cols.push(<td key={`${failure.id}-error`} className="short">{failure.error}</td>)
         cols.push(
           <td key={`${failure.id}-actions`}>
             <button className="btn btn-xs btn-danger" onClick={()=> {
@@ -148,7 +139,7 @@ export default class FailedList extends BaseComponent {
       }
       return (
         <tr className={cx('clickable', {info: selected && selected.id === failure.id})} key={failure.id} onClick={(e)=> {
-          if(e.target.nodeName != 'BUTTON' && e.target.nodeName != 'I') {
+          if (e.target.nodeName != 'BUTTON' && e.target.nodeName != 'I') {
             this.selectFailure(failure)
           }
         }}>
@@ -167,14 +158,8 @@ export default class FailedList extends BaseComponent {
 
   onMaxChange(max) {
     if (this.state.max !== max) {
-      this.setState(assign(this.state, {max: max}));
-      let func;
-      if (this.state.currentPage === 1) {
-        func = this.doUpdate
-      } else {
-        func = this.resetToFirstPage
-      }
-      setTimeout(func, 100)
+      let func = this.state.currentPage === 1 ? this.doUpdate : this.resetToFirstPage;
+      this.assignState({max: max}, func);
     }
   }
 
@@ -197,9 +182,10 @@ export default class FailedList extends BaseComponent {
   clearAll() {
     this.client.delete('failed', null, {})
       .then(() => {
-        this.setState(assign(this.state, {confirmClearAll: false}))
-        this.selectFailure(null)
-        this.doUpdate(1)
+        this.assignState({confirmClearAll: false}, ()=> {
+          this.selectFailure(null);
+        });
+        this.doUpdate()
       }).catch((err)=> {
       console.error(err)
     })
@@ -221,7 +207,7 @@ export default class FailedList extends BaseComponent {
         if (confirmed) {
           this.clearAll()
         } else {
-          this.setState(assign(this.state, {confirmClearAll: false}))
+          this.assignState({confirmClearAll: false});
         }
       }}
     />)
@@ -245,13 +231,13 @@ export default class FailedList extends BaseComponent {
           </div>
           <div className="filter-form">
             <div className="filter">
-              <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50]}></FilterButtonGroup>
+              <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
             </div>
             <div className="filter">
               <button
                 className="btn btn-danger pull-right"
                 onClick={()=> {
-                  this.setState(assign(this.state, {confirmClearAll: true}))
+                  this.assignState({confirmClearAll: true});
                 }}
               >
                 <i className="fa fa-trash"></i> Clear all
@@ -273,7 +259,6 @@ export default class FailedList extends BaseComponent {
             pages={this.getMaxPages()}
             current={this.state.currentPage}
             target={`/jobs/failed`}
-            disabled={this.state.loading}
             onPageChange={this.changePage}
           />
         </div>

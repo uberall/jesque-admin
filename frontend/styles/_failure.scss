@@ -10,6 +10,14 @@ ul.stacktrace {
   flex-flow: wrap;
   flex-direction: row;
   transition: all ease-in-out 0.3s;
+
+  td.short {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+  }
+
   .table-container {
     display: flex;
     flex-direction: column;
@@ -36,4 +44,5 @@ ul.stacktrace {
   dl {
       margin-bottom: 0;
   }
+
 }

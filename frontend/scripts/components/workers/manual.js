@@ -33,7 +33,7 @@ export default class WorkerManual extends BaseComponent {
   }
 
   getQueues() {
-    this.setState(assign(this.state, {loading: true}));
+    this.assignState({loading: true});
     this.client.get('queues', null, {max: 500, offset: 0})
       .then((resp) => {
         let queues = [];
@@ -42,7 +42,7 @@ export default class WorkerManual extends BaseComponent {
             queues.push(queue.name)
           }
         });
-        this.setState(assign(this.state, {queues: queues, loading: false}));
+        this.assignState({queues: queues, loading: false});
       }).catch((err)=> {
       window.setError(err);
     })
@@ -50,16 +50,16 @@ export default class WorkerManual extends BaseComponent {
 
   onFormSubmit(e) {
     e.preventDefault();
-    this.setState(assign(this.state, {loading: true}));
+    this.assignState({loading: true});
     this.client.post('workers', null, {jobs: this.state.selectedJobs, queue: this.state.selectedQueue})
       .then((resp) => {
         if (resp.status === 'OK') {
-          this.setState(assign(this.state, {loading: false, success: true}));
+          this.assignState({loading: false, success: true});
         } else {
-          this.setState(assign(this.state, {loading: false, success: false, errorMessage: resp.message}));
+          this.assignState({loading: false, success: false, errorMessage: resp.message});
         }
       }).catch(()=> {
-      this.setState(assign(this.state, {loading: false, success: false}));
+      this.assignState({loading: false, success: false});
     })
   }
 
@@ -79,7 +79,7 @@ export default class WorkerManual extends BaseComponent {
     if (queue) {
       selected = queue.value;
     }
-    this.setState(assign(this.state, {selectedQueue: selected}))
+    this.assignState({selectedQueue: selected});
   }
 
   getAlert() {

@@ -11,14 +11,14 @@ export default class Config {
     return JSON.parse(confString)
   }
 
-  static get(key) {
-    return this.getConfig()[key]
+  static get(key, defaultValue) {
+    return this.getConfig()[key] || defaultValue
   }
 
   static set(key, val) {
-    let conf = this.getConfig()
-    conf[key] = val
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(conf))
+    let conf = this.getConfig();
+    conf[key] = val;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(conf));
   }
 
 }

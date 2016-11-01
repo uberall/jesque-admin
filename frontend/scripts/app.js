@@ -15,6 +15,7 @@ import {assign} from "lodash";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
 const navigate = require('react-mini-router').navigate;
+const querystring = require('querystring');
 
 var JesqueAdminApp = React.createClass({
   mixins: [RouterMixin],
@@ -23,12 +24,11 @@ var JesqueAdminApp = React.createClass({
     '/': 'home',
     '/404': 'notFound',
     '/queues/:name': 'queueDetails',
-    '/queues/:name/:page': 'queueDetails',
     '/jobs/enqueue/': 'enqueueJob',
     '/jobs/triggers/': 'triggers',
-    '/jobs/failed/:page': 'failedJobs',
-    '/jobs/:page': 'jobsList',
-    '/jobs/details/:name/:page': 'jobsDetails',
+    '/jobs/failed/': 'failedJobs',
+    '/jobs/': 'jobsList',
+    '/jobs/:name': 'jobsDetails',
     '/workers': 'workerList',
     '/workers/start': 'workerManual',
   },
@@ -96,8 +96,8 @@ var JesqueAdminApp = React.createClass({
     )
   },
 
-  queueDetails: function (name, page) {
-    return <QueueDetails name={name} page={parseInt(page) || 1} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
+  queueDetails: function (name) {
+    return <QueueDetails name={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
   },
 
   home: function () {
@@ -105,34 +105,19 @@ var JesqueAdminApp = React.createClass({
     return <HomeView autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
-  failedJobs: function (page) {
+  failedJobs: function () {
     window.currentPath = JOB_FAILED;
-    try {
-      page = parseInt(page)
-    } catch (ignore) {
-      page = 1
-    }
-    return <FailedList page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <FailedList params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
-  jobsList: function (page) {
+  jobsList: function () {
     window.currentPath = JOBS_LIST;
-    try {
-      page = parseInt(page)
-    } catch (ignore) {
-      page = 1
-    }
-    return <JobsList page={page} jobs={window.AppConfig.knownJobs} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <JobsList params={this.getUrlParameters()} jobs={window.AppConfig.knownJobs} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
-  jobsDetails: function (name, page) {
+  jobsDetails: function (name) {
     window.currentPath = JOBS_LIST;
-    try {
-      page = parseInt(page)
-    } catch (ignore) {
-      page = 1
-    }
-    return <JobDetails job={name} page={page} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <JobDetails job={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
   },
 
   enqueueJob: function () {
@@ -160,6 +145,16 @@ var JesqueAdminApp = React.createClass({
   workerManual: function () {
     window.currentPath = WORKER_MANUAL;
     return <WorkerManual jobs={window.AppConfig.knownJobs}/>
+  },
+
+  getUrlParameters: function () {
+    let search = window.location.hash || '';
+    let qidx = search.indexOf('?');
+    if (qidx === -1) {
+      return;
+    }
+    search = search.substring(qidx + 1);
+    return querystring.parse(search)
   },
 
 

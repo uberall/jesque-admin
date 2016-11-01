@@ -1,5 +1,8 @@
 import React from "react";
-import {each, assign} from "lodash";
+import _ from "lodash";
+const navigate = require('react-mini-router').navigate;
+const querystring = require('querystring');
+
 export default class BaseComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -7,7 +10,7 @@ export default class BaseComponent extends React.Component {
   }
 
   bindThiz(...methods) {
-    each(methods, (m)=> {
+    _.each(methods, (m)=> {
       let method = this[m];
       if (method && typeof method === 'function') {
         this[m] = method.bind(this)
@@ -15,6 +18,19 @@ export default class BaseComponent extends React.Component {
         console.error(`${m} is not a function on ${this.constructor.name}`)
       }
     })
+  }
+
+
+  getMax() {
+    return parseInt(_.get(this.props.params, 'max') || 25);
+  }
+
+  getOffset() {
+    return parseInt(_.get(this.props.params, 'offset') || 0);
+  }
+
+  getQuery() {
+    return _.get(this.props.params, 'query') || "";
   }
 
   startInterval(fn, int) {
@@ -28,11 +44,19 @@ export default class BaseComponent extends React.Component {
 
   assignState(updates, cb) {
     try {
-      this.setState(assign(this.state, updates), cb)
-    } catch(e) {
+      this.setState(_.assign(this.state, updates), cb)
+    } catch (e) {
       this.stopInterval();
       throw e
     }
+  }
+
+  navigate(target, query, onylAddressBar) {
+    let url = target;
+    if (query) {
+      url = `${url}?${querystring.stringify(query)}`;
+    }
+    navigate(url, onylAddressBar || false)
   }
 
 }

@@ -1,12 +1,12 @@
 import React from "react";
 import BaseComponent from "../base-component";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
-import {assign, map} from "lodash";
-import Pager from "../common/pager";
+import _, {assign, map} from "lodash";
 import FilterButtonGroup from "../common/filter-button-group";
 import FormatedDate from "../common/formated-date";
 import JobListDetails from "./job-list-details";
-const navigate = require('react-mini-router').navigate;
+import ReactPaginate from "react-paginate";
+
 const cx = require('classnames')
 
 export default class JobDetails extends BaseComponent {
@@ -17,15 +17,13 @@ export default class JobDetails extends BaseComponent {
     this.client = new JesqueAdminClient();
 
     this.state = {
-      list: null,
       loading: false,
-      total: -1,
-      max: 25,
-      currentPage: props.page,
+      list: null,
+      total: 0,
       selectedJob: null
     };
 
-    this.bindThiz('doUpdate', 'getMaxPages', 'changePage', 'resetToFirstPage', 'onMaxChange', 'selectJob', 'getTableHeaders');
+    this.bindThiz('doUpdate', 'onMaxChange', 'selectJob', 'getTableHeaders');
   }
 
   componentDidMount() {
@@ -41,12 +39,13 @@ export default class JobDetails extends BaseComponent {
     if (props.autoReload != this.props.autoReload) {
       if (props.autoReload) {
         this.doUpdate();
-        this.startAutoUpdate()
+        this.startAutoUpdate();
       } else {
-        this.stopAutoUpdate()
+        this.stopAutoUpdate();
       }
+    } else if (!_.isEqual(props.params, this.props.params)) {
+      this.doUpdate()
     }
-    this.changePage(props.page - 1)
   }
 
   startAutoUpdate() {
@@ -59,35 +58,8 @@ export default class JobDetails extends BaseComponent {
     this.stopInterval();
   }
 
-  changePage(page) {
-    page++;
-    if (page < 1) {
-      page = 1
-    }
-    if (page !== this.state.currentPage) {
-      this.assignState({currentPage: page}, ()=> {
-        this.doUpdate();
-        navigate(`/jobs/details/${this.props.job}/${page}`, false);
-      });
-    } else {
-      console.log("no actual page change detected, skipping")
-    }
-  }
-
-  resetToFirstPage() {
-    this.changePage(0)
-  }
-
-  getMaxPages() {
-    let {total, max} = this.state;
-    return Math.ceil(total / max)
-  }
-
   onMaxChange(max) {
-    if (this.state.max !== max) {
-      let func = this.state.currentPage === 1 ? this.doUpdate : this.resetToFirstPage;
-      this.assignState({max: max}, func);
-    }
+    this.navigate(`/jobs/${this.props.job}`, {offset: 0, max: max});
   }
 
   selectJob(job) {
@@ -95,24 +67,20 @@ export default class JobDetails extends BaseComponent {
   }
 
   doUpdate() {
-    if (!this.state.loading) {
-      let {currentPage, max} = this.state;
-      this.assignState({loading: true}, ()=> {
-        this.client.get('jobs', this.props.job, {max: max, offset: (currentPage - 1) * max})
-          .then((resp) => {
-            if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
-              console.log("no items received and not on first page, returning to first page");
-              this.assignState({loading: false}, this.resetToFirstPage);
-            } else {
-              this.assignState({list: resp.list, total: resp.total, loading: false});
-            }
-          }).catch((err)=> {
-          this.stopAutoUpdate();
-          window.setError(err);
-          this.assignState({loading: false});
-        })
-      });
-    }
+    this.assignState({loading: true}, ()=> {
+      this.client.get('jobs', this.props.job, {max: this.getMax(), offset: this.getOffset()})
+        .then((resp) => {
+          if (resp.list.length === 0 && this.getOffset() !== 0) {
+            this.navigate(`/jobs/${this.props.job}`, {offset: 0, max: this.getMax()});
+          } else {
+            this.assignState({list: resp.list, total: resp.total, loading: false});
+          }
+        }).catch((err)=> {
+        this.stopAutoUpdate();
+        window.setError(err);
+        this.assignState({loading: false});
+      })
+    });
   }
 
   getTableBody() {
@@ -159,10 +127,9 @@ export default class JobDetails extends BaseComponent {
   }
 
   render() {
-    const {list} = this.state;
-    if (!list) {
-      return <div>loading</div>
-    }
+    const {total} = this.state;
+    const max = parseInt(this.getMax());
+    const offset = parseInt(this.getOffset());
     return (
       <div>
         <div className="page-header">
@@ -172,7 +139,7 @@ export default class JobDetails extends BaseComponent {
           <div className="table-container">
             <div className="filter-form">
               <div className="filter">
-                <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
+                <FilterButtonGroup current={max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]} />
               </div>
             </div>
             <table className="table table-condensed">
@@ -185,12 +152,20 @@ export default class JobDetails extends BaseComponent {
               {this.getTableBody()}
               </tbody>
             </table>
-            <Pager
-              pages={this.getMaxPages()}
-              current={this.state.currentPage}
-              target={`/jobs/details/${this.props.job}/`}
-              disabled={this.state.loading}
-              onPageChange={this.changePage}
+            <ReactPaginate
+              pageNum={Math.ceil(total / max)}
+              forceSelected={Math.floor(offset / max)}
+              pageRangeDisplayed={2}
+              marginPagesDisplayed={1}
+              previousLabel="&laquo;"
+              nextLabel="&raquo;"
+              breakLabel={<a>&hellip;</a>}
+              containerClassName="pagination"
+              disabledClassName="disabled"
+              activeClassName="active"
+              clickCallback={(pageObject)=> {
+                this.navigate(`/jobs/${this.props.job}`, {max: max, offset: max * pageObject.selected})
+              }}
             />
           </div>
           <JobListDetails job={this.state.selectedJob} close={()=> {

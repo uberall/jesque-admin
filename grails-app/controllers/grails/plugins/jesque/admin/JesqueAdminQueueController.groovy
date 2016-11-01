@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus
 class JesqueAdminQueueController extends AbstractJesqueAdminController {
 
     def details(String name) {
-        def queue = jesqueQueuesService.getQueueInfo(name, 0, 1000)
-        if(!queue) {
+        def queue = jesqueQueuesService.getQueueInfo(name, params.getLong('offset', 0), params.getLong('max', 25))
+        if (!queue) {
             response.status = HttpStatus.NOT_FOUND.value()
             jsonRender([status: HttpStatus.NOT_FOUND])
         } else {

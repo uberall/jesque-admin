@@ -51,24 +51,25 @@ class JesqueAdminJsonMarhsaller {
         JSON.registerObjectMarshaller(Job) { Job job ->
             [
                     className: job.className,
-                    args     : job.args
+                    args     : job.args,
+                    vars     : job.vars
             ]
         }
 
         JSON.registerObjectMarshaller(JobFailure) { JobFailure jobFailure ->
             def result = [
-                    backtrace: jobFailure.backtrace,
-                    error: jobFailure.error,
-                    failedAt: jobFailure.failedAt,
-                    payload: jobFailure.payload,
-                    queue: jobFailure.queue,
-                    retriedAt: jobFailure.retriedAt,
-                    throwable: jobFailure.throwable,
+                    backtrace      : jobFailure.backtrace,
+                    error          : jobFailure.error,
+                    failedAt       : jobFailure.failedAt,
+                    payload        : jobFailure.payload,
+                    queue          : jobFailure.queue,
+                    retriedAt      : jobFailure.retriedAt,
+                    throwable      : jobFailure.throwable,
                     throwableString: jobFailure.throwableString,
-                    worker: jobFailure.worker
+                    worker         : jobFailure.worker
             ]
 
-            if(jobFailure.hasProperty("id")) {
+            if (jobFailure.hasProperty("id")) {
                 result.id = jobFailure.id
             }
 

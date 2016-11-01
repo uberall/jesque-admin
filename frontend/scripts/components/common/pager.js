@@ -36,6 +36,5 @@ export default class Pager extends BaseComponent {
 Pager.propTypes = {
   pages: React.PropTypes.number.isRequired,
   current: React.PropTypes.number.isRequired,
-  target: React.PropTypes.string.isRequired,
   onPageChange: React.PropTypes.func
 };

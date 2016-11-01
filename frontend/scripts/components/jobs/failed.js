@@ -1,14 +1,14 @@
 import React from "react";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
 import BaseComponent from "../base-component";
-import {map, assign} from "lodash";
+import _ from "lodash";
 import FromNow from "../common/from-now";
 import FailureDetails from "./failure-details";
 import FilterButtonGroup from "../common/filter-button-group";
-import Pager from "../common/pager";
 import FormatedDate from "../common/formated-date";
+import ReactPaginate from "react-paginate";
+
 const cx = require('classnames');
-const navigate = require('react-mini-router').navigate;
 const SweetAlert = require('react-swal');
 
 export default class FailedList extends BaseComponent {
@@ -21,11 +21,10 @@ export default class FailedList extends BaseComponent {
       list: null,
       total: 0,
       selected: null,
-      max: 25,
-      currentPage: props.page,
-      confirmClearAll: false
+      confirmClearAll: false,
+      loading: false
     };
-    this.bindThiz('doUpdate', 'getMaxPages', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'changePage', 'resetToFirstPage', 'getClearAllAlert');
+    this.bindThiz('doUpdate', 'selectFailure', 'getSelectedView', 'onMaxChange', 'clearAll', 'getClearAllAlert');
   }
 
   componentDidMount() {
@@ -40,13 +39,14 @@ export default class FailedList extends BaseComponent {
   componentWillReceiveProps(props) {
     if (props.autoReload != this.props.autoReload) {
       if (props.autoReload) {
-        this.doUpdate()
-        this.startAutoUpdate()
+        this.doUpdate();
+        this.startAutoUpdate();
       } else {
-        this.stopAutoUpdate()
+        this.stopAutoUpdate();
       }
+    } else if (!_.isEqual(props.params, this.props.params)) {
+      this.doUpdate()
     }
-    this.changePage(props.page - 1)
   }
 
   startAutoUpdate() {
@@ -60,43 +60,20 @@ export default class FailedList extends BaseComponent {
   }
 
   doUpdate() {
-    let {currentPage, max} = this.state;
-    this.client.get('failed', null, {max: max, offset: (currentPage - 1) * max})
-      .then((resp) => {
-        if (resp.list.length === 0 && currentPage !== 1) {
-          console.log("no items received and not on first page, returning to first page");
-          this.resetToFirstPage();
-        } else {
-          this.assignState({list: resp.list, total: resp.total});
-        }
-      }).catch((err)=> {
-      this.stopAutoUpdate();
-      window.setError(err);
+    this.assignState({loading: true}, ()=> {
+      this.client.get('failed', null, {max: this.getMax(), offset: this.getOffset()})
+        .then((resp) => {
+          if (resp.list.length === 0 && this.getOffset() !== 0) {
+            this.navigate("/jobs/failed", {offset: 0, max: this.getMax()})
+          } else {
+            this.assignState({list: resp.list, total: resp.total, loading: false});
+          }
+        }).catch((err)=> {
+        this.stopAutoUpdate();
+        window.setError(err);
+        this.assignState({loading: false})
+      })
     })
-  }
-
-  changePage(page) {
-    page++;
-    if (page < 1) {
-      page = 1
-    }
-    if (page !== this.state.currentPage) {
-      this.assignState({currentPage: page}, ()=> {
-        this.doUpdate();
-        navigate(`/jobs/failed/${page}`, false);
-      });
-    } else {
-      console.log("no actual page change detected, skipping")
-    }
-  }
-
-  resetToFirstPage() {
-    this.changePage(0)
-  }
-
-  getMaxPages() {
-    let {total, max} = this.state;
-    return Math.ceil(total / max)
   }
 
   selectFailure(failure) {
@@ -121,7 +98,7 @@ export default class FailedList extends BaseComponent {
 
   getTableBody(somethingSelected) {
     const {list, selected} = this.state;
-    return map(list, (failure)=> {
+    return _.map(list, (failure)=> {
       let cols = [];
       cols.push(<td key={`${failure.id}-date`}><FromNow date={new Date(failure.failedAt)}/></td>);
       cols.push(<td key={`${failure.id}-class`}>{failure.payload.className}</td>)
@@ -157,10 +134,7 @@ export default class FailedList extends BaseComponent {
   }
 
   onMaxChange(max) {
-    if (this.state.max !== max) {
-      let func = this.state.currentPage === 1 ? this.doUpdate : this.resetToFirstPage;
-      this.assignState({max: max}, func);
-    }
+    this.navigate("/jobs/failed", {offset: 0, max: max});
   }
 
   onRetryClicked(failure) {
@@ -214,6 +188,9 @@ export default class FailedList extends BaseComponent {
   }
 
   render() {
+    const {total}  = this.state;
+    const max = parseInt(this.getMax());
+    const offset = parseInt(this.getOffset());
     let somethingSelected = !!this.state.selected;
     let headers = [];
     headers.push(<th key="header-When">When</th>);
@@ -231,7 +208,7 @@ export default class FailedList extends BaseComponent {
           </div>
           <div className="filter-form">
             <div className="filter">
-              <FilterButtonGroup current={this.state.max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
+              <FilterButtonGroup current={max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
             </div>
             <div className="filter">
               <button
@@ -255,12 +232,23 @@ export default class FailedList extends BaseComponent {
             {this.getTableBody(somethingSelected)}
             </tbody>
           </table>
-          <Pager
-            pages={this.getMaxPages()}
-            current={this.state.currentPage}
-            target={`/jobs/failed`}
-            onPageChange={this.changePage}
-          />
+          <nav>
+            <ReactPaginate
+              pageNum={Math.ceil(total / max)}
+              forceSelected={Math.floor(offset / max)}
+              pageRangeDisplayed={2}
+              marginPagesDisplayed={1}
+              previousLabel="&laquo;"
+              nextLabel="&raquo;"
+              breakLabel={<a>&hellip;</a>}
+              containerClassName="pagination"
+              disabledClassName="disabled"
+              activeClassName="active"
+              clickCallback={(pageObject)=> {
+                this.navigate("/jobs/failed", {max: max, offset: max * pageObject.selected})
+              }}
+            />
+          </nav>
         </div>
         {this.getSelectedView()}
       </div>

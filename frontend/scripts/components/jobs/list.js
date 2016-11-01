@@ -1,8 +1,9 @@
 import React from "react";
 import BaseComponent from "../base-component";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
-import {assign, map} from "lodash";
-import Pager from "../common/pager";
+import _ from "lodash";
+import ReactPaginate from "react-paginate";
+
 const navigate = require('react-mini-router').navigate;
 const cx = require('classnames')
 
@@ -14,15 +15,13 @@ export default class JobsList extends BaseComponent {
     this.client = new JesqueAdminClient();
 
     this.state = {
-      list: null,
       loading: false,
+      list: null,
       total: 0,
-      max: 25,
-      query: "",
-      currentPage: props.page
+      query: this.getQuery()
     };
 
-    this.bindThiz('doUpdate', 'getMaxPages', 'changePage', 'resetToFirstPage');
+    this.bindThiz('doUpdate');
   }
 
   componentDidMount() {
@@ -38,12 +37,13 @@ export default class JobsList extends BaseComponent {
     if (props.autoReload != this.props.autoReload) {
       if (props.autoReload) {
         this.doUpdate();
-        this.startAutoUpdate()
+        this.startAutoUpdate();
       } else {
-        this.stopAutoUpdate()
+        this.stopAutoUpdate();
       }
+    } else if (!_.isEqual(props.params, this.props.params)) {
+      this.doUpdate()
     }
-    this.changePage(props.page - 1)
   }
 
   startAutoUpdate() {
@@ -56,57 +56,29 @@ export default class JobsList extends BaseComponent {
     this.stopInterval()
   }
 
-  changePage(page) {
-    page++;
-    if (page < 1) {
-      page = 1
-    }
-    if (page !== this.state.currentPage) {
-      this.assignState({currentPage: page}, ()=> {
-        this.doUpdate();
-        navigate(`/jobs/${page}`, false);
-      });
-    } else {
-      console.log("no actual page change detected, skipping")
-    }
-  }
-
-  resetToFirstPage() {
-    this.changePage(0)
-  }
-
-  getMaxPages() {
-    let {total, max} = this.state;
-    return Math.ceil(total / max)
-  }
-
   doUpdate() {
-    if (!this.state.loading) {
-      let {currentPage, max, query} = this.state;
-      this.assignState({loading: true}, ()=> {
-        this.client.get('jobs', null, {max: max, offset: (currentPage - 1) * max, query: query})
-          .then((resp) => {
-            if (!resp.list || resp.list.length === 0 && currentPage !== 1) {
-              console.log("no items received and not on first page, returning to first page");
-              this.assignState({loading: false}, this.resetToFirstPage);
-            } else {
-              this.assignState({list: resp.list, total: resp.total, loading: false});
-            }
-          }).catch(err=> {
-          this.stopAutoUpdate();
-          window.setError(err);
-          this.assignState({loading: false})
-        })
-      });
-    }
+    this.assignState({loading: true}, ()=> {
+      this.client.get('jobs', null, {max: this.getMax(), offset: this.getOffset(), query: this.getQuery()})
+        .then((resp) => {
+          if (resp.list.length === 0 && this.getOffset() !== 0) {
+            this.navigate("/jobs", {query: this.getQuery(), max: this.getMax(), offset: 0})
+          } else {
+            this.assignState({list: resp.list, total: resp.total, loading: false});
+          }
+        }).catch(err=> {
+        this.stopAutoUpdate();
+        window.setError(err);
+        this.assignState({loading: false})
+      })
+    });
   }
 
   getTableBody() {
-    return map(this.state.list, (job)=> {
+    return _.map(this.state.list, (job)=> {
       return (
         <tr key={job.name} className={cx({"clickable": job.jobs > 0})} onClick={()=> {
           if (job.jobs > 0) {
-            navigate(`/jobs/details/${job.name}/1`)
+            navigate(`/jobs/${job.name}`)
           }
         }}>
           <td>{job.name}</td>
@@ -117,13 +89,14 @@ export default class JobsList extends BaseComponent {
   }
 
   onQueryChange(query) {
-    this.assignState({query}, ()=> {
-      this.changePage(0)
-    });
+    this.navigate("/jobs", {query: query, offset: 0, max: this.getMax()});
   }
 
   render() {
-    const {list} = this.state;
+    const {list, total} = this.state;
+    const max = this.getMax();
+    const offset = this.getOffset();
+    const query = this.getQuery();
     if (!list) {
       return <div>loading</div>
     }
@@ -134,7 +107,7 @@ export default class JobsList extends BaseComponent {
         </div>
         <div className="filter-form">
           <div className="filter">
-            <input className="form-control" placeholder="Search" type="text" value={this.state.query || ""} onChange={(e)=> {
+            <input className="form-control" placeholder="Search" type="text" value={query} onChange={(e)=> {
               this.onQueryChange(e.target.value)
             }}/>
           </div>
@@ -144,13 +117,23 @@ export default class JobsList extends BaseComponent {
           {this.getTableBody()}
           </tbody>
         </table>
-        <Pager
-          pages={this.getMaxPages()}
-          current={this.state.currentPage}
-          target={`/jobs/failed`}
-          disabled={this.state.loading}
-          onPageChange={this.changePage}
-        />
+        <nav>
+          <ReactPaginate
+            pageNum={Math.ceil(total / max)}
+            forceSelected={Math.floor(offset / max)}
+            pageRangeDisplayed={2}
+            marginPagesDisplayed={1}
+            previousLabel="&laquo;"
+            nextLabel="&raquo;"
+            breakLabel={<a>&hellip;</a>}
+            containerClassName="pagination"
+            disabledClassName="disabled"
+            activeClassName="active"
+            clickCallback={(pageObject)=> {
+              this.navigate("/jobs/", {max: max, offset: max * pageObject.selected})
+            }}
+          />
+        </nav>
       </div>
     )
   }

@@ -1,9 +1,10 @@
 import React from "react";
-import {assign, map, slice} from "lodash";
+import _ from "lodash";
 import BaseComponent from "../base-component";
-import Pager from "../common/pager";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
+import FilterButtonGroup from "../common/filter-button-group";
 import {HOME} from "../../constants/paths";
+import ReactPaginate from "react-paginate";
 
 const SweetAlert = require('react-swal');
 const MAX = 25;
@@ -13,58 +14,60 @@ export default class QueueDetails extends BaseComponent {
     super(props);
     this.state = {
       queue: null,
-      page: props.page,
       confirmDelete: false
     };
 
     this.client = new JesqueAdminClient();
-    this.bindThiz('getPager', 'getTableRows', 'changePage', 'getDeleteAlert', 'doDelete')
+    this.bindThiz('doUpdate', 'getTableRows', 'onMaxChange', 'getDeleteAlert', 'doDelete')
 
   }
 
   doUpdate() {
-    this.client.get('queues', encodeURIComponent(this.props.name), {})
+    this.client.get('queues', encodeURIComponent(this.props.name), {max: this.getMax(), offset: this.getOffset()})
       .then((json) => {
-        this.assignState({queue: json.queue});
+        this.assignState({queue: json.queue, list: json.queue.jobs, total: json.queue.size});
       })
   }
 
-  changePage(page) {
-    this.assignState({page: page});
-  }
 
-  getTableRows() {
-    let from = ((this.state.page - 1) * MAX);
-    let to = from + MAX;
-    let i = 0;
-    return map(slice(this.state.queue.jobs, from, to), (job)=> {
+  getTableRows(list) {
+    let i = this.getOffset();
+    return _.map(list, (job)=> {
       i++;
       return <QueueDetailsListRow job={job} key={`${job.className}-${JSON.stringify(job.args)}-${i}`}/>
     })
   }
 
-  getMaxPages() {
-    return Math.ceil(this.state.queue.jobs.length / MAX)
-  }
-
-  getPager() {
-    return (
-      <Pager
-        pages={this.getMaxPages()}
-        current={this.state.page}
-        target={`/queues/${this.props.name}`}
-        onPageChange={this.changePage}
-      />
-    )
-  }
-
   componentDidMount() {
-    this.doUpdate();
-    this.startInterval(this.doUpdate, 1000)
+    this.startAutoUpdate();
+    this.doUpdate()
   }
 
   componentWillUnmount() {
-    this.stopInterval()
+    this.stopAutoUpdate()
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.autoReload != this.props.autoReload) {
+      if (props.autoReload) {
+        this.doUpdate();
+        this.startAutoUpdate();
+      } else {
+        this.stopAutoUpdate();
+      }
+    } else if (!_.isEqual(props.params, this.props.params)) {
+      this.doUpdate()
+    }
+  }
+
+  startAutoUpdate() {
+    this.startInterval(this.doUpdate, 1000);
+    this.props.changeAutoReload(true);
+  }
+
+  stopAutoUpdate() {
+    this.props.changeAutoReload(false);
+    this.stopInterval();
   }
 
   doDelete() {
@@ -96,22 +99,37 @@ export default class QueueDetails extends BaseComponent {
     }
   }
 
+  onMaxChange(max) {
+    this.navigate(`/queues/${this.props.name}`, {offset: 0, max: max});
+  }
+
   render() {
-    if (!this.state.queue) {
-      return <div>loading</div>
-    }
+    const {queue}  = this.state;
+    const total = _.get(queue, "size");
+    const list = _.get(queue, "jobs");
+    const max = parseInt(this.getMax());
+    const offset = parseInt(this.getOffset());
     return (
       <div>
         <div className="row">
           <div className="col-sm-12">
             <div className="page-header">
-              <h1>{this.state.queue.name}
+              <h1>{this.props.name}
               </h1>
               <button className="btn btn danger" onClick={()=> {
                 this.assignState({confirmDelete: true});
               }}>Delete
               </button>
               {this.getDeleteAlert()}
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="filter-form">
+              <div className="filter">
+                <FilterButtonGroup current={max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}/>
+              </div>
             </div>
           </div>
         </div>
@@ -129,14 +147,26 @@ export default class QueueDetails extends BaseComponent {
               </tr>
               </thead>
               <tbody>
-              {this.getTableRows()}
+              {this.getTableRows(list)}
               </tbody>
             </table>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
-            {this.getPager()}
+            <nav>
+              <ReactPaginate
+                pageNum={Math.ceil(total / max)}
+                forceSelected={Math.floor(offset / max)}
+                pageRangeDisplayed={2}
+                marginPagesDisplayed={1}
+                previousLabel="&laquo;"
+                nextLabel="&raquo;"
+                breakLabel={<a>&hellip;</a>}
+                containerClassName="pagination"
+                disabledClassName="disabled"
+                activeClassName="active"
+                clickCallback={(pageObject)=> {
+                  this.navigate(`/queues/${this.props.name}`, {max: max, offset: max * pageObject.selected})
+                }}
+              />
+            </nav>
           </div>
         </div>
       </div>

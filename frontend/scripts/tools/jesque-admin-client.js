@@ -11,7 +11,6 @@ export default class JesqueAdminClient {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      cache: false
     }).then((res)=> {
       return res.json()
     })
@@ -26,7 +25,7 @@ export default class JesqueAdminClient {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      cache: false
+
     }).then((res)=> {
       return res.json()
     })
@@ -41,7 +40,6 @@ export default class JesqueAdminClient {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      cache: false,
       body: JSON.stringify(data)
     }).then((res)=> {
       return res.json()

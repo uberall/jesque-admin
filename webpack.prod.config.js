@@ -8,6 +8,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   entry: [
     'bootstrap-loader',
+    'whatwg-fetch',
     mainPath // Your appʼs entry point
   ],
   output: {

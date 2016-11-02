@@ -6,6 +6,7 @@ var mainPath = path.resolve(__dirname, 'frontend', 'scripts', 'app.js');
 module.exports = {
   entry: [
     'bootstrap-loader',
+    'whatwg-fetch',
     'webpack-dev-server/client?http://0.0.0.0:3000', // WebpackDevServer host and port
     'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
     mainPath // Your appʼs entry point

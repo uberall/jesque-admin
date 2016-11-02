@@ -48,7 +48,8 @@
     "transform-loader": "^0.2.3",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "webpack-dashboard": "0.0.1"

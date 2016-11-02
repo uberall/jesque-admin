@@ -44,7 +44,7 @@ export default class WorkerManual extends BaseComponent {
         });
         this.assignState({queues: queues, loading: false});
       }).catch((err)=> {
-      window.setError(err);
+      this.props.setAlert(err);
     })
   }
 
@@ -60,6 +60,7 @@ export default class WorkerManual extends BaseComponent {
         }
       }).catch(()=> {
       this.assignState({loading: false, success: false});
+      this.props.setAlert(err);
     })
   }
 

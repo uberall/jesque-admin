@@ -1,5 +1,7 @@
 const STORAGE_KEY = 'grails.jesque.admin.config'
 
+export const DEFAULT_INTERVAL = "default.interval";
+
 export default class Config {
 
   static getConfig() {

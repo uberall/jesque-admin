@@ -12,7 +12,11 @@ export default class JesqueAdminClient {
         'Content-Type': 'application/json'
       },
     }).then((res)=> {
-      return res.json()
+      if (res.status === 200) {
+        return res.json()
+      } else {
+        throw new Error(`Got ${res.status} from upstream server for [GET] ${path}`)
+      }
     })
   }
 
@@ -27,7 +31,11 @@ export default class JesqueAdminClient {
       },
 
     }).then((res)=> {
-      return res.json()
+      if (res.status === 200) {
+        return res.json()
+      } else {
+        throw new Error(`Got ${res.status} from upstream server for [DELETE] ${path}`)
+      }
     })
   }
 
@@ -42,7 +50,11 @@ export default class JesqueAdminClient {
       },
       body: JSON.stringify(data)
     }).then((res)=> {
-      return res.json()
+      if (res.status === 200) {
+        return res.json()
+      } else {
+        throw new Error(`Got ${res.status} from upstream server for [POST] ${path}`)
+      }
     })
   }
 

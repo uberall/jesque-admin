@@ -19,35 +19,31 @@ export default class Triggers extends BaseComponent {
   componentWillReceiveProps(props) {
     if (props.autoReload != this.props.autoReload) {
       if (props.autoReload) {
-        this.doUpdate()
-        this.startAutoUpdate(false)
+        this.doUpdate();
+        this.startAutoUpdate()
       } else {
-        this.stopAutoUpdate(false)
+        this.stopAutoUpdate()
       }
     }
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if(this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {
     this.stopAutoUpdate()
   }
 
-  startAutoUpdate(propagate) {
-    this.startInterval(this.doUpdate, 5000);
-    if (propagate) {
-      this.props.changeAutoReload(true);
-    }
+  startAutoUpdate() {
+    this.startInterval(this.doUpdate);
   }
 
-  stopAutoUpdate(propagate) {
+  stopAutoUpdate() {
     this.stopInterval();
-    if (propagate) {
-      this.props.changeAutoReload(false);
-    }
   }
 
   doUpdate() {
@@ -57,9 +53,9 @@ export default class Triggers extends BaseComponent {
         .then((resp) => {
           this.assignState({list: resp.list, total: resp.total, loading: false});
         }).catch((err)=> {
-        this.stopAutoUpdate();
-        window.setError(err);
         this.assignState({loading: false});
+        this.props.setAlert(err);
+        this.props.changeAutoReload(false);
       })
     }
   }
@@ -74,7 +70,7 @@ export default class Triggers extends BaseComponent {
     this.client.delete('triggers', name, {}).then((resp)=> {
       this.doUpdate()
     }).catch((err)=> {
-      //HANDLE
+      this.props.setAlert(err)
     })
   }
 

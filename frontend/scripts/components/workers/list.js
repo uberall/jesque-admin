@@ -33,8 +33,10 @@ export default class WorkerList extends BaseComponent {
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if (this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {
@@ -53,12 +55,10 @@ export default class WorkerList extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this.startInterval(this.doUpdate, 1000);
-    this.props.changeAutoReload(true);
+    this.startInterval(this.doUpdate);
   }
 
   stopAutoUpdate() {
-    this.props.changeAutoReload(false);
     this.stopInterval()
   }
 
@@ -76,8 +76,9 @@ export default class WorkerList extends BaseComponent {
           }
           this.assignState({list: resp.list, selected: newSelected})
         })
-        .catch(()=> {
-          this.stopAutoUpdate()
+        .catch(err=> {
+          this.props.setAlert(err)
+          this.props.changeAutoReload(false);
         })
     }
   }

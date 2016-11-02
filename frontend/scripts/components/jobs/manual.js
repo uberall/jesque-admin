@@ -45,7 +45,7 @@ export default class JobManual extends BaseComponent {
         });
         this.setState(assign(this.state, {queues: queues, loading: false}));
       }).catch((err)=> {
-      window.setError(err);
+      this.props.setAlert(err);
     })
   }
 
@@ -58,8 +58,9 @@ export default class JobManual extends BaseComponent {
     this.client.post('jobs', null, {job: this.state.selectedJob, queue: this.state.selectedQueue, args: args})
       .then((resp) => {
         this.assignState({loading: false, success: resp.success});
-      }).catch(()=> {
+      }).catch(err=> {
       this.assignState({loading: false, success: false});
+      this.props.setAlert(err);
     })
   }
 

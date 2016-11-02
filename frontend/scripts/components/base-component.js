@@ -1,5 +1,7 @@
 import React from "react";
 import _ from "lodash";
+import Config from "../tools/config";
+import {DEFAULT_INTERVAL} from "../tools/config";
 const navigate = require('react-mini-router').navigate;
 const querystring = require('querystring');
 
@@ -34,6 +36,8 @@ export default class BaseComponent extends React.Component {
   }
 
   startInterval(fn, int) {
+    this.stopInterval() // make sure we are only starting one interval
+    int = int && int > 1000 ? int : Config.get(DEFAULT_INTERVAL, 2000);
     this._interval = setInterval(fn, int)
   }
 

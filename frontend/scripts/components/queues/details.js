@@ -26,7 +26,10 @@ export default class QueueDetails extends BaseComponent {
     this.client.get('queues', encodeURIComponent(this.props.name), {max: this.getMax(), offset: this.getOffset()})
       .then((json) => {
         this.assignState({queue: json.queue, list: json.queue.jobs, total: json.queue.size});
-      })
+      }).catch(err=> {
+      this.props.setAlert(err)
+      this.props.changeAutoReload(false);
+    })
   }
 
 
@@ -39,8 +42,10 @@ export default class QueueDetails extends BaseComponent {
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if (this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {
@@ -61,20 +66,21 @@ export default class QueueDetails extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this.startInterval(this.doUpdate, 1000);
-    this.props.changeAutoReload(true);
+    this.startInterval(this.doUpdate);
   }
 
   stopAutoUpdate() {
-    this.props.changeAutoReload(false);
     this.stopInterval();
   }
 
   doDelete() {
     this.client.delete('queues', encodeURIComponent(this.props.name), {})
-      .then((json) => {
-        window.doNavigate(HOME)
-      })
+      .then(() => {
+        this.navigate(HOME.path)
+      }).catch(err=> {
+      this.props.setAlert(err);
+      this.props.changeAutoReload(false);
+    })
   }
 
   getDeleteAlert() {

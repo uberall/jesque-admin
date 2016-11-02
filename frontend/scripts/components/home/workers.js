@@ -4,7 +4,6 @@ import FromNow from "../common/from-now";
 import Config from "../../tools/config";
 import FilterButtonGroup from "../common/filter-button-group";
 import BaseComponent from "../base-component";
-const bindThis = require('../../tools/bindThis')
 
 const STATES = ["IDLE", "PAUSED", "WORKING"]
 const STATUS_CONFIG_KEY = "home.queues.empty";

@@ -11,7 +11,8 @@ import JobManual from "./components/jobs/manual";
 import Triggers from "./components/jobs/triggers";
 import WorkerList from "./components/workers/list";
 import WorkerManual from "./components/workers/manual";
-import {assign} from "lodash";
+import _ from "lodash";
+import Config, {DEFAULT_INTERVAL} from "./tools/config";
 
 const RouterMixin = require('react-mini-router').RouterMixin;
 const navigate = require('react-mini-router').navigate;
@@ -34,17 +35,22 @@ var JesqueAdminApp = React.createClass({
   },
 
   componentDidMount: function () {
+
+    if (!Config.get(DEFAULT_INTERVAL, null)) {
+      Config.set(DEFAULT_INTERVAL, 2000)
+    }
     window.setError = error=> {
-      this.setState(assign(this.state, {
+      this.setState(_.assign(this.state, {
           alert: error,
           autoReload: false
         }
       ));
     };
 
-    window.doNavigate = function (linkInfo) {
-      navigate(linkInfo.path)
-    }
+    window.addEventListener("unhandledrejection", function (err, promise) {
+      debugger
+    });
+
   },
 
   getInitialState: function () {
@@ -58,6 +64,10 @@ var JesqueAdminApp = React.createClass({
     this.setState({autoReload: reload})
   },
 
+  setAlert: function (err) {
+    this.setState(_.assign(this.state, {alert: err}))
+  },
+
   getAlert: function () {
     const {alert} = this.state;
     if (!alert) {
@@ -67,16 +77,14 @@ var JesqueAdminApp = React.createClass({
       <div className="alert alert-danger">
         <button type="button"
                 className="close"
-                data-dismiss="alert"
-                aria-label="Close"
                 onClick={(e)=> {
                   e.preventDefault();
-                  this.setState(assign(this.state, {alert: null}))
+                  this.setState(_.assign(this.state, {alert: null}))
                 }}
         >
           <span aria-hidden="true">&times;</span>
         </button>
-        {JSON.stringify(alert)}
+        {alert.toString()}
       </div>
     )
   },
@@ -97,32 +105,33 @@ var JesqueAdminApp = React.createClass({
   },
 
   queueDetails: function (name) {
-    return <QueueDetails name={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
+    return <QueueDetails name={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} setAlert={this.setAlert}/>
   },
 
   home: function () {
     window.currentPath = HOME;
-    return <HomeView autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <HomeView autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} setAlert={this.setAlert}/>;
   },
 
   failedJobs: function () {
     window.currentPath = JOB_FAILED;
-    return <FailedList params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <FailedList params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} setAlert={this.setAlert}/>;
   },
 
   jobsList: function () {
     window.currentPath = JOBS_LIST;
-    return <JobsList params={this.getUrlParameters()} jobs={window.AppConfig.knownJobs} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <JobsList params={this.getUrlParameters()} jobs={window.AppConfig.knownJobs} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}
+                     setAlert={this.setAlert}/>;
   },
 
   jobsDetails: function (name) {
     window.currentPath = JOBS_LIST;
-    return <JobDetails job={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>;
+    return <JobDetails job={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} setAlert={this.setAlert}/>;
   },
 
   enqueueJob: function () {
     window.currentPath = JOB_ENQUEUE;
-    return <JobManual jobs={window.AppConfig.knownJobs}/>
+    return <JobManual jobs={window.AppConfig.knownJobs} setAlert={this.setAlert}/>
   },
 
   notFound: function (path) {
@@ -134,17 +143,17 @@ var JesqueAdminApp = React.createClass({
 
   triggers: function () {
     window.currentPath = JOB_TRIGGERS;
-    return <Triggers autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload}/>
+    return <Triggers autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} setAlert={this.setAlert}/>
   },
 
   workerList: function () {
     window.currentPath = WORKER_LIST;
-    return <WorkerList autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} selectable={true}/>;
+    return <WorkerList autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} selectable={true} setAlert={this.setAlert}/>;
   },
 
   workerManual: function () {
     window.currentPath = WORKER_MANUAL;
-    return <WorkerManual jobs={window.AppConfig.knownJobs}/>
+    return <WorkerManual jobs={window.AppConfig.knownJobs} setAlert={this.setAlert}/>
   },
 
   getUrlParameters: function () {

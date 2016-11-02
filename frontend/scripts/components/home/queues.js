@@ -3,7 +3,6 @@ import {assign, map, sortBy, filter} from "lodash";
 import BaseComponent from "../base-component";
 import Config from "../../tools/config";
 const cx = require("classnames");
-const bindThis = require('../../tools/bindThis')
 
 var navigate = require('react-mini-router').navigate;
 

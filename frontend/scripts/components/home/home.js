@@ -7,20 +7,22 @@ import JesqueAdminClient from "../../tools/jesque-admin-client";
 
 export default class HomeView extends BaseComponent {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       queues: [],
       workers: [],
       failed: 0
-    }
+    };
 
-    this.bindThiz('doUpdate')
+    this.bindThiz('doUpdate');
     this.client = new JesqueAdminClient()
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if(this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {
@@ -39,12 +41,10 @@ export default class HomeView extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this.startInterval(this.doUpdate, 2000);
-    this.props.changeAutoReload(true);
+    this.startInterval(this.doUpdate);
   }
 
   stopAutoUpdate() {
-    this.props.changeAutoReload(false);
     this.stopInterval()
   }
 
@@ -54,7 +54,8 @@ export default class HomeView extends BaseComponent {
         this.assignState({queues: json.queues, workers: json.workers, failed: json.failed});
       })
       .catch((err)=> {
-        throw(err)
+        this.props.setAlert(err);
+        this.props.changeAutoReload(false);
       })
   }
 

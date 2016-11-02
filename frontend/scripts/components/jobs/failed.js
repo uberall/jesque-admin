@@ -50,12 +50,10 @@ export default class FailedList extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this.startInterval(this.doUpdate, 1000);
-    this.props.changeAutoReload(true);
+    this.startInterval(this.doUpdate);
   }
 
   stopAutoUpdate() {
-    this.props.changeAutoReload(false);
     this.stopInterval();
   }
 
@@ -69,9 +67,9 @@ export default class FailedList extends BaseComponent {
             this.assignState({list: resp.list, total: resp.total, loading: false});
           }
         }).catch((err)=> {
-        this.stopAutoUpdate();
-        window.setError(err);
-        this.assignState({loading: false})
+        this.assignState({loading: false});
+        this.props.setAlert(err);
+        this.props.changeAutoReload(false);
       })
     })
   }
@@ -141,7 +139,7 @@ export default class FailedList extends BaseComponent {
     this.client.post('failed', failure.id, {})
       .then(this.doUpdate)
       .catch((err)=> {
-        throw err
+        this.props.setAlert(err);
       })
   }
 
@@ -149,7 +147,7 @@ export default class FailedList extends BaseComponent {
     this.client.delete('failed', failure.id, {})
       .then(this.doUpdate)
       .catch((err)=> {
-        throw err
+        this.props.setAlert(err);
       })
   }
 
@@ -161,7 +159,7 @@ export default class FailedList extends BaseComponent {
         });
         this.doUpdate()
       }).catch((err)=> {
-      console.error(err)
+      this.props.setAlert(err);
     })
   }
 

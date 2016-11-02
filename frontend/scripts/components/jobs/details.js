@@ -49,12 +49,10 @@ export default class JobDetails extends BaseComponent {
   }
 
   startAutoUpdate() {
-    this.startInterval(this.doUpdate, 1000);
-    this.props.changeAutoReload(true);
+    this.startInterval(this.doUpdate);
   }
 
   stopAutoUpdate() {
-    this.props.changeAutoReload(false);
     this.stopInterval();
   }
 
@@ -76,9 +74,9 @@ export default class JobDetails extends BaseComponent {
             this.assignState({list: resp.list, total: resp.total, loading: false});
           }
         }).catch((err)=> {
-        this.stopAutoUpdate();
-        window.setError(err);
         this.assignState({loading: false});
+        this.props.setAlert(err);
+        this.props.changeAutoReload(false);
       })
     });
   }

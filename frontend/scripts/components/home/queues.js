@@ -104,7 +104,7 @@ export default class QueueList extends BaseComponent {
           <tbody>
           {this.getQueueRows()}
           <tr className={failedClasses} onClick={()=> {
-            navigate('/jobs/failed/1')
+            navigate('/jobs/failed/')
           }}>
             <td>Failed</td>
             <td>{this.props.failed}</td>

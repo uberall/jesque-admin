@@ -3,11 +3,9 @@ package grails.plugins.jesque.admin
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.plugins.redis.RedisService
-import grails.transaction.Transactional
 import net.greghaines.jesque.Job
 import redis.clients.jedis.Jedis
 
-@Transactional
 class JesqueStatisticsService {
 
     private static final String CLASSES_KEY = 'jesque:job:statistic'

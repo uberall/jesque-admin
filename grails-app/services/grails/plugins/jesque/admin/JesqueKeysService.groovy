@@ -1,9 +1,7 @@
 package grails.plugins.jesque.admin
 
-import grails.transaction.Transactional
 import net.greghaines.jesque.meta.dao.KeysDAO
 
-@Transactional
 class JesqueKeysService {
 
     KeysDAO keysDao

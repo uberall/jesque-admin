@@ -2,10 +2,8 @@ package grails.plugins.jesque.admin
 
 import grails.converters.JSON
 import grails.plugins.jesque.ScheduledJobDaoService
-import grails.transaction.Transactional
 import redis.clients.jedis.Jedis
 
-@Transactional
 class JesqueScheduledService {
 
     ScheduledJobDaoService scheduledJobDaoService

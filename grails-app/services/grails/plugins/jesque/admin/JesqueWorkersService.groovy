@@ -1,9 +1,7 @@
 package grails.plugins.jesque.admin
 
-import grails.transaction.Transactional
 import net.greghaines.jesque.meta.dao.WorkerInfoDAO
 
-@Transactional
 class JesqueWorkersService {
 
     WorkerInfoDAO workerInfoDao

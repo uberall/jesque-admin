@@ -1,10 +1,8 @@
 package grails.plugins.jesque.admin
 
-import grails.transaction.Transactional
 import net.greghaines.jesque.meta.QueueInfo
 import net.greghaines.jesque.meta.dao.QueueInfoDAO
 
-@Transactional
 class JesqueQueuesService {
 
     QueueInfoDAO queueInfoDao

@@ -30,6 +30,8 @@ export default class FailureDetails extends React.Component {
           <dd>{failure.payload.args}</dd>
           <dt>Queue</dt>
           <dd>{failure.queue}</dd>
+          <dt>Worker</dt>
+          <dd>{failure.worker}</dd>
           <dt>Time</dt>
           <dd><FormatedDate date={new Date(failure.failedAt)}/></dd>
           <dt>Exception</dt>

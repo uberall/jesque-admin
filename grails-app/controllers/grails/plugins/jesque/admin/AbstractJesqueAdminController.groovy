@@ -1,7 +1,6 @@
 package grails.plugins.jesque.admin
 
 import grails.converters.JSON
-import grails.core.GrailsApplication
 import grails.plugins.jesque.JesqueService
 import org.springframework.http.HttpStatus
 
@@ -13,7 +12,6 @@ abstract class AbstractJesqueAdminController {
     JesqueStatisticsService jesqueStatisticsService
     JesqueService jesqueService
     JesqueScheduledService jesqueScheduledService
-    GrailsApplication grailsApplication
 
     protected void jsonRender(model = [:]) {
         response.contentType = 'application/json'

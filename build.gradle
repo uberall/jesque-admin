@@ -64,7 +64,7 @@ dependencies {
 
     runtime "org.grails.plugins:asset-pipeline"
 
-    compile "org.grails.plugins:jesque:1.1.9"
+    compile 'org.grails.plugins:jesque:1.2.1'
 }
 
 task wrapper(type: Wrapper) {

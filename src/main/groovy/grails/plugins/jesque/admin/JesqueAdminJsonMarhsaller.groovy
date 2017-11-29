@@ -1,14 +1,14 @@
 package grails.plugins.jesque.admin
 
 import grails.converters.JSON
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import net.greghaines.jesque.Job
 import net.greghaines.jesque.JobFailure
 import net.greghaines.jesque.WorkerStatus
 import net.greghaines.jesque.meta.QueueInfo
 import net.greghaines.jesque.meta.WorkerInfo
 
-@Log
+@Slf4j
 class JesqueAdminJsonMarhsaller {
 
     static void init() {

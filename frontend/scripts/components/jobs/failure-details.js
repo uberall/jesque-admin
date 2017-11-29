@@ -26,6 +26,8 @@ export default class FailureDetails extends React.Component {
         <dl>
           <dt>Job</dt>
           <dd>{failure.payload.className}</dd>
+          <dt>Arguments</dt>
+          <dd>{failure.payload.args}</dd>
           <dt>Queue</dt>
           <dd>{failure.queue}</dd>
           <dt>Time</dt>

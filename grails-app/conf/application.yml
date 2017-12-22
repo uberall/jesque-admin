@@ -6,21 +6,12 @@ grails:
     spring:
         transactionManagement:
             proxies: false
-    jesque:
-            enabled: true
-            pruneWorkersOnStartup: false
-            createWorkersOnStartup: false
-            schedulerThreadActive: false
-            delayedJobThreadActive: false
-            startPaused: true
-            workers: []
 info:
     app:
         name: '@info.app.name@'
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
 spring:
-
     groovy:
         template:
             check-template-location: false

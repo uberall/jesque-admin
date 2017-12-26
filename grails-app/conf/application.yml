@@ -102,11 +102,11 @@ grails:
         startPaused: false
         autoFlush: true
         custom:
-          worker:
-            clazz: grails.plugins.jesque.admin.JesqueJobStatisticsCollectingWorkerImpl
+          listener:
+            clazz: grails.plugins.jesque.admin.JesqueJobStatisticsWorkerListener
         workers:
             testJobPool:
-                workers: 2
+                workers: 100
                 queueNames:
                     - TestJobQueue
                 jobTypes:

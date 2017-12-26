@@ -4,7 +4,7 @@ import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.plugins.redis.RedisService
 import net.greghaines.jesque.Job
-import redis.clients.jedis.Jedis
+import redis.clients.jedis.Transaction
 
 class JesqueStatisticsService {
 
@@ -13,12 +13,6 @@ class JesqueStatisticsService {
 
     RedisService redisService
     GrailsApplication grailsApplication
-
-    List<String> getJobNames() {
-        Set set = redisService.keys("$CLASSES_KEY:*")
-        List result = set.sort().collect { it - "$CLASSES_KEY:" }
-        result
-    }
 
     List<JesqueJobStatistic> getStatistics(String job, offset = 0, max = 100) {
         List<String> items = redisService.lrange(getClassesDoneKey(job), offset, offset + (max - 1))
@@ -30,26 +24,26 @@ class JesqueStatisticsService {
     }
 
     void addStatistic(Job job, String queue, long start, long end, def args, boolean success, Throwable t) {
-        if (enabled) {
-            String jobName = getJobName(job)
-            JesqueJobStatistic stats = new JesqueJobStatistic(
-                    job: jobName,
-                    queue: queue,
-                    start: start,
-                    end: end,
-                    runtime: end - start,
-                    args: args,
-                    success: success,
-                    throwable: t
-            )
-            redisService.withRedis { Jedis jedis ->
-                String key = getClassesDoneKey(getJobName(job))
-                jedis.lpush(key, stats.asJsonString())
-                jedis.ltrim(key, 0L, max-1)
-            }
+        if (!enabled) return
+
+        String jobName = getJobName(job)
+        JesqueJobStatistic stats = new JesqueJobStatistic(
+                job: jobName,
+                queue: queue,
+                start: start,
+                end: end,
+                runtime: end - start,
+                args: args,
+                success: success,
+                throwable: t
+        )
+
+        String key = getClassesDoneKey(getJobName(job))
+        redisService.withTransaction { Transaction transaction ->
+            transaction.lpush(key, stats.asJsonString())
+            transaction.ltrim(key, 0L, max-1)
         }
     }
-
 
     int getMax() {
         grailsApplication.config.grails.jesque.statistics?.max ?: DEFAULT_MAX

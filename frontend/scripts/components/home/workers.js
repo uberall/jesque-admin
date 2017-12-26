@@ -112,7 +112,7 @@ class WorkerListRow extends React.Component {
     const {host, pid, state, status} = this.props.worker
     let job = ""
     let since = ""
-    if (status) {
+    if (status && status.payload) {
       job = status.payload.className
       since = <FromNow date={new Date(status.runAt)}/>
     }

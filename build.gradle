@@ -85,6 +85,8 @@ grailsPublish {
     portalUser = "peschenbach"
 }
 
-tasks.withType(JavaExec).each { task ->
-    task.systemProperties System.properties
+bootRun {
+    if (System.getProperty('jesque.admin.devel') == "true") {
+        jvmArgs("-Djesque.admin.devel=true")
+    }
 }

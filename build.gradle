@@ -8,6 +8,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
     }
 }
 
@@ -20,6 +21,7 @@ apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
+apply plugin: "asset-pipeline"
 
 ext {
     grailsVersion = project.grailsVersion
@@ -90,3 +92,5 @@ bootRun {
         jvmArgs("-Djesque.admin.devel=true")
     }
 }
+
+jar.dependsOn('assetPluginPackage')

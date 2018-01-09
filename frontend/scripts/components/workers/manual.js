@@ -2,7 +2,7 @@ import React from "react";
 import BaseComponent from "../base-component";
 import {assign, map, clone, each} from "lodash";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
-const ReactSelect = require('react-select');
+import Select from 'react-select';
 const cx = require('classnames');
 
 const DEFAULT_STATE = {
@@ -98,8 +98,10 @@ export default class WorkerManual extends BaseComponent {
   }
 
   render() {
-    const jobs = this.props.jobs
     const {queues, selectedJobs, selectedQueue, loading} = this.state;
+    const jobs = this.props.jobs;
+    let jobOptions = this.buildReactSelectOptions(jobs);
+    let queueOptions = this.buildReactSelectOptions(queues);
     return (
       <div className="job-manual">
         <div className="page-header">
@@ -109,11 +111,11 @@ export default class WorkerManual extends BaseComponent {
         <form onSubmit={this.onFormSubmit} className={cx({disabled: loading})}>
           <div className="form-group">
             <label htmlFor="jobs">Job</label>
-            <ReactSelect
+            <Select
               name="jobs"
               clearable={true}
               value={selectedJobs}
-              options={this.buildReactSelectOptions(jobs)}
+              options={jobOptions}
               onChange={this.jobSelected}
               disabled={loading}
               multi={true}
@@ -121,12 +123,12 @@ export default class WorkerManual extends BaseComponent {
           </div>
           <div className="form-group">
             <label htmlFor="queues">Queue</label>
-            <ReactSelect
+            <Select
               name="queues"
               clearable={true}
               value={selectedQueue}
               disabled={!selectedJobs || loading}
-              options={this.buildReactSelectOptions(queues)}
+              options={queueOptions}
               onChange={this.queueSelected}/>
           </div>
           <div className="btn-group">

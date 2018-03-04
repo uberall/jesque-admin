@@ -6,7 +6,7 @@ class JesqueScheduledService {
 
     ScheduledJobDaoService scheduledJobDaoService
 
-    def getAll() {
+    List getAll() {
         scheduledJobDaoService.getAll()
     }
 

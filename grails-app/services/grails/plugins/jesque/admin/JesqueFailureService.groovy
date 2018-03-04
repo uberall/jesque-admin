@@ -7,11 +7,11 @@ class JesqueFailureService {
 
     FailureDAO failureDao
 
-    def requeue(long id) {
+    Date requeue(long id) {
         failureDao.requeue(id)
     }
 
-    def remove(long id) {
+    void remove(long id) {
         failureDao.remove(id)
     }
 
@@ -19,7 +19,7 @@ class JesqueFailureService {
         failureDao.clear()
     }
 
-    def getCount() {
+    long getCount() {
         failureDao.count
     }
 

@@ -1,37 +1,46 @@
 package grails.plugins.jesque.admin
 
+import net.greghaines.jesque.meta.WorkerInfo
 import net.greghaines.jesque.meta.dao.WorkerInfoDAO
 
 class JesqueWorkersService {
 
     WorkerInfoDAO workerInfoDao
 
-    def getAllWorkers() {
+    List getAllWorkers() {
         workerInfoDao.allWorkers
     }
 
-    def getActiveWorkers() {
+    List getActiveWorkers() {
         workerInfoDao.activeWorkers
     }
 
-    def getWorkerCount() {
+    List getPausedWorkers() {
+        workerInfoDao.pausedWorkers
+    }
+
+    long getWorkerCount() {
         workerInfoDao.workerCount
     }
 
-    def getWorkerHostMap() {
-        workerInfoDao.workerHostMap
-    }
-
-    def getActiveWorkerCount() {
+    long getActiveWorkerCount() {
         workerInfoDao.activeWorkerCount
     }
 
-    def getWorker(String name) {
+    long getPausedWorkerCount() {
+        workerInfoDao.pausedWorkerCount
+    }
+
+    WorkerInfo getWorker(String name) {
         workerInfoDao.getWorker(name)
     }
 
-    def removeWorker(String name) {
+    void removeWorker(String name) {
         workerInfoDao.removeWorker(name)
+    }
+
+    Map getWorkerHostMap() {
+        workerInfoDao.workerHostMap
     }
 
 }

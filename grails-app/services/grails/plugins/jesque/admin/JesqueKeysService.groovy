@@ -1,20 +1,26 @@
 package grails.plugins.jesque.admin
 
+import net.greghaines.jesque.meta.KeyInfo
 import net.greghaines.jesque.meta.dao.KeysDAO
 
 class JesqueKeysService {
 
     KeysDAO keysDao
 
-    def getRedisInfo() {
+    Map getRedisInfo() {
         keysDao.redisInfo
     }
 
-    def getKeyInfos() {
+    List getKeyInfos() {
         keysDao.keyInfos
     }
 
-    def getKeyInfo(String key, long offset, long max) {
+    KeyInfo getKeyInfo(String key) {
+        keysDao.getKeyInfo(key)
+    }
+
+    KeyInfo getKeyInfo(String key, int offset, int max) {
         keysDao.getKeyInfo(key, offset, max)
     }
+
 }

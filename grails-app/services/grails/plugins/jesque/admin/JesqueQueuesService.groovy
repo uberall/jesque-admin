@@ -11,23 +11,23 @@ class JesqueQueuesService {
         queueInfoDao.queueInfos.sort { it1, it2 -> it1.name <=> it2.name }
     }
 
-    QueueInfo getQueueInfo(def name, offset, max){
+    QueueInfo getQueueInfo(String name, long offset, long max) {
         queueInfoDao.getQueueInfo(name, offset, max)
     }
 
-    def getQueueNames(){
+    List getQueueNames() {
         queueInfoDao.queueNames
     }
 
-    def getPendingCount(){
+    long getPendingCount() {
         queueInfoDao.pendingCount
     }
 
-    def getProcessedCount(){
+    long getProcessedCount() {
         queueInfoDao.processedCount
     }
 
-    def removeQueue(String name) {
+    void removeQueue(String name) {
         queueInfoDao.removeQueue(name)
     }
 

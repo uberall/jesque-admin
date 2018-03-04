@@ -88,26 +88,37 @@ grails:
         host: localhost
         poolConfig:
           testWhileIdle: true
-          maxTotal: 1000
+          maxTotal: 10
         timeout: 2000
     jesque:
         enabled: true
         statistics:
           enabled: true
           max: 100
+        failedItemLimit: 10
         pruneWorkersOnStartup: true
         createWorkersOnStartup: true
-        schedulerThreadActive: true
-        delayedJobThreadActive: true
+        schedulerThreadActive: false
         startPaused: false
         autoFlush: true
+        nextQueueStrategy: RESET_TO_HIGHEST_PRIORITY #DRAIN_WHILE_MESSAGES_EXISTS
         custom:
           listener:
             clazz: grails.plugins.jesque.admin.JesqueJobStatisticsWorkerListener
         workers:
-            testJobPool:
-                workers: 100
+            highPrioJobPool:
+                workers: -1
                 queueNames:
                     - TestJobQueue
                 jobTypes:
                     - jesque.test.TestJob
+                    - jesque.test.AnotherTestJob
+            lowPrioJobPool:
+                workers: 1
+                queueNames:
+                    - TestJobQueue
+                    - EmptyJobQueue
+                jobTypes:
+                    - jesque.test.TestJob
+                    - jesque.test.AnotherTestJob
+                    - jesque.test.EmptyJob

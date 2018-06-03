@@ -3,6 +3,7 @@ package grails.plugins.jesque.admin
 import grails.converters.JSON
 import grails.plugins.jesque.JesqueSchedulerService
 import grails.plugins.jesque.JesqueService
+import grails.plugins.jesque.ScheduledJobDaoService
 import org.springframework.http.HttpStatus
 
 abstract class AbstractJesqueAdminController {
@@ -12,7 +13,7 @@ abstract class AbstractJesqueAdminController {
     JesqueWorkersService jesqueWorkersService
     JesqueStatisticsService jesqueStatisticsService
     JesqueService jesqueService
-    JesqueScheduledService jesqueScheduledService
+    ScheduledJobDaoService scheduledJobDaoService
     JesqueSchedulerService jesqueSchedulerService
 
     protected void jsonRender(model = [:]) {

@@ -35,7 +35,7 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
     }
 
     def triggers() {
-        jsonRender([list: jesqueScheduledService.all.sort { it.trigger.nextFireTime.millis }.collect {
+        jsonRender([list: scheduledJobDaoService.all.sort { it.trigger.nextFireTime.millis }.collect {
             [name          : it.name,
              cronExpression: it.cronExpression,
              args          : it.args,

@@ -51,7 +51,7 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
     }
 
     def deleteTrigger(String name) {
-        jesqueScheduledService.delete(name)
+        jesqueSchedulerService.deleteSchedule(name)
         jsonRender([success: true])
     }
 

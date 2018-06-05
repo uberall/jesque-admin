@@ -6,7 +6,7 @@ import FilterButtonGroup from "../common/filter-button-group";
 import BaseComponent from "../base-component";
 
 const STATES = ["IDLE", "PAUSED", "WORKING"]
-const STATUS_CONFIG_KEY = "home.queues.empty";
+const STATUS_CONFIG_KEY = "home.queues.status";
 
 export default class WorkerList extends BaseComponent {
 

@@ -9,28 +9,28 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         sanitizeParams()
 
         long offset = params.getLong("offset", 0)
-        def list = jesqueFailureService.getFailures(offset, params.getLong("max"))
+        def list = failureDao.getFailures(offset, params.getLong("max"))
         list.eachWithIndex { JobFailure entry, int i ->
             entry.metaClass.id = offset + i
         }
         render([
                 list : list,
-                total: jesqueFailureService.count
+                total: failureDao.count
         ] as JSON)
     }
 
     def retry(Long id) {
-        jesqueFailureService.requeue(id)
+        failureDao.requeue(id)
         jsonRender([success: true])
     }
 
     def remove(Long id) {
-        jesqueFailureService.remove(id)
+        failureDao.remove(id)
         jsonRender([success: true])
     }
 
     def clear() {
-        jesqueFailureService.clear()
+        failureDao.clear()
         jsonRender([success: true])
     }
 
@@ -57,8 +57,8 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
 
     def retryAll() {
         // TODO: not yet supported in FE
-        jesqueFailureService.count.times {
-            jesqueFailureService.requeue(it)
+        failureDao.count.times {
+            failureDao.requeue(it)
         }
 
         redirect(action: 'failed')

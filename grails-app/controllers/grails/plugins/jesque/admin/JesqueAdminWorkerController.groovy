@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus
 class JesqueAdminWorkerController extends AbstractJesqueAdminController {
 
     def list() {
-        jsonRender([list: jesqueWorkersService.allWorkers])
+        jsonRender([list: workerInfoDao.allWorkers])
     }
 
     def manual() {
@@ -23,7 +23,7 @@ class JesqueAdminWorkerController extends AbstractJesqueAdminController {
     }
 
     def remove() {
-        jesqueWorkersService.removeWorker(params.name)
+        workerInfoDao.removeWorker(params.name)
         jsonRender([success: 'OK'])
     }
 
@@ -36,6 +36,5 @@ class JesqueAdminWorkerController extends AbstractJesqueAdminController {
         jesqueService.resumeAllWorkersInCluster()
         jsonRender([success: 'OK'])
     }
-
 
 }

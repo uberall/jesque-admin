@@ -72,7 +72,7 @@ export default class WorkerList extends BaseComponent {
     return (
       <div>
         <div className="page-header">
-          <h3>Worker</h3>
+          <h3>Workers</h3>
         </div>
         <div className="filter-form">
           <div className="filter">

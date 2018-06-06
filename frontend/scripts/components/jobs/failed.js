@@ -199,56 +199,58 @@ export default class FailedList extends BaseComponent {
       headers.push(<th key="header-Actions"></th>);
     }
     return (
-      <div className="failed-list">
-        <div className="table-container">
-          <div className="page-header">
-            <h3>Failed Jobs</h3>
-          </div>
-          <div className="filter-form">
-            <div className="filter">
-              <FilterButtonGroup current={max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
-            </div>
-            <div className="filter">
-              <button
-                className="btn btn-danger pull-right"
-                onClick={()=> {
-                  this.assignState({confirmClearAll: true});
-                }}
-              >
-                <i className="fa fa-trash"></i> Clear all
-              </button>
-              {this.getClearAllAlert()}
-            </div>
-          </div>
-          <table className="table">
-            <thead>
-            <tr>
-              {headers}
-            </tr>
-            </thead>
-            <tbody>
-            {this.getTableBody(somethingSelected)}
-            </tbody>
-          </table>
-          <nav>
-            <ReactPaginate
-              pageNum={Math.ceil(total / max)}
-              forceSelected={Math.floor(offset / max)}
-              pageRangeDisplayed={2}
-              marginPagesDisplayed={1}
-              previousLabel="&laquo;"
-              nextLabel="&raquo;"
-              breakLabel={<a>&hellip;</a>}
-              containerClassName="pagination"
-              disabledClassName="disabled"
-              activeClassName="active"
-              clickCallback={(pageObject)=> {
-                this.navigate("/jobs/failed", {max: max, offset: max * pageObject.selected})
-              }}
-            />
-          </nav>
+      <div>
+        <div className="page-header">
+          <h3>Failed Jobs</h3>
         </div>
-        {this.getSelectedView()}
+        <div className="failed-list">
+          <div className="table-container">
+            <div className="filter-form">
+              <div className="filter">
+                <FilterButtonGroup current={max} onChange={this.onMaxChange} filters={[10, 25, 50, 100, 200]}></FilterButtonGroup>
+              </div>
+              <div className="filter">
+                <button
+                  className="btn btn-danger pull-right"
+                  onClick={() => {
+                    this.assignState({confirmClearAll: true});
+                  }}
+                >
+                  <i className="fa fa-trash"></i> Clear all
+                </button>
+                {this.getClearAllAlert()}
+              </div>
+            </div>
+            <table className="table">
+              <thead>
+              <tr>
+                {headers}
+              </tr>
+              </thead>
+              <tbody>
+              {this.getTableBody(somethingSelected)}
+              </tbody>
+            </table>
+            <nav>
+              <ReactPaginate
+                pageNum={Math.ceil(total / max)}
+                forceSelected={Math.floor(offset / max)}
+                pageRangeDisplayed={2}
+                marginPagesDisplayed={1}
+                previousLabel="&laquo;"
+                nextLabel="&raquo;"
+                breakLabel={<a>&hellip;</a>}
+                containerClassName="pagination"
+                disabledClassName="disabled"
+                activeClassName="active"
+                clickCallback={(pageObject) => {
+                  this.navigate("/jobs/failed", {max: max, offset: max * pageObject.selected})
+                }}
+              />
+            </nav>
+          </div>
+          {this.getSelectedView()}
+        </div>
       </div>
     )
   }

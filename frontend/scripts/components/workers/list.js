@@ -205,11 +205,12 @@ export default class WorkerList extends BaseComponent {
   }
 
   render() {
-    let {selected, query, status} = this.state;
+    let {selected, query, status, list} = this.state;
     return (
       <div className="worker-list-container">
         <div className="page-header">
-          <h3>Worker</h3>
+          <h3>Workers</h3>
+          Workers running: {list != null ? list.length : 0}
           {this.getWorkerDeleteAlert()}
         </div>
         <div className="filter-form">

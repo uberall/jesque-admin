@@ -77,6 +77,7 @@ export default class QueueList extends BaseComponent {
       <div className="queue-list">
         <div className="page-header">
           <h3>Queues</h3>
+          Jobs processed: {this.props.processed}
         </div>
         <div className="filter-form">
           <div className="filter">
@@ -101,6 +102,10 @@ export default class QueueList extends BaseComponent {
           </tr>
           </thead>
           <tbody>
+          <tr>
+            <td>All Pending</td>
+            <td>{this.props.pending}</td>
+          </tr>
           {this.getQueueRows()}
           <tr className={failedClasses} onClick={()=> {
             navigate('/jobs/failed/')

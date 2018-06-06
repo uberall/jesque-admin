@@ -8,7 +8,7 @@ import redis.clients.jedis.Transaction
 
 class JesqueStatisticsService {
 
-    private static final String CLASSES_KEY = 'jesque:job:statistic'
+    private static final String CLASSES_KEY = 'job:statistic' // we're using the same namespace as the grails-jesque-plugin
     private static final int DEFAULT_MAX = 10000 // number of entries to keep per job
 
     RedisService redisService

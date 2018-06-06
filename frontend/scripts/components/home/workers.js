@@ -73,6 +73,7 @@ export default class WorkerList extends BaseComponent {
       <div>
         <div className="page-header">
           <h3>Workers</h3>
+          Workers running: {this.props.workers.length}
         </div>
         <div className="filter-form">
           <div className="filter">

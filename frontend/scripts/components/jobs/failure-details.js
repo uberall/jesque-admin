@@ -5,6 +5,9 @@ const cx = require('classnames')
 
 export default class FailureDetails extends React.Component {
   getStacktrace(failure) {
+    if (failure.throwable == null) {
+      return
+    }
     let i = 0
     return _.map(failure.throwable.stackTrace, (el)=> {
       i++

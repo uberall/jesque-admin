@@ -64,16 +64,6 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         redirect(action: 'failed')
     }
 
-    def delayed() {
-        sanitizeParams()
-        jsonRender(
-                [
-                        list  : jesqueScheduledService.getDelayedJobs(params.getLong("offset"), params.getLong("max")),
-                        queues: jesqueScheduledService.delayedQueues
-                ]
-        )
-    }
-
     def enqueue() {
         def json = request.JSON
         jesqueService.enqueue(json.queue, json.job, json.args)

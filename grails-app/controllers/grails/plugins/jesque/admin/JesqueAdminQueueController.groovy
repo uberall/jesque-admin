@@ -13,6 +13,7 @@ class JesqueAdminQueueController extends AbstractJesqueAdminController {
     }
 
     def list() {
-        jsonRender([queues: queueInfoDao.queueInfos])
+        jsonRender([queues: queueInfoDao.queueNames])
     }
+
 }

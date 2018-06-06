@@ -38,8 +38,8 @@ export default class WorkerManual extends BaseComponent {
       .then((resp) => {
         let queues = [];
         resp.queues.forEach((queue)=> {
-          if (queue.name !== 'JesqueDefaultQueue') {
-            queues.push(queue.name)
+          if (queue !== 'JesqueDefaultQueue') {
+            queues.push(queue)
           }
         });
         this.assignState({queues: queues, loading: false});

@@ -222,7 +222,7 @@ export default class WorkerList extends BaseComponent {
             <FilterButtonGroup onChange={this.onStatusFilterChange} current={status} filters={STATES}/>
           </div>
           <div className="filter">
-            <div className="btn-group pull-right">
+            <div className="btn-group">
               <button className="btn btn-default" onClick={this.pauseAll}><i className="fa fa-pause"></i>&nbsp;Pause All</button>
               <button className="btn btn-default" onClick={this.resumeAll}><i className="fa fa-play"></i>&nbsp;Resume All</button>
             </div>

@@ -6,6 +6,7 @@ import Config from "../../tools/config";
 import WorkerListRow from "./list-row";
 import FilterButtonGroup from "../common/filter-button-group";
 import WorkerDetails from "./details";
+import {WorkerStats} from "./stats";
 
 const cx = require("classnames");
 const SweetAlert = require('react-swal');
@@ -220,7 +221,7 @@ export default class WorkerList extends BaseComponent {
       <div className="worker-list-container">
         <div className="page-header">
           <h3>Workers</h3>
-          Workers running: {list != null ? list.length : 0}
+          <WorkerStats workers={list}/>
           {this.getWorkerDeleteAlert()}
         </div>
         <div className="filter-form">

@@ -4,8 +4,9 @@ import FromNow from "../common/from-now";
 import Config from "../../tools/config";
 import FilterButtonGroup from "../common/filter-button-group";
 import BaseComponent from "../base-component";
+import {WorkerStats} from "../workers/stats";
 
-const STATES = ["IDLE", "PAUSED", "WORKING"]
+const STATES = ["IDLE", "PAUSED", "WORKING"];
 const STATUS_CONFIG_KEY = "home.queues.status";
 
 export default class WorkerList extends BaseComponent {
@@ -73,7 +74,7 @@ export default class WorkerList extends BaseComponent {
       <div>
         <div className="page-header">
           <h3>Workers</h3>
-          Workers running: {this.props.workers.length}
+          <WorkerStats workers={this.props.workers}/>
         </div>
         <div className="filter-form">
           <div className="filter">

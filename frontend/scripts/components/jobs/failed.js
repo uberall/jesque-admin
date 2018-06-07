@@ -75,7 +75,11 @@ export default class FailedList extends BaseComponent {
   }
 
   selectFailure(failure) {
-    this.assignState({selected: failure});
+    if (this.state.selected && failure && this.state.selected.id === failure.id) {
+      this.assignState({selected: null});
+    } else {
+      this.assignState({selected: failure});
+    }
   }
 
   getRetryComponent(failure) {

@@ -61,7 +61,13 @@ export default class JobDetails extends BaseComponent {
   }
 
   selectJob(job) {
-    this.assignState({selectedJob: job});
+    let selected = this.state.selectedJob;
+    if (selected && job &&
+      `${selected.start}-${selected.end}-${selected.runtime}` === `${job.start}-${job.end}-${job.runtime}`) {
+      this.assignState({selectedJob: null});
+    } else {
+      this.assignState({selectedJob: job});
+    }
   }
 
   doUpdate() {

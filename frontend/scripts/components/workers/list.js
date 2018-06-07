@@ -153,7 +153,7 @@ export default class WorkerList extends BaseComponent {
           selected={selected}
           selectable={this.props.selectable}
           onClick={() => {
-            this.assignState({selected: worker})
+            this.selectWorker(worker)
           }}
           onDelete={()=> {
             this.assignState({workerToDelete: worker})
@@ -161,6 +161,16 @@ export default class WorkerList extends BaseComponent {
         />
       }
     })
+  }
+
+  selectWorker(worker) {
+    let selected = this.state.selected;
+    if (selected && worker &&
+      `${worker.host}-${worker.pid}` === `${selected.host}-${selected.pid}`) {
+      this.assignState({selected: null});
+    } else {
+      this.assignState({selected: worker});
+    }
   }
 
   getWorkerDeleteAlert() {

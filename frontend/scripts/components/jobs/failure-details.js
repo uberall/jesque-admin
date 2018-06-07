@@ -5,15 +5,15 @@ const cx = require('classnames')
 
 export default class FailureDetails extends React.Component {
   getStacktrace(failure) {
-    if (failure.throwable == null) {
-      return
+    if (failure.backtrace == null) {
+      return ""
     }
     let i = 0
-    return _.map(failure.throwable.stackTrace, (el)=> {
+    return _.map(failure.backtrace, (el)=> {
       i++
       return (
         <li key={i}>
-          at {el.className}.{el.methodName}(<b>{el.fileName}:{el.lineNumber}</b>)
+          {el}
         </li>
       )
     })

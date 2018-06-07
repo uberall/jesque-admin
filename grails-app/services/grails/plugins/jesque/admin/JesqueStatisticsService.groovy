@@ -39,8 +39,9 @@ class JesqueStatisticsService {
         )
 
         String key = getClassesDoneKey(getJobName(job))
+        String json = stats.asJsonString()
         redisService.withTransaction { Transaction transaction ->
-            transaction.lpush(key, stats.asJsonString())
+            transaction.lpush(key, json)
             transaction.ltrim(key, 0L, max-1)
         }
     }

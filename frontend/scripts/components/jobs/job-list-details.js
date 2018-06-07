@@ -5,15 +5,15 @@ const cx = require('classnames')
 export default class JobListDetails extends React.Component {
 
   getStacktrace(job) {
-    if (!job.throwable) {
+    if (!job.backtrace) {
       return ""
     }
     let i = 0;
-    return map(job.throwable.stackTrace, (el)=> {
+    return map(job.backtrace, (el)=> {
       i++;
       return (
         <li key={i}>
-          at {el.className}.{el.methodName}(<b>{el.fileName}:{el.lineNumber}</b>)
+          {el}
         </li>
       )
     })
@@ -36,9 +36,11 @@ export default class JobListDetails extends React.Component {
     rows.push(<dd key="args-data">
       <pre>{JSON.stringify(job.args, 1, 1)}</pre>
     </dd>);
-    if(!job.success && job.throwable) {
-      rows.push(<dt key="error-label">Error</dt>);
-      rows.push(<dd key="error-data">{job.throwable.localizedMessage}</dd>);
+    if(!job.success && job.throwableString) {
+      rows.push(<dt key="exception-label">Exception</dt>);
+      rows.push(<dd key="exception-data">{job.throwableString}</dd>);
+      rows.push(<dt key="message-label">Message</dt>);
+      rows.push(<dd key="message-data">{job.throwableMessage}</dd>);
       rows.push(<dt key="stacktrace-label">Stacktrace</dt>);
       rows.push(<dd key="stacktrace-data"><ul className="stacktrace">{this.getStacktrace(job)}</ul></dd>);
     }

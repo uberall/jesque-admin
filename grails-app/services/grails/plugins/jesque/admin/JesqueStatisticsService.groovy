@@ -1,8 +1,8 @@
 package grails.plugins.jesque.admin
 
-import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.plugins.redis.RedisService
+import groovy.json.JsonSlurper
 import net.greghaines.jesque.Job
 import redis.clients.jedis.Transaction
 
@@ -16,7 +16,7 @@ class JesqueStatisticsService {
 
     List<JesqueJobStatistic> getStatistics(String job, offset = 0, max = 100) {
         List<String> items = redisService.lrange(getClassesDoneKey(job), offset, offset + (max - 1))
-        items.collect { JSON.parse(it) as JesqueJobStatistic }
+        items.collect { new JsonSlurper().parseText(it) as JesqueJobStatistic }
     }
 
     long getStatisticCount(String job) {

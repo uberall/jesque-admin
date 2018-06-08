@@ -1,9 +1,9 @@
 package grails.plugins.jesque.admin
 
-import grails.converters.JSON
 import grails.plugins.jesque.JesqueSchedulerService
 import grails.plugins.jesque.JesqueService
 import grails.plugins.jesque.ScheduledJobDaoService
+import groovy.json.JsonOutput
 import net.greghaines.jesque.meta.dao.FailureDAO
 import net.greghaines.jesque.meta.dao.QueueInfoDAO
 import net.greghaines.jesque.meta.dao.WorkerInfoDAO
@@ -26,7 +26,7 @@ abstract class AbstractJesqueAdminController {
         }
         response.status = model.status.value()
         model.status = model.status.name()
-        render model as JSON
+        render JsonOutput.toJson(model)
     }
 
     protected void sanitizeParams() {

@@ -1,6 +1,5 @@
 package grails.plugins.jesque.admin
 
-import grails.converters.JSON
 import net.greghaines.jesque.JobFailure
 
 class JesqueAdminJobController extends AbstractJesqueAdminController {
@@ -13,10 +12,10 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         list.eachWithIndex { JobFailure entry, int i ->
             entry.metaClass.id = offset + i
         }
-        render([
+        jsonRender([
                 list : list,
                 total: failureDao.count
-        ] as JSON)
+        ])
     }
 
     def retry(Long id) {

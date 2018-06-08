@@ -62,12 +62,15 @@ export default class JobDetails extends BaseComponent {
 
   selectJob(job) {
     let selected = this.state.selectedJob;
-    if (selected && job &&
-      `${selected.start}-${selected.end}-${selected.runtime}` === `${job.start}-${job.end}-${job.runtime}`) {
+    if (selected && job && this.getJobKey(selected) === this.getJobKey(job)) {
       this.assignState({selectedJob: null});
     } else {
       this.assignState({selectedJob: job});
     }
+  }
+
+  getJobKey(job) {
+    return job ? `${job.start}-${job.end}-${job.runtime}-${JSON.stringify(job.args)}` : ""
   }
 
   doUpdate() {
@@ -91,7 +94,7 @@ export default class JobDetails extends BaseComponent {
     let selected = this.state.selectedJob;
     let selectedKey = "";
     if (selected) {
-      selectedKey = `${selected.start}-${selected.end}-${selected.runtime}`;
+      selectedKey = this.getJobKey(selected);
     }
     return map(this.state.list, (job)=> {
       let cols = [];
@@ -103,7 +106,7 @@ export default class JobDetails extends BaseComponent {
       }
       cols.push(<td key={`${key}-runtime`}>{job.runtime}</td>);
       if (!this.state.selectedJob) {
-        cols.push(<td key={`${key}-args`}>{job.args.join(",")||"-"}</td>);
+        cols.push(<td key={`${key}-args`}>{job.args.join(",")||"test"}</td>);
       }
 
       return (

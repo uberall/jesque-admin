@@ -4,7 +4,7 @@ import grails.util.Environment
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%thread %level %logger - %msg%n"
+        pattern = "%d{HH:mm:ss.SSS} %thread %level %logger - %msg%n"
     }
 }
 
@@ -23,5 +23,5 @@ if (Environment.isDevelopmentMode() && targetDir) {
     logger('org.springframework', WARN, ['STDOUT'], false)
     logger('org.grails.spring', WARN, ['STDOUT'], false)
     logger('org.hibernate', WARN, ['STDOUT'], false)
-    logger('grails.plugins.jesque.GrailsWorkerImpl', DEBUG, ['STDOUT'], false)
+    logger('grails.plugins.jesque', DEBUG, ['STDOUT'], false)
 }

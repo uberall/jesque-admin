@@ -122,7 +122,7 @@ export default class QueueDetails extends BaseComponent {
             <div className="page-header">
               <h1>{this.props.name}
               </h1>
-              <button className="btn btn danger" onClick={()=> {
+              <button className="btn btn-danger" onClick={()=> {
                 this.assignState({confirmDelete: true});
               }}>Delete
               </button>

@@ -30,7 +30,7 @@ export default class FailureDetails extends React.Component {
           <dt>Job</dt>
           <dd>{failure.payload.className}</dd>
           <dt>Arguments</dt>
-          <dd>{failure.payload.args}</dd>
+          <dd><pre>{JSON.stringify(failure.payload.args, 1, 1)}</pre></dd>
           <dt>Queue</dt>
           <dd>{failure.queue}</dd>
           <dt>Worker</dt>

@@ -95,7 +95,7 @@ export default class JobDetails extends BaseComponent {
     }
     return map(this.state.list, (job)=> {
       let cols = [];
-      let key = `${job.start}-${job.end}-${job.runtime}`;
+      let key = `${job.start}-${job.end}-${job.runtime}-${JSON.stringify(job.args)}`;
       cols.push(<td key={`${key}-queue`}>{job.queue}</td>);
       cols.push(<td key={`${key}-start`}><FormatedDate date={new Date(job.start)} format="l LTS"/></td>);
       if (!this.state.selectedJob) {
@@ -103,7 +103,7 @@ export default class JobDetails extends BaseComponent {
       }
       cols.push(<td key={`${key}-runtime`}>{job.runtime}</td>);
       if (!this.state.selectedJob) {
-        cols.push(<td key={`${key}-args`}>{job.args.join(",")}</td>);
+        cols.push(<td key={`${key}-args`}>{job.args.join(",")||"-"}</td>);
       }
 
       return (

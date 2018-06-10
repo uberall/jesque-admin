@@ -28,8 +28,10 @@ export default class FailedList extends BaseComponent {
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if (this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {

@@ -7,7 +7,7 @@ import FormatedDate from "../common/formated-date";
 import JobListDetails from "./job-list-details";
 import ReactPaginate from "react-paginate";
 
-const cx = require('classnames')
+const cx = require('classnames');
 
 export default class JobDetails extends BaseComponent {
 
@@ -27,8 +27,10 @@ export default class JobDetails extends BaseComponent {
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if (this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {

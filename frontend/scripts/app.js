@@ -4,7 +4,7 @@ import Navbar from "./components/navbar/navbar";
 import HomeView from "./components/home/home";
 import QueueDetails from "./components/queues/details";
 import FailedList from "./components/jobs/failed";
-import {HOME, JOB_FAILED, JOBS_LIST, JOB_ENQUEUE, JOB_TRIGGERS, WORKER_LIST, WORKER_MANUAL} from "./constants/paths";
+import {HOME, JOB_FAILED, JOBS_LIST, JOB_ENQUEUE, JOB_TRIGGERS, WORKER_LIST, WORKER_MANUAL, QUEUE_LIST} from "./constants/paths";
 import JobsList from "./components/jobs/list";
 import JobDetails from "./components/jobs/details";
 import JobManual from "./components/jobs/manual";
@@ -105,6 +105,7 @@ var JesqueAdminApp = React.createClass({
   },
 
   queueDetails: function (name) {
+    window.currentPath = QUEUE_LIST;
     return <QueueDetails name={name} params={this.getUrlParameters()} autoReload={this.state.autoReload} changeAutoReload={this.changeAutoReload} setAlert={this.setAlert}/>
   },
 

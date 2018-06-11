@@ -94,3 +94,7 @@ bootRun {
 }
 
 jar.dependsOn('assetPluginPackage')
+
+assets {
+    packagePlugin = true
+}

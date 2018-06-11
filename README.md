@@ -45,27 +45,26 @@ You can freely change "/jesque/api/" to whatever you want but i highly recommend
 
 # Job Statistics
 
-jesque-admin comes with mechanics to gather statistics like start, end and runtimes of Jobs. All this is done by using a Special Job Listener.
-If you are already using a custom JesqueWorker all you have to do is enable the feature and let your custom worker extend "JesqueJobStatisticsCollectingWorkerImpl" instead of the 
-default WorkerImpl coming with grails-jesque and enable the statistics collecting feature in you application.yml (or groovy)
+jesque-admin comes with mechanics to gather statistics like start, end and runtimes of Jobs. All this is done by using a specific Worker Listener.
+All you have to do is enable the statistics collecting feature in you application.yml (or .groovy):
 
 ```
 grails:
     jesque:
         statistics:
           enabled: true
-          max: 100 // the maximum number of jobs PER JOB CLASS to store
+          max: 100 // the maximum number of statistics PER JOB CLASS to store
 ```
 
-If you are not yet using a custom Jesque Worker you have to tell grails-jesque to use JesqueJobStatisticsCollectingWorkerImpl as a custom worker impl
+you also have to set `JesqueJobStatisticsWorkerListener` as a custom listener:
 
 ```
 grails:
     jesque:
         enabled: true
         custom:
-          worker:
-            clazz: JesqueJobStatisticsCollectingWorkerImpl
+          listener:
+            clazz: grails.plugins.jesque.admin.JesqueJobStatisticsWorkerListener
 ```
 
 After restarting your App you should find a list menu item under "jobs" in jesque-admin which lets you browse past jobs being processed. 

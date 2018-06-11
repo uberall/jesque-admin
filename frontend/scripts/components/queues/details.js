@@ -14,14 +14,14 @@ export default class QueueDetails extends BaseComponent {
 
   constructor(props) {
     super(props);
+    this.client = new JesqueAdminClient();
 
     this.state = {
       queue: null,
       confirmDelete: false
     };
 
-    this.client = new JesqueAdminClient();
-    this.bindThiz('doUpdate', 'getTableHeaders', 'getTableRows', 'onMaxChange', 'getDeleteAlert', 'doDelete')
+    this.bindThiz('doUpdate', 'getTableHeaders', 'getTableRows', 'onMaxChange', 'getDeleteAlert', 'doDelete', 'handleJobDelete')
   }
 
   doUpdate() {
@@ -34,6 +34,14 @@ export default class QueueDetails extends BaseComponent {
     })
   }
 
+  handleJobDelete(job) {
+    this.client.post('jobs', 'removeDelayed', {queue: this.state.queue.name, job: job.className, args: job.args})
+      .then(this.doUpdate)
+      .catch((err) => {
+        this.props.setAlert(err);
+      })
+  }
+
   getTableHeaders() {
     const {queue} = this.state;
     if (!queue) {
@@ -43,10 +51,11 @@ export default class QueueDetails extends BaseComponent {
     const delayed = queue.delayed;
     let heads = [];
     heads.push(<th key="head-job">Job</th>);
+    heads.push(<th key="head-arguments">Arguments</th>);
     if (delayed) {
       heads.push(<th key="head-when">When</th>);
+      heads.push(<th key="head-delete"/>);
     }
-    heads.push(<th key="head-arguments">Arguments</th>);
     return heads
   }
 
@@ -64,7 +73,7 @@ export default class QueueDetails extends BaseComponent {
       i++;
       let key = `${job.className}-${JSON.stringify(job.args)}-${i}`;
       if (delayed) {
-        return <DelayedQueueDetailsListRow job={job} key={key}/>
+        return <DelayedQueueDetailsListRow job={job} onClick={this.handleJobDelete} key={key}/>
       } else {
         return <QueueDetailsListRow job={job} key={key}/>
       }
@@ -208,14 +217,8 @@ class QueueDetailsListRow extends React.Component {
   render() {
     return (
       <tr>
-        <td>
-          {this.props.job.className}
-        </td>
-        <td>
-          <code>
-            {JSON.stringify(this.props.job.args)}
-          </code>
-        </td>
+        <td>{this.props.job.className}</td>
+        <td><code>{JSON.stringify(this.props.job.args)}</code></td>
       </tr>
     )
   }
@@ -223,18 +226,16 @@ class QueueDetailsListRow extends React.Component {
 
 class DelayedQueueDetailsListRow extends React.Component {
   render() {
+    const job = this.props.job;
     return (
       <tr>
+        <td>{job.className}</td>
+        <td><code>{JSON.stringify(job.args)}</code></td>
+        <td><FormatedDate date={new Date(job.runAt)}/> (<FromNow date={new Date(job.runAt)}/>)</td>
         <td>
-          {this.props.job.className}
-        </td>
-        <td>
-          <FormatedDate date={new Date(this.props.job.runAt)}/> (<FromNow date={new Date(this.props.job.runAt)}/>)
-        </td>
-        <td>
-          <code>
-            {JSON.stringify(this.props.job.args)}
-          </code>
+          <button className="btn btn-danger btn-xs pull-right" onClick={() => {
+            this.props.onClick(job)
+          }}><i className="fa fa-trash"/></button>
         </td>
       </tr>
     )

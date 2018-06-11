@@ -11,6 +11,7 @@ class UrlMappings {
         "/jesque/api/queues/$name"(controller: 'jesqueAdminQueue', action: 'remove', method: "DELETE")
         "/jesque/api/jobs"(controller: 'jesqueAdminStatistics', action: 'jobs', method: "GET")
         "/jesque/api/jobs"(controller: 'jesqueAdminJob', action: 'enqueue', method: "POST")
+        "/jesque/api/jobs/removeDelayed"(controller: 'jesqueAdminJob', action: 'removeDelayed', method: "POST")
         "/jesque/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'failed', method: "GET")
         "/jesque/api/jobs/failed/$id"(controller: 'jesqueAdminJob', action: 'retry', method: "POST")
         "/jesque/api/jobs/failed/$id"(controller: 'jesqueAdminJob', action: 'remove', method: "DELETE")

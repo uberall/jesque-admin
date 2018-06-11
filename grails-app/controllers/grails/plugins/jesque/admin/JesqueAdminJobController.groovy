@@ -69,4 +69,10 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         jsonRender([success: true])
     }
 
+    def removeDelayed() {
+        def json = request.JSON
+        jesqueService.removeDelayed(json.queue, json.job, json.args)
+        jsonRender([success: true])
+    }
+
 }

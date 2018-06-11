@@ -1,6 +1,6 @@
 # jesque-admin
 
-A User interface for [Jesque|https://grails.org/plugins.html#plugin/jesque] powered by grails and react.
+A User interface for [Jesque](https://grails.org/plugins.html#plugin/jesque) powered by grails and react.
 
 # Installation
 

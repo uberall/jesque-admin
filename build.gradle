@@ -8,10 +8,11 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
     }
 }
 
-version "0.6.5"
+version "0.6.6"
 
 group "org.grails.plugins"
 
@@ -20,6 +21,7 @@ apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
+apply plugin: "asset-pipeline"
 
 ext {
     grailsVersion = project.grailsVersion
@@ -29,6 +31,8 @@ ext {
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
+    maven { url "http://dl.bintray.com/uberall/plugins" }
+    maven { url "http://dl.bintray.com/uberall/maven" }
 }
 
 dependencyManagement {
@@ -64,7 +68,7 @@ dependencies {
 
     runtime "org.grails.plugins:asset-pipeline"
 
-    compile "org.grails.plugins:jesque:1.1.9"
+    compile 'org.grails.plugins:jesque:1.3.0-UBERALL'
 }
 
 task wrapper(type: Wrapper) {
@@ -85,6 +89,14 @@ grailsPublish {
     portalUser = "peschenbach"
 }
 
-tasks.withType(JavaExec).each { task ->
-    task.systemProperties System.properties
+bootRun {
+    if (System.getProperty('jesque.admin.devel') == "true") {
+        jvmArgs("-Djesque.admin.devel=true")
+    }
+}
+
+jar.dependsOn('assetPluginPackage')
+
+assets {
+    packagePlugin = true
 }

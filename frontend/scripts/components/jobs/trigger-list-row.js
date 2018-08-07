@@ -6,11 +6,11 @@ const SweetAlert = require('react-swal');
 export default class TriggerListRow extends BaseComponent {
 
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       shouldConfirm: false
-    }
+    };
 
     this.bindThiz('doDelete', 'getAlert')
   }
@@ -47,12 +47,13 @@ export default class TriggerListRow extends BaseComponent {
 
     return (
       <tr>
-        <td>{trigger.jesqueJobName}</td>
-        <td>{trigger.jesqueJobQueue}</td>
-        <td>{trigger.cronExpression}</td>
-        <td><FromNow date={new Date(trigger.trigger.nextFireTime)}/></td>
+        <td>{trigger.name}<br/>{trigger.jesqueJobName}</td>
+        <td>{trigger.jesqueJobQueue}<br/>{JSON.stringify(trigger.args)}</td>
+        <td>{trigger.cronExpression}<br/><FromNow date={new Date(trigger.trigger.nextFireTime)}/></td>
+        <td>{trigger.trigger.state}<br/>{trigger.trigger.acquiredBy}</td>
         <td>
-          <button className="btn btn-danger" disabled={this.state.shouldConfirm} onClick={this.doDelete}>Delete
+          <button className="btn btn-danger btn-xs" disabled={this.state.shouldConfirm} onClick={this.doDelete}>
+            <i className="fa fa-trash"/>
           </button>
           {this.getAlert()}
         </td>

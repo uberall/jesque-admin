@@ -47,9 +47,11 @@ $fa-font-path: "~font-awesome/fonts";
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 5px;
   .filter {
     flex: 1;
     margin-left: 3px;
+    margin-right: 5px;
     min-width: 250px;
     label {
       font-size: 1.2em;

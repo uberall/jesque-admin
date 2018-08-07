@@ -9,7 +9,6 @@ ul.stacktrace {
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
-  transition: all ease-in-out 0.3s;
 
   td.short {
     overflow: hidden;
@@ -34,11 +33,10 @@ ul.stacktrace {
       background: lighten($jumbotron-bg, 5%);
       border: 2px solid darken($jumbotron-bg, 5%);
       border-radius: $border-radius-base;
-      padding: 3px;
+      padding: 5px;
       flex: 2;
-      max-width: 66%;
+      max-width: 50%;
       min-width: 500px;
-      transition: all ease-in-out 0.3s;
     }
   }
   dl {

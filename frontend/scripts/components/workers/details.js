@@ -14,7 +14,7 @@ export default class WorkerDetails extends React.Component {
         workingRows.push(<dt key="working-job-label">Job</dt>)
         workingRows.push(<dd key="working-job-value">{worker.status.payload.className}</dd>)
         workingRows.push(<dt key="working-args-label">Args</dt>)
-        workingRows.push(<dd key="working-args-value">{worker.status.payload.args.join(",")}</dd>)
+        workingRows.push(<dd key="working-args-value"><pre>{JSON.stringify(worker.status.payload.args, 1, 1)}</pre></dd>)
       }
       const started = new Date(worker.started)
       return (

@@ -3,7 +3,7 @@ import BaseComponent from "../base-component";
 import {assign, map, clone, each} from "lodash";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
 import {Creatable} from "react-select";
-const ReactSelect = require('react-select');
+import Select from 'react-select';
 const cx = require('classnames');
 
 const DEFAULT_STATE = {
@@ -39,8 +39,8 @@ export default class JobManual extends BaseComponent {
       .then((resp) => {
         let queues = [];
         resp.queues.forEach((queue)=> {
-          if (queue.name !== 'JesqueDefaultQueue') {
-            queues.push(queue.name)
+          if (queue !== 'JesqueDefaultQueue') {
+            queues.push(queue)
           }
         });
         this.setState(assign(this.state, {queues: queues, loading: false}));
@@ -161,6 +161,8 @@ export default class JobManual extends BaseComponent {
   render() {
     const {queues, selectedJob, selectedQueue, args, loading} = this.state;
     const jobs = this.props.jobs;
+    let jobOptions = this.buildReactSelectOptions(jobs)
+    let queueOptions = this.buildReactSelectOptions(queues)
     return (
       <div className="job-manual">
         <div className="page-header">
@@ -170,11 +172,11 @@ export default class JobManual extends BaseComponent {
         <form onSubmit={this.onFormSubmit} className={cx({disabled: loading})}>
           <div className="form-group">
             <label htmlFor="jobs">Job</label>
-            <ReactSelect
+            <Select
               name="jobs"
               clearable={true}
               value={selectedJob}
-              options={this.buildReactSelectOptions(jobs)}
+              options={jobOptions}
               onChange={this.jobSelected}
               disabled={loading}/>
           </div>
@@ -185,7 +187,7 @@ export default class JobManual extends BaseComponent {
               clearable={true}
               value={selectedQueue}
               disabled={!selectedJob || loading}
-              options={this.buildReactSelectOptions(queues)}
+              options={queueOptions}
               onChange={this.queueSelected}
             />
           </div>

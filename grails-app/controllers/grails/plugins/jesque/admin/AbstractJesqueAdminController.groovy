@@ -1,19 +1,23 @@
 package grails.plugins.jesque.admin
 
 import grails.converters.JSON
-import grails.core.GrailsApplication
+import grails.plugins.jesque.JesqueSchedulerService
 import grails.plugins.jesque.JesqueService
+import grails.plugins.jesque.ScheduledJobDaoService
+import net.greghaines.jesque.meta.dao.FailureDAO
+import net.greghaines.jesque.meta.dao.QueueInfoDAO
+import net.greghaines.jesque.meta.dao.WorkerInfoDAO
 import org.springframework.http.HttpStatus
 
 abstract class AbstractJesqueAdminController {
 
-    JesqueQueuesService jesqueQueuesService
-    JesqueFailureService jesqueFailureService
-    JesqueWorkersService jesqueWorkersService
+    FailureDAO failureDao
+    QueueInfoDAO queueInfoDao
+    WorkerInfoDAO workerInfoDao
     JesqueStatisticsService jesqueStatisticsService
     JesqueService jesqueService
-    JesqueScheduledService jesqueScheduledService
-    GrailsApplication grailsApplication
+    ScheduledJobDaoService scheduledJobDaoService
+    JesqueSchedulerService jesqueSchedulerService
 
     protected void jsonRender(model = [:]) {
         response.contentType = 'application/json'

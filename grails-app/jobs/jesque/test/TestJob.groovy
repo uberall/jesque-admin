@@ -10,15 +10,18 @@ class TestJob {
     static queue = 'TestJobQueue'
 
     static triggers = {
-        cron queueName: 'TestJobQueue', name: 'TestJobTrigger', cronExpression: '0/45 * * * * ? *'
+        cron queueName: 'TestJobQueue', name: 'TestJobTrigger-1', cronExpression: '0/45 * * * * ? *', args: [1000]
+        cron queueName: 'TestJobQueue', name: 'TestJobTrigger-2', cronExpression: '0 */1 * * * ? *', args: [2000]
+        cron queueName: 'TestJobQueue', name: 'TestJobTrigger-3', cronExpression: '0 */2 * * * ? *', args: [2000]
+        cron queueName: 'TestJobQueue', name: 'TestJobTrigger-4', cronExpression: '0/5 * * * * ? *', args: [3000]
     }
 
     def perform(random = RandomUtils.nextInt(60000)) {
         log.warn("sleeping for $random")
         sleep(random)
-        jesqueService.enqueueAt(DateTime.now().plusSeconds(random), queue, TestJob)
-        if (random % 5 == 0) {
-            throw new Exception("slepped for $random which is divisble by 5!")
+        jesqueService.enqueueAt(DateTime.now().plusMillis(random), queue, TestJob)
+        if (RandomUtils.nextInt(5) == 2) {
+            throw new Exception("radnom")
         }
     }
 }

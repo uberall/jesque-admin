@@ -6,6 +6,7 @@ import Config from "../../tools/config";
 import WorkerListRow from "./list-row";
 import FilterButtonGroup from "../common/filter-button-group";
 import WorkerDetails from "./details";
+import {WorkerStats} from "./stats";
 
 const cx = require("classnames");
 const SweetAlert = require('react-swal');
@@ -153,7 +154,7 @@ export default class WorkerList extends BaseComponent {
           selected={selected}
           selectable={this.props.selectable}
           onClick={() => {
-            this.assignState({selected: worker})
+            this.selectWorker(worker)
           }}
           onDelete={()=> {
             this.assignState({workerToDelete: worker})
@@ -161,6 +162,16 @@ export default class WorkerList extends BaseComponent {
         />
       }
     })
+  }
+
+  selectWorker(worker) {
+    let selected = this.state.selected;
+    if (selected && worker &&
+      `${worker.host}-${worker.pid}` === `${selected.host}-${selected.pid}`) {
+      this.assignState({selected: null});
+    } else {
+      this.assignState({selected: worker});
+    }
   }
 
   getWorkerDeleteAlert() {
@@ -205,11 +216,12 @@ export default class WorkerList extends BaseComponent {
   }
 
   render() {
-    let {selected, query, status} = this.state;
+    let {selected, query, status, list} = this.state;
     return (
       <div className="worker-list-container">
         <div className="page-header">
-          <h3>Worker</h3>
+          <h3>Workers</h3>
+          <WorkerStats workers={list}/>
           {this.getWorkerDeleteAlert()}
         </div>
         <div className="filter-form">
@@ -222,7 +234,7 @@ export default class WorkerList extends BaseComponent {
             <FilterButtonGroup onChange={this.onStatusFilterChange} current={status} filters={STATES}/>
           </div>
           <div className="filter">
-            <div className="btn-group pull-right">
+            <div className="btn-group">
               <button className="btn btn-default" onClick={this.pauseAll}><i className="fa fa-pause"></i>&nbsp;Pause All</button>
               <button className="btn btn-default" onClick={this.resumeAll}><i className="fa fa-play"></i>&nbsp;Resume All</button>
             </div>

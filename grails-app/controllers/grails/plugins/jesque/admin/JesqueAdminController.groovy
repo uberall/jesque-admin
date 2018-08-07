@@ -8,9 +8,11 @@ class JesqueAdminController extends AbstractJesqueAdminController {
 
     def overview() {
         jsonRender([
-                queues : jesqueQueuesService.queueInfos,
-                workers: jesqueWorkersService.allWorkers,
-                failed : jesqueFailureService.count
+                queues   : queueInfoDao.queueInfos,
+                pending  : queueInfoDao.pendingCount,
+                processed: queueInfoDao.processedCount,
+                workers  : workerInfoDao.allWorkers,
+                failed   : failureDao.count
         ])
     }
 }

@@ -38,7 +38,7 @@ class JesqueAdminGrailsPlugin extends Plugin {
     def scm = [url: "https://github.com/peh/jesque-admin/issues"]
 
     void doWithApplicationContext() {
-        JesqueAdminJsonMarhsaller.init()
+        JesqueAdminJsonMarshaller.init()
     }
 
 }

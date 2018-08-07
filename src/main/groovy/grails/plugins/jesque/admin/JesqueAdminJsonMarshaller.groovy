@@ -1,15 +1,15 @@
 package grails.plugins.jesque.admin
 
 import grails.converters.JSON
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 import net.greghaines.jesque.Job
 import net.greghaines.jesque.JobFailure
 import net.greghaines.jesque.WorkerStatus
 import net.greghaines.jesque.meta.QueueInfo
 import net.greghaines.jesque.meta.WorkerInfo
 
-@Log
-class JesqueAdminJsonMarhsaller {
+@Slf4j
+class JesqueAdminJsonMarshaller {
 
     static void init() {
         log.info "Registering JSON Marshallers for JesqueAdmin"
@@ -17,11 +17,26 @@ class JesqueAdminJsonMarhsaller {
             s.toString()
         }
 
+        JSON.registerObjectMarshaller(JesqueJobStatistic) { JesqueJobStatistic jesqueJobStatistic ->
+            [
+                    job             : jesqueJobStatistic.job,
+                    queue           : jesqueJobStatistic.queue,
+                    start           : jesqueJobStatistic.start,
+                    end             : jesqueJobStatistic.end,
+                    runtime         : jesqueJobStatistic.runtime,
+                    args            : jesqueJobStatistic.args,
+                    throwableString : jesqueJobStatistic.throwableString,
+                    throwableMessage: jesqueJobStatistic.throwableMessage,
+                    backtrace       : jesqueJobStatistic.backtrace
+            ]
+        }
+
         JSON.registerObjectMarshaller(QueueInfo) { QueueInfo queueInfo ->
             [
-                    jobs: queueInfo.jobs,
-                    name: queueInfo.name,
-                    size: queueInfo.size
+                    jobs   : queueInfo.jobs,
+                    name   : queueInfo.name,
+                    size   : queueInfo.size,
+                    delayed: queueInfo.delayed
             ]
         }
 
@@ -52,7 +67,8 @@ class JesqueAdminJsonMarhsaller {
             [
                     className: job.className,
                     args     : job.args,
-                    vars     : job.vars
+                    vars     : job.vars,
+                    runAt    : job.runAt
             ]
         }
 
@@ -64,7 +80,6 @@ class JesqueAdminJsonMarhsaller {
                     payload        : jobFailure.payload,
                     queue          : jobFailure.queue,
                     retriedAt      : jobFailure.retriedAt,
-                    throwable      : jobFailure.throwable,
                     throwableString: jobFailure.throwableString,
                     worker         : jobFailure.worker
             ]

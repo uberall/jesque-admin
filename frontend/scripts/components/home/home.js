@@ -51,7 +51,13 @@ export default class HomeView extends BaseComponent {
   doUpdate() {
     this.client.get('overview', null, {})
       .then((json) => {
-        this.assignState({queues: json.queues, workers: json.workers, failed: json.failed});
+        this.assignState({
+          queues: json.queues,
+          pending: json.pending,
+          processed: json.processed,
+          workers: json.workers,
+          failed: json.failed
+        });
       })
       .catch((err)=> {
         this.props.setAlert(err);
@@ -62,7 +68,8 @@ export default class HomeView extends BaseComponent {
   render() {
     return (
       <div className="row">
-        <div className="col-lg-6 queues"><QueueList queues={this.state.queues} failed={this.state.failed}/></div>
+        <div className="col-lg-6 queues"><QueueList queues={this.state.queues} failed={this.state.failed}
+                                                    pending={this.state.pending} processed={this.state.processed}/></div>
         <div className="col-lg-6 workers"><WorkerList workers={this.state.workers}/></div>
       </div>
     )

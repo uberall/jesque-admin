@@ -18,9 +18,7 @@
                 failed: "${g.createLink(controller: 'jesqueAdminJob', action: 'failed')}",
                 triggers: "${g.createLink(controller: 'jesqueAdminJob', action: 'triggers')}",
                 jobs: "${g.createLink(controller: 'jesqueAdminStatistics', action: 'jobs')}",
-                delayed: "${g.createLink(controller: 'jesqueAdminJob', action: 'delayed')}",
                 workers: "${g.createLink(controller: 'jesqueAdminWorker', action: 'list')}",
-                workerManual: "${g.createLink(controller: 'jesqueAdminWorker', action: 'manual')}"
             },
             isMonitoringEnabled: ${grailsApplication.config.grails.jesque.statistics?.enabled == true},
             knownJobs: ${raw((grailsApplication.jesqueJobClasses.clazz.simpleName as grails.converters.JSON).toString())}

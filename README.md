@@ -1,6 +1,6 @@
 # jesque-admin
 
-A User interface for [Jesque|https://grails.org/plugins.html#plugin/jesque] powered by grails and react.
+A User interface for [Jesque](https://grails.org/plugins.html#plugin/jesque) powered by grails and react.
 
 # Installation
 
@@ -9,7 +9,7 @@ Just add jesque-admin to your dependencies
 ```
 dependencies {
     ...
-    compile 'org.grails.plugins:jesque-admin:0.6.5'
+    compile 'org.grails.plugins:jesque-admin:0.6.6'
 }
 ```
 
@@ -26,11 +26,11 @@ This plugin does not expose any UrlMappings by itself for security reasons. Job 
 "/jesque/api/queues/$name"(controller: 'jesqueAdminQueue', action: 'remove', method: "DELETE")
 "/jesque/api/jobs"(controller: 'jesqueAdminStatistics', action: 'jobs', method: "GET")
 "/jesque/api/jobs"(controller: 'jesqueAdminJob', action: 'enqueue', method: "POST")
+"/jesque/api/jobs/removeDelayed"(controller: 'jesqueAdminJob', action: 'removeDelayed', method: "POST")
 "/jesque/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'failed', method: "GET")
 "/jesque/api/jobs/failed/$id"(controller: 'jesqueAdminJob', action: 'retry', method: "POST")
 "/jesque/api/jobs/failed/$id"(controller: 'jesqueAdminJob', action: 'remove', method: "DELETE")
 "/jesque/api/jobs/failed"(controller: 'jesqueAdminJob', action: 'clear', method: "DELETE")
-"/jesque/api/jobs/delayed"(controller: 'jesqueAdminJob', action: 'delayed', method: "GET")
 "/jesque/api/jobs/triggers"(controller: 'jesqueAdminJob', action: 'triggers', method: "GET")
 "/jesque/api/jobs/triggers/$name"(controller: 'jesqueAdminJob', action: 'deleteTrigger', method: "DELETE")
 "/jesque/api/jobs/$job"(controller: 'jesqueAdminStatistics', action: 'list', method: "GET")
@@ -45,27 +45,26 @@ You can freely change "/jesque/api/" to whatever you want but i highly recommend
 
 # Job Statistics
 
-jesque-admin comes with mechanics to gather statistics like start, end and runtimes of Jobs. All this is done by using a Special Job Listener.
-If you are already using a custom JesqueWorker all you have to do is enable the feature and let your custom worker extend "JesqueJobStatisticsCollectingWorkerImpl" instead of the 
-default WorkerImpl coming with grails-jesque and enable the statistics collecting feature in you application.yml (or groovy)
+jesque-admin comes with mechanics to gather statistics like start, end and runtimes of Jobs. All this is done by using a specific Worker Listener.
+All you have to do is enable the statistics collecting feature in you application.yml (or .groovy):
 
 ```
 grails:
     jesque:
         statistics:
           enabled: true
-          max: 100 // the maximum number of jobs PER JOB CLASS to store
+          max: 100 // the maximum number of statistics PER JOB CLASS to store
 ```
 
-If you are not yet using a custom Jesque Worker you have to tell grails-jesque to use JesqueJobStatisticsCollectingWorkerImpl as a custom worker impl
+you also have to set `JesqueJobStatisticsWorkerListener` as a custom listener:
 
 ```
 grails:
     jesque:
         enabled: true
         custom:
-          worker:
-            clazz: JesqueJobStatisticsCollectingWorkerImpl
+          listener:
+            clazz: grails.plugins.jesque.admin.JesqueJobStatisticsWorkerListener
 ```
 
 After restarting your App you should find a list menu item under "jobs" in jesque-admin which lets you browse past jobs being processed. 

@@ -3,6 +3,7 @@ import BaseComponent from "../base-component";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
 import {assign, map} from "lodash";
 import TriggerListRow from "./trigger-list-row";
+
 export default class Triggers extends BaseComponent {
   constructor(props) {
     super(props);
@@ -17,7 +18,7 @@ export default class Triggers extends BaseComponent {
   }
 
   componentWillReceiveProps(props) {
-    if (props.autoReload != this.props.autoReload) {
+    if (props.autoReload !== this.props.autoReload) {
       if (props.autoReload) {
         this.doUpdate();
         this.startAutoUpdate()
@@ -67,7 +68,7 @@ export default class Triggers extends BaseComponent {
   }
 
   deleteTrigger(name) {
-    this.client.delete('triggers', name, {}).then((resp)=> {
+    this.client.delete('triggers', name, {}).then(()=> {
       this.doUpdate()
     }).catch((err)=> {
       this.props.setAlert(err)
@@ -79,15 +80,16 @@ export default class Triggers extends BaseComponent {
       <div>
         <div className="page-header">
           <h3>Job Triggers</h3>
+          {this.state.list.length} active triggers
         </div>
         <table className="table table-condensed table-striped">
           <thead>
           <tr>
-            <th>Job</th>
-            <th>Queue</th>
-            <th>Cron Expression</th>
-            <th>Next Fire Time</th>
-            <th></th>
+            <th>Name/JobClass</th>
+            <th>Queue/Arguments</th>
+            <th>Cron Expression/Next Fire Time</th>
+            <th>State/Aquired By</th>
+            <th/>
           </tr>
           </thead>
           <tbody>

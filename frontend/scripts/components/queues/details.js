@@ -5,21 +5,23 @@ import JesqueAdminClient from "../../tools/jesque-admin-client";
 import FilterButtonGroup from "../common/filter-button-group";
 import {HOME} from "../../constants/paths";
 import ReactPaginate from "react-paginate";
+import FormatedDate from "../common/formated-date";
+import FromNow from "../common/from-now";
 
 const SweetAlert = require('react-swal');
-const MAX = 25;
 
 export default class QueueDetails extends BaseComponent {
+
   constructor(props) {
     super(props);
+    this.client = new JesqueAdminClient();
+
     this.state = {
       queue: null,
       confirmDelete: false
     };
 
-    this.client = new JesqueAdminClient();
-    this.bindThiz('doUpdate', 'getTableRows', 'onMaxChange', 'getDeleteAlert', 'doDelete')
-
+    this.bindThiz('doUpdate', 'getTableHeaders', 'getTableRows', 'onMaxChange', 'getDeleteAlert', 'doDelete', 'handleJobDelete')
   }
 
   doUpdate() {
@@ -32,12 +34,49 @@ export default class QueueDetails extends BaseComponent {
     })
   }
 
+  handleJobDelete(job) {
+    this.client.post('jobs', 'removeDelayed', {queue: this.state.queue.name, job: job.className, args: job.args})
+      .then(this.doUpdate)
+      .catch((err) => {
+        this.props.setAlert(err);
+      })
+  }
 
-  getTableRows(list) {
+  getTableHeaders() {
+    const {queue} = this.state;
+    if (!queue) {
+      return "";
+    }
+
+    const delayed = queue.delayed;
+    let heads = [];
+    heads.push(<th key="head-job">Job</th>);
+    heads.push(<th key="head-arguments">Arguments</th>);
+    if (delayed) {
+      heads.push(<th key="head-when">When</th>);
+      heads.push(<th key="head-delete"/>);
+    }
+    return heads
+  }
+
+  getTableRows() {
+    const {queue} = this.state;
+    if (!queue) {
+      return "";
+    }
+
+    const delayed = queue.delayed;
+    const jobs = _.get(queue, "jobs");
     let i = this.getOffset();
-    return _.map(list, (job)=> {
+
+    return _.map(jobs, (job) => {
       i++;
-      return <QueueDetailsListRow job={job} key={`${job.className}-${JSON.stringify(job.args)}-${i}`}/>
+      let key = `${job.className}-${JSON.stringify(job.args)}-${i}`;
+      if (delayed) {
+        return <DelayedQueueDetailsListRow job={job} onClick={this.handleJobDelete} key={key}/>
+      } else {
+        return <QueueDetailsListRow job={job} key={key}/>
+      }
     })
   }
 
@@ -112,7 +151,6 @@ export default class QueueDetails extends BaseComponent {
   render() {
     const {queue}  = this.state;
     const total = _.get(queue, "size");
-    const list = _.get(queue, "jobs");
     const max = parseInt(this.getMax());
     const offset = parseInt(this.getOffset());
     return (
@@ -122,7 +160,7 @@ export default class QueueDetails extends BaseComponent {
             <div className="page-header">
               <h1>{this.props.name}
               </h1>
-              <button className="btn btn danger" onClick={()=> {
+              <button className="btn btn-danger" onClick={()=> {
                 this.assignState({confirmDelete: true});
               }}>Delete
               </button>
@@ -144,16 +182,11 @@ export default class QueueDetails extends BaseComponent {
             <table className="table table-striped table-condensed">
               <thead>
               <tr>
-                <th>
-                  Job
-                </th>
-                <th>
-                  Arguments
-                </th>
+                {this.getTableHeaders()}
               </tr>
               </thead>
               <tbody>
-              {this.getTableRows(list)}
+                {this.getTableRows()}
               </tbody>
             </table>
             <nav>
@@ -180,18 +213,29 @@ export default class QueueDetails extends BaseComponent {
   }
 }
 
-
-class QueueDetailsListRow extends BaseComponent {
+class QueueDetailsListRow extends React.Component {
   render() {
     return (
       <tr>
+        <td>{this.props.job.className}</td>
+        <td><code>{JSON.stringify(this.props.job.args)}</code></td>
+      </tr>
+    )
+  }
+}
+
+class DelayedQueueDetailsListRow extends React.Component {
+  render() {
+    const job = this.props.job;
+    return (
+      <tr>
+        <td>{job.className}</td>
+        <td><code>{JSON.stringify(job.args)}</code></td>
+        <td><FormatedDate date={new Date(job.runAt)}/> (<FromNow date={new Date(job.runAt)}/>)</td>
         <td>
-          {this.props.job.className}
-        </td>
-        <td>
-          <code>
-            {JSON.stringify(this.props.job.args)}
-          </code>
+          <button className="btn btn-danger btn-xs pull-right" onClick={() => {
+            this.props.onClick(job)
+          }}><i className="fa fa-trash"/></button>
         </td>
       </tr>
     )

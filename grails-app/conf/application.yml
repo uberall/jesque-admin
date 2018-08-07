@@ -6,21 +6,12 @@ grails:
     spring:
         transactionManagement:
             proxies: false
-    jesque:
-            enabled: true
-            pruneWorkersOnStartup: false
-            createWorkersOnStartup: false
-            schedulerThreadActive: false
-            delayedJobThreadActive: false
-            startPaused: true
-            workers: []
 info:
     app:
         name: '@info.app.name@'
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
 spring:
-
     groovy:
         template:
             check-template-location: false
@@ -103,20 +94,23 @@ grails:
         enabled: true
         statistics:
           enabled: true
-          max: 100
+          max: 1000
+        failedItemLimit: 1000
         pruneWorkersOnStartup: true
         createWorkersOnStartup: true
         schedulerThreadActive: true
-        delayedJobThreadActive: true
-        startPaused: false
+        startPaused: true
         autoFlush: true
+        nextQueueStrategy: RESET_TO_HIGHEST_PRIORITY #DRAIN_WHILE_MESSAGES_EXISTS
         custom:
-          worker:
-            clazz: grails.plugins.jesque.admin.JesqueJobStatisticsCollectingWorkerImpl
+          listener:
+            clazz: grails.plugins.jesque.admin.JesqueJobStatisticsWorkerListener
         workers:
-            testJobPool:
-                workers: 2
+            genericJobPool:
+                workers: 5
                 queueNames:
                     - TestJobQueue
                 jobTypes:
                     - jesque.test.TestJob
+                    - jesque.test.AnotherTestJob
+                    - jesque.test.EmptyJob

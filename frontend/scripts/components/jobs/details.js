@@ -7,7 +7,7 @@ import FormatedDate from "../common/formated-date";
 import JobListDetails from "./job-list-details";
 import ReactPaginate from "react-paginate";
 
-const cx = require('classnames')
+const cx = require('classnames');
 
 export default class JobDetails extends BaseComponent {
 
@@ -27,8 +27,10 @@ export default class JobDetails extends BaseComponent {
   }
 
   componentDidMount() {
-    this.startAutoUpdate();
-    this.doUpdate()
+    this.doUpdate();
+    if (this.props.autoReload) {
+      this.startAutoUpdate();
+    }
   }
 
   componentWillUnmount() {
@@ -61,7 +63,16 @@ export default class JobDetails extends BaseComponent {
   }
 
   selectJob(job) {
-    this.assignState({selectedJob: job});
+    let selected = this.state.selectedJob;
+    if (selected && job && this.getJobKey(selected) === this.getJobKey(job)) {
+      this.assignState({selectedJob: null});
+    } else {
+      this.assignState({selectedJob: job});
+    }
+  }
+
+  getJobKey(job) {
+    return job ? `${job.start}-${job.end}-${job.runtime}-${JSON.stringify(job.args)}` : ""
   }
 
   doUpdate() {
@@ -85,11 +96,11 @@ export default class JobDetails extends BaseComponent {
     let selected = this.state.selectedJob;
     let selectedKey = "";
     if (selected) {
-      selectedKey = `${selected.start}-${selected.end}-${selected.runtime}`;
+      selectedKey = this.getJobKey(selected);
     }
     return map(this.state.list, (job)=> {
       let cols = [];
-      let key = `${job.start}-${job.end}-${job.runtime}`;
+      let key = `${job.start}-${job.end}-${job.runtime}-${JSON.stringify(job.args)}`;
       cols.push(<td key={`${key}-queue`}>{job.queue}</td>);
       cols.push(<td key={`${key}-start`}><FormatedDate date={new Date(job.start)} format="l LTS"/></td>);
       if (!this.state.selectedJob) {
@@ -97,7 +108,7 @@ export default class JobDetails extends BaseComponent {
       }
       cols.push(<td key={`${key}-runtime`}>{job.runtime}</td>);
       if (!this.state.selectedJob) {
-        cols.push(<td key={`${key}-args`}>{job.args.join(",")}</td>);
+        cols.push(<td key={`${key}-args`}>{job.args.join(",")||"test"}</td>);
       }
 
       return (

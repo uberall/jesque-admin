@@ -18,7 +18,7 @@ class JesqueAdminGrailsPlugin extends Plugin {
 
     def profiles = ['web']
 
-    def documentation = "https://github.com/peh/jesque-admin"
+    def documentation = "https://github.com/uberall/jesque-admin"
 
     // Extra (optional) plugin metadata
 

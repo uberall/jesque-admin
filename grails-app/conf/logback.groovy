@@ -23,5 +23,5 @@ if (Environment.isDevelopmentMode() && targetDir) {
     logger('org.springframework', WARN, ['STDOUT'], false)
     logger('org.grails.spring', WARN, ['STDOUT'], false)
     logger('org.hibernate', WARN, ['STDOUT'], false)
-    logger('grails.plugins.jesque', DEBUG, ['STDOUT'], false)
+    logger('grails.plugins.jesque', INFO, ['STDOUT'], false)
 }

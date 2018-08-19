@@ -16,11 +16,15 @@ class TestJob {
         cron queueName: 'TestJobQueue', name: 'TestJobTrigger-4', cronExpression: '0/5 * * * * ? *', args: [3000]
     }
 
-    def perform(random = RandomUtils.nextInt(60000)) {
+    def perform(int random = RandomUtils.nextInt(2000)) {
         log.warn("sleeping for $random")
-        sleep(random)
-        jesqueService.enqueueAt(DateTime.now().plusMillis(random), queue, TestJob)
-        if (RandomUtils.nextInt(5) == 2) {
+        Thread.sleep(random)
+        jesqueService.enqueue(queue, TestJob)
+        jesqueService.enqueueAt(DateTime.now().plusMillis(random), queue, TestJob, RandomUtils.nextInt(100000))
+        jesqueService.enqueueAt(DateTime.now().plusSeconds(random), queue, TestJob, RandomUtils.nextInt(100000))
+        jesqueService.enqueueAt(DateTime.now().plusMinutes(random), queue, TestJob, RandomUtils.nextInt(100000))
+        jesqueService.enqueueAt(DateTime.now().plusHours(random), queue, TestJob, RandomUtils.nextInt(100000))
+        if (random % 100 == 0) {
             throw new Exception("radnom")
         }
     }

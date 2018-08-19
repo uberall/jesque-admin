@@ -27,7 +27,8 @@ class JesqueAdminJsonMarshaller {
                     args            : jesqueJobStatistic.args,
                     throwableString : jesqueJobStatistic.throwableString,
                     throwableMessage: jesqueJobStatistic.throwableMessage,
-                    backtrace       : jesqueJobStatistic.backtrace
+                    backtrace       : jesqueJobStatistic.backtrace,
+                    success         : jesqueJobStatistic.success
             ]
         }
 

@@ -97,6 +97,7 @@ grails:
           max: 1000
         failedItemLimit: 1000
         pruneWorkersOnStartup: true
+        pruneOrphanedScheduledJobsOnStartup: true
         createWorkersOnStartup: true
         schedulerThreadActive: true
         startPaused: true

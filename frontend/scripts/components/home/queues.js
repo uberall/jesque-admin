@@ -49,7 +49,7 @@ export default class QueueList extends BaseComponent {
           this.onRowClick(q)
         }}>
           <td>{q.name}</td>
-          <td>{q.size}</td>
+          <td>{q.delayed ? q.size + " (" + q.pending + ")" : q.size}</td>
         </tr>
       )
     })
@@ -103,7 +103,7 @@ export default class QueueList extends BaseComponent {
           </thead>
           <tbody>
           <tr>
-            <td>All Pending</td>
+            <td>All</td>
             <td>{this.props.pending}</td>
           </tr>
           {this.getQueueRows()}

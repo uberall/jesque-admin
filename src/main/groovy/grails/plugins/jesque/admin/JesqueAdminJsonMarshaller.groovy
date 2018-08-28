@@ -37,7 +37,8 @@ class JesqueAdminJsonMarshaller {
                     jobs   : queueInfo.jobs,
                     name   : queueInfo.name,
                     size   : queueInfo.size,
-                    delayed: queueInfo.delayed
+                    delayed: queueInfo.delayed,
+                    pending: queueInfo.pending
             ]
         }
 

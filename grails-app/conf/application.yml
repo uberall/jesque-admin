@@ -108,7 +108,7 @@ grails:
             clazz: grails.plugins.jesque.admin.JesqueJobStatisticsWorkerListener
         workers:
             genericJobPool:
-                workers: 5
+                workers: 3
                 queueNames:
                     - TestJobQueue
                 jobTypes:

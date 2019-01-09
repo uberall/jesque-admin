@@ -85,10 +85,10 @@ export default class Triggers extends BaseComponent {
         <table className="table table-condensed table-striped">
           <thead>
           <tr>
-            <th>Name/JobClass</th>
-            <th>Queue/Arguments</th>
-            <th>Cron Expression/Next Fire Time</th>
-            <th>State/Aquired By</th>
+            <th>Name<br/>JobClass</th>
+            <th>Queue<br/>Arguments</th>
+            <th>Cron Expression<br/>Next Fire Time</th>
+            <th>State<br/>Aquired By</th>
             <th/>
           </tr>
           </thead>

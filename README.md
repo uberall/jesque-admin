@@ -76,3 +76,5 @@ If you want to extend jesque-admin or help developing it further simply start by
 1. Run `gradle bootRun -Djesque.admin.devel=true` (or `grails run-app` or run the main method in Application.groovy whatever you prefer)
 2. Run `npm i` in the root folder of this plugin
 3. Run `npm run devel`
+
+Note: you need node.js version `6.9.0`

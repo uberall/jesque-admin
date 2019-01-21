@@ -21,7 +21,7 @@
                 workers: "${g.createLink(controller: 'jesqueAdminWorker', action: 'list')}",
             },
             isMonitoringEnabled: ${grailsApplication.config.grails.jesque.statistics?.enabled == true},
-            knownJobs: ${raw((grailsApplication.jesqueJobClasses.clazz.simpleName as grails.converters.JSON).toString())}
+            knownJobs: ${raw((grailsApplication.jesqueJobClasses*.clazz*.simpleName.sort() as grails.converters.JSON).toString())}
         }
     </script>
     <g:if test="${System.getProperty('jesque.admin.devel') == 'true'}">

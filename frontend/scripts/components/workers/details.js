@@ -7,21 +7,21 @@ export default class WorkerDetails extends React.Component {
   render() {
     const {worker, onClose, onDelete} = this.props;
     if (!worker) {
-      return <div></div>
+      return <div/>
     } else {
       let workingRows = [];
       if (worker.state === 'WORKING') {
-        workingRows.push(<dt key="working-job-label">Job</dt>)
-        workingRows.push(<dd key="working-job-value">{worker.status.payload.className}</dd>)
-        workingRows.push(<dt key="working-args-label">Args</dt>)
+        workingRows.push(<dt key="working-job-label">Job</dt>);
+        workingRows.push(<dd key="working-job-value">{worker.status.payload.className}</dd>);
+        workingRows.push(<dt key="working-args-label">Args</dt>);
         workingRows.push(<dd key="working-args-value"><pre>{JSON.stringify(worker.status.payload.args, 1, 1)}</pre></dd>)
       }
-      const started = new Date(worker.started)
+      const started = new Date(worker.started);
       return (
         <div>
           <div className="btn-group pull-right">
-            <button className="btn btn-danger" onClick={onDelete}><i className="fa fa-trash"></i></button>
-            <button className="btn btn-default" onClick={onClose}><i className="fa fa-times"></i></button>
+            <button className="btn btn-danger" onClick={onDelete}><i className="fa fa-trash"/></button>
+            <button className="btn btn-default" onClick={onClose}><i className="fa fa-times"/></button>
           </div>
           <dl>
             <dt>Host</dt>

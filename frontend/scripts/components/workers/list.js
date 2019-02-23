@@ -78,7 +78,7 @@ export default class WorkerList extends BaseComponent {
           this.assignState({list: resp.list, selected: newSelected})
         })
         .catch(err=> {
-          this.props.setAlert(err)
+          this.props.setAlert(err);
           this.props.changeAutoReload(false);
         })
     }
@@ -102,15 +102,15 @@ export default class WorkerList extends BaseComponent {
     let {selected} = this.state;
     let headers = [
       (<th key="table-header-host">Host</th>),
-      (<th key="table-header-pid">Pid</th>),
-      (<th key="table-header-state">State</th>),
+      (<th key="table-header-pid">Pid</th>)
     ];
 
     if (!selected) {
+      headers.push(<th key="table-header-state">State</th>);
       headers.push(<th key="table-header-job">Job</th>);
       headers.push(<th key="table-header-since">Since</th>);
       headers.push(<th key="table-header-queues">Queues</th>);
-      headers.push(<th key="table-header-actions"></th>);
+      headers.push(<th key="table-header-actions"/>);
     }
 
     return headers
@@ -135,7 +135,7 @@ export default class WorkerList extends BaseComponent {
   getTableRows() {
     const {list, selected} = this.state;
     if (!list) {
-      return <tr></tr>
+      return <tr/>
     }
     let workers = sortBy(list, (w)=> {
       return w.state
@@ -235,8 +235,8 @@ export default class WorkerList extends BaseComponent {
           </div>
           <div className="filter">
             <div className="btn-group">
-              <button className="btn btn-default" onClick={this.pauseAll}><i className="fa fa-pause"></i>&nbsp;Pause All</button>
-              <button className="btn btn-default" onClick={this.resumeAll}><i className="fa fa-play"></i>&nbsp;Resume All</button>
+              <button className="btn btn-default" onClick={this.pauseAll}><i className="fa fa-pause"/>&nbsp;Pause All</button>
+              <button className="btn btn-default" onClick={this.resumeAll}><i className="fa fa-play"/>&nbsp;Resume All</button>
             </div>
           </div>
         </div>

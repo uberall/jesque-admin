@@ -23,13 +23,13 @@ class JesqueAdminGrailsPlugin extends Plugin {
     // Extra (optional) plugin metadata
 
     // License: one of 'APACHE', 'GPL2', 'GPL3'
-//    def license = "APACHE"
+    def license = "APACHE"
 
     // Details of company behind the plugin (if there is one)
     def organization = [name: "uberall", url: "https://uberall.com/"]
 
     // Any additional developers beyond the author specified above.
-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
+    def developers = [ [ name: "Florian Langenhahn", email: "florian.langenhahn@uberall.com" ]]
 
     // Location of the plugin's issue tracker.
     def issueManagement = [system: "Github", url: "https://github.com/peh/jesque-admin/issues"]

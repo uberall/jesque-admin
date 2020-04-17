@@ -85,7 +85,8 @@ grailsPublish {
     }
     title = "Jesque Admin"
     desc = "Admin UI for the Grails Jesque Plugin"
-    developers = [peh: "Philipp Eschenbach"]
+    developers = [peh: "Philipp Eschenbach",
+                  fln: "Florian Langenhahn"]
     portalUser = "peschenbach"
 }
 

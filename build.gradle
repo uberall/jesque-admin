@@ -50,17 +50,13 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
-    compile "org.grails.plugins:cache"
-    compile "org.grails.plugins:scaffolding"
     console "org.grails:grails-console"
     profile "org.grails.profiles:web-plugin:3.1.4"
     provided "org.grails:grails-plugin-services"
     provided "org.grails.plugins:hibernate4"
-    provided "org.grails:grails-plugin-domain-class"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
@@ -68,7 +64,7 @@ dependencies {
 
     runtime "org.grails.plugins:asset-pipeline"
 
-    compile 'org.grails.plugins:jesque:1.3.1-SNAPSHOT'
+    compile 'org.grails.plugins:jesque:1.3.2-UBERALL'
 }
 
 task wrapper(type: Wrapper) {

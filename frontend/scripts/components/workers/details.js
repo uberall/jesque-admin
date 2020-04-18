@@ -13,10 +13,11 @@ export default class WorkerDetails extends React.Component {
       if (worker.state === 'WORKING') {
         workingRows.push(<dt key="working-job-label">Job</dt>);
         workingRows.push(<dd key="working-job-value">{worker.status.payload.className}</dd>);
+        workingRows.push(<dt key="working-since-label">Since</dt>);
+        workingRows.push(<dd key="working-since-value"><FormatedDate date={worker.status.runAt}/> (<FromNow date={worker.status.runAt}/>)</dd>);
         workingRows.push(<dt key="working-args-label">Args</dt>);
         workingRows.push(<dd key="working-args-value"><pre>{JSON.stringify(worker.status.payload.args, 1, 1)}</pre></dd>)
       }
-      const started = new Date(worker.started);
       return (
         <div>
           <div className="btn-group pull-right">
@@ -29,14 +30,14 @@ export default class WorkerDetails extends React.Component {
             <dt>Pid</dt>
             <dd>{worker.pid}</dd>
             <dt>Started</dt>
-            <dd><FormatedDate date={started}/> (<FromNow date={started}/>)</dd>
+            <dd><FormatedDate date={worker.started}/> (<FromNow date={worker.started}/>)</dd>
             <dt>Processed</dt>
             <dd>{worker.processed}</dd>
             <dt>Failed</dt>
             <dd>{worker.failed}</dd>
             <dt>Queues</dt>
             <dd>{worker.queues.join(",")}</dd>
-            {workingRows}
+            <br/>{workingRows}
           </dl>
         </div>
       )

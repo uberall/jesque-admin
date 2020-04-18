@@ -2,7 +2,7 @@ import React from "react";
 import BaseComponent from "../base-component";
 import {assign, map, clone, each} from "lodash";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
-import Select from 'react-select';
+import Select, {Creatable} from 'react-select';
 const cx = require('classnames');
 
 const DEFAULT_STATE = {
@@ -76,11 +76,15 @@ export default class WorkerManual extends BaseComponent {
   }
 
   queueSelected(queue) {
-    let selected = null;
+    let queues = JSON.parse(JSON.stringify(this.state.queues)); // quick and dirty copy to maintain immutability
+    let selectedQueue = null;
     if (queue) {
-      selected = queue.value;
+      selectedQueue = queue.value;
     }
-    this.assignState({selectedQueue: selected});
+    if (selectedQueue && queues.indexOf(selectedQueue) == -1) {
+      queues.push(selectedQueue)
+    }
+    this.assignState({selectedQueue, queues});
   }
 
   getAlert() {
@@ -123,13 +127,14 @@ export default class WorkerManual extends BaseComponent {
           </div>
           <div className="form-group">
             <label htmlFor="queues">Queue</label>
-            <Select
+            <Creatable
               name="queues"
               clearable={true}
               value={selectedQueue}
               disabled={!selectedJobs || loading}
               options={queueOptions}
-              onChange={this.queueSelected}/>
+              onChange={this.queueSelected}
+            />
           </div>
           <div className="btn-group">
             <button type="reset" className="btn btn-danger" onClick={this.reset}>Reset</button>

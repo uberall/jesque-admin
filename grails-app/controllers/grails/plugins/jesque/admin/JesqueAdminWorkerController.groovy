@@ -7,7 +7,13 @@ class JesqueAdminWorkerController extends AbstractJesqueAdminController {
     def redisService
 
     def list() {
-        jsonRender([list: workerInfoDao.allWorkers])
+        def workerHostMap = workerInfoDao.workerHostMap
+        def channels = workerHostMap.collect { host, infos -> "admin-$host" }
+        def infos = workerHostMap.collectMany { host, infos -> infos }
+        jsonRender([
+                channels: channels,
+                list    : infos
+        ])
     }
 
     def manual() {
@@ -31,13 +37,25 @@ class JesqueAdminWorkerController extends AbstractJesqueAdminController {
         jsonRender([success: true])
     }
 
-    def pause() {
+    def pauseAll() {
         jesqueService.pauseAllWorkersInCluster()
         jsonRender([success: true])
     }
 
-    def resume() {
+    def pauseChannel() {
+        String channel = params.channel
+        jesqueService.pauseAllWorkersInChannel(channel)
+        jsonRender([success: true])
+    }
+
+    def resumeAll() {
         jesqueService.resumeAllWorkersInCluster()
+        jsonRender([success: true])
+    }
+
+    def resumeChannel() {
+        String channel = params.channel
+        jesqueService.resumeAllWorkersInChannel(channel)
         jsonRender([success: true])
     }
 

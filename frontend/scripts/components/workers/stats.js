@@ -14,7 +14,7 @@ export class WorkerStats extends React.Component {
     let idle = filter(workers, ['state', 'IDLE']).length;
     let paused = filter(workers, ['state', 'PAUSED']).length;
     return (
-      <div>Total running: {total} -- working: {working} idle: {idle} paused: {paused}</div>
+      <div>Total: {total} -- working: {working} idle: {idle} paused: {paused}</div>
     )
   }
 

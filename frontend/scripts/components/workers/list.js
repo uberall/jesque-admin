@@ -1,4 +1,5 @@
 import React from "react";
+import Select from 'react-select';
 import BaseComponent from "../base-component";
 import JesqueAdminClient from "../../tools/jesque-admin-client";
 import {map, sortBy, find} from "lodash";
@@ -20,6 +21,8 @@ export default class WorkerList extends BaseComponent {
 
     this.state = {
       list: null,
+      channels: null,
+      selectedChannel: null,
       loading: false,
       total: 0,
       selected: null,
@@ -30,7 +33,7 @@ export default class WorkerList extends BaseComponent {
       query: "",
       workerToDelete: null
     };
-    this.bindThiz('doUpdate', 'getTableHeaders', 'getTableRows', 'onQueryChange', 'onStatusFilterChange', 'resumeAll', 'pauseAll');
+    this.bindThiz('doUpdate', 'getTableHeaders', 'getTableRows', 'onQueryChange', 'onStatusFilterChange', 'resumeAll', 'pauseAll', 'channelSelected', 'pauseChannel', 'resumeChannel');
   }
 
   componentDidMount() {
@@ -75,7 +78,7 @@ export default class WorkerList extends BaseComponent {
               return `${worker.host}-${worker.pid}` === selectedKey;
             });
           }
-          this.assignState({list: resp.list, selected: newSelected})
+          this.assignState({list: resp.list, channels: resp.channels, selected: newSelected})
         })
         .catch(err=> {
           this.props.setAlert(err);
@@ -209,14 +212,49 @@ export default class WorkerList extends BaseComponent {
     })
   }
 
+  pauseChannel() {
+    let selectedChannel = this.state.selectedChannel;
+    if (!selectedChannel) {
+      return
+    }
+    this.client.get('workers', 'pause/' + selectedChannel, {}).then(()=> {
+      this.doUpdate()
+    })
+  }
+
   resumeAll() {
     this.client.get('workers', 'resume', {}).then(()=> {
       this.doUpdate()
     })
   }
 
+  resumeChannel() {
+    let selectedChannel = this.state.selectedChannel;
+    if (!selectedChannel) {
+      return
+    }
+    this.client.get('workers', 'resume/' + selectedChannel, {}).then(()=> {
+      this.doUpdate()
+    })
+  }
+
+  buildReactSelectOptions(list) {
+    return map(list, (l) => {
+      return {value: l, label: l}
+    })
+  }
+
+  channelSelected(channel) {
+    let selectedChannel = null;
+    if (channel) {
+      selectedChannel = channel.value;
+    }
+    this.assignState({selectedChannel: selectedChannel});
+  }
+
   render() {
-    let {selected, query, status, list} = this.state;
+    let {selected, query, status, list, channels, selectedChannel} = this.state;
+    let channelOptions = this.buildReactSelectOptions(channels);
     return (
       <div className="worker-list-container">
         <div className="page-header">
@@ -234,6 +272,21 @@ export default class WorkerList extends BaseComponent {
             <FilterButtonGroup onChange={this.onStatusFilterChange} current={status} filters={STATES}/>
           </div>
           <div className="filter">
+              <Select
+                name="channels"
+                placeholder="Choose channel..."
+                options={channelOptions}
+                value={selectedChannel}
+                onChange={this.channelSelected}
+              />
+          </div>
+          <div className="filter">
+            <div className="btn-group">
+              <button className="btn btn-default" onClick={this.pauseChannel}><i className="fa fa-pause"/>&nbsp;Pause Channel</button>
+              <button className="btn btn-default" onClick={this.resumeChannel}><i className="fa fa-play"/>&nbsp;Resume Channel</button>
+            </div>
+          </div>
+          <div className="filter">
             <div className="btn-group">
               <button className="btn btn-default" onClick={this.pauseAll}><i className="fa fa-pause"/>&nbsp;Pause All</button>
               <button className="btn btn-default" onClick={this.resumeAll}><i className="fa fa-play"/>&nbsp;Resume All</button>
@@ -249,7 +302,7 @@ export default class WorkerList extends BaseComponent {
               </tr>
               </thead>
               <tbody>
-              {this.getTableRows()}
+                {this.getTableRows()}
               </tbody>
             </table>
           </div>

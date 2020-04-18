@@ -1,5 +1,5 @@
 import React from "react";
-import {assign, map, sortBy, filter} from "lodash";
+import {map, sortBy, filter} from "lodash";
 import BaseComponent from "../base-component";
 import Config from "../../tools/config";
 const cx = require("classnames");
@@ -30,7 +30,7 @@ export default class QueueList extends BaseComponent {
 
   getQueueRows() {
     if (!this.props.queues) {
-      return <tr></tr>
+      return <tr/>
     }
     let queues = this.props.queues;
     if (!this.state.empty) {
@@ -90,7 +90,7 @@ export default class QueueList extends BaseComponent {
               <input id="empty" type="checkbox" checked={this.state.empty} onChange={(e)=> {
                 this.changeEmpty(e.target.checked)
               }}/>
-              Empty
+              Show empty queues
             </label>
           </div>
         </div>

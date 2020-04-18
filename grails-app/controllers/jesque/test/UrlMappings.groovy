@@ -22,7 +22,9 @@ class UrlMappings {
         "/jesque/api/workers"(controller: 'jesqueAdminWorker', action: 'list', method: 'GET')
         "/jesque/api/workers"(controller: 'jesqueAdminWorker', action: 'manual', method: 'POST')
         "/jesque/api/workers/$name"(controller: 'jesqueAdminWorker', action: 'remove', method: 'DELETE')
-        "/jesque/api/workers/pause"(controller: 'jesqueAdminWorker', action: 'pause', method: 'GET')
-        "/jesque/api/workers/resume"(controller: 'jesqueAdminWorker', action: 'resume', method: 'GET')
+        "/jesque/api/workers/pause"(controller: 'jesqueAdminWorker', action: 'pauseAll', method: 'GET')
+        "/jesque/api/workers/pause/$channel"(controller: 'jesqueAdminWorker', action: 'pauseChannel', method: 'GET')
+        "/jesque/api/workers/resume"(controller: 'jesqueAdminWorker', action: 'resumeAll', method: 'GET')
+        "/jesque/api/workers/resume/$channel"(controller: 'jesqueAdminWorker', action: 'resumeChannel', method: 'GET')
     }
 }

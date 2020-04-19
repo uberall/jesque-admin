@@ -2,7 +2,8 @@ ul.stacktrace {
   list-style: none;
   font-family: monospace;
   font-size: 9pt;
-  margin-left: 2px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
 
 .job-details {

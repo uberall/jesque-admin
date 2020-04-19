@@ -12,7 +12,7 @@ class JesqueAdminController extends AbstractJesqueAdminController {
                 pending  : queueInfoDao.pendingCount,
                 processed: queueInfoDao.processedCount,
                 workers  : workerInfoDao.allWorkers,
-                failed   : failureDao.count
+                failed   : failureDao.failQueueJobCount
         ])
     }
 }

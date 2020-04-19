@@ -14,7 +14,7 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         }
         jsonRender([
                 list : list,
-                total: failureDao.count
+                total: failureDao.failQueueJobCount
         ])
     }
 

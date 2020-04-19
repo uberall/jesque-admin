@@ -54,15 +54,6 @@ class JesqueAdminJobController extends AbstractJesqueAdminController {
         jsonRender([success: true])
     }
 
-    def retryAll() {
-        // TODO: not yet supported in FE
-        failureDao.count.times {
-            failureDao.requeue(it)
-        }
-
-        redirect(action: 'failed')
-    }
-
     def enqueue() {
         def json = request.JSON
         jesqueService.enqueue(json.queue, json.job, json.args)

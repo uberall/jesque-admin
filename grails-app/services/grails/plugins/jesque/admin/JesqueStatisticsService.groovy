@@ -46,19 +46,19 @@ class JesqueStatisticsService {
         }
     }
 
-    int getMax() {
+    private int getMax() {
         grailsApplication.config.grails.jesque.statistics?.max ?: DEFAULT_MAX
     }
 
-    boolean isEnabled() {
+    private boolean isEnabled() {
         grailsApplication.config.grails.jesque.statistics?.enabled ?: false
     }
 
-    static String getJobName(Job job) {
+    private static String getJobName(Job job) {
         return job.className
     }
 
-    static String getClassesDoneKey(String name) {
+    private static String getClassesDoneKey(String name) {
         "$CLASSES_KEY:$name"
     }
 }

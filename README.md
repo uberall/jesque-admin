@@ -78,3 +78,8 @@ If you want to extend jesque-admin or help developing it further simply start by
 3. Run `npm run devel`
 
 Note: you need node.js version `6.9.0`
+
+In order to build the project run the following commands:
+
+1. `npm run package`
+2. `./gradlew publishToMavenLocal`

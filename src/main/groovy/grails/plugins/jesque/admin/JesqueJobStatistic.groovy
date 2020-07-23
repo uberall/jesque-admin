@@ -1,8 +1,10 @@
 package grails.plugins.jesque.admin
 
 import groovy.json.JsonOutput
+import groovy.transform.CompileStatic
 import net.greghaines.jesque.utils.JesqueUtils
 
+@CompileStatic
 class JesqueJobStatistic {
 
     String job

@@ -3,6 +3,7 @@ package grails.plugins.jesque.admin
 import grails.core.GrailsApplication
 import grails.plugins.redis.RedisService
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import net.greghaines.jesque.Job
 import redis.clients.jedis.Transaction
 
@@ -23,10 +24,11 @@ class JesqueStatisticsService {
         redisService.llen(getClassesDoneKey(job))
     }
 
+    @CompileStatic
     void addStatistic(Job job, String queue, long start, long end, def args, boolean success, Throwable t) {
         if (!enabled) return
 
-        String jobName = getJobName(job)
+        String jobName = job.className
         JesqueJobStatistic stats = new JesqueJobStatistic(
                 job: jobName,
                 queue: queue,
@@ -38,7 +40,7 @@ class JesqueStatisticsService {
                 throwable: t
         )
 
-        String key = getClassesDoneKey(getJobName(job))
+        String key = getClassesDoneKey(jobName)
         String json = stats.asJsonString()
         redisService.withTransaction { Transaction transaction ->
             transaction.lpush(key, json)
@@ -54,10 +56,7 @@ class JesqueStatisticsService {
         grailsApplication.config.grails.jesque.statistics?.enabled ?: false
     }
 
-    private static String getJobName(Job job) {
-        return job.className
-    }
-
+    @CompileStatic
     private static String getClassesDoneKey(String name) {
         "$CLASSES_KEY:$name"
     }

@@ -22,6 +22,7 @@ apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 apply plugin: "org.grails.grails-gsp"
 apply plugin: "asset-pipeline"
+apply plugin: "maven-publish"
 
 ext {
     grailsVersion = project.grailsVersion
@@ -31,8 +32,13 @@ ext {
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
-    maven { url "http://dl.bintray.com/uberall/plugins" }
-    maven { url "http://dl.bintray.com/uberall/maven" }
+    maven {
+        url "https://maven.pkg.github.com/uberall/*"
+        credentials {
+            username = System.getenv("GITHUB_USER")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencyManagement {
@@ -70,19 +76,23 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = gradleWrapperVersion
 }
-grailsPublish {
-    user = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
-    key = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
-    userOrg = 'uberall'
-    githubSlug = 'peh/jesque-admin'
-    license {
-        name = 'Apache-2.0'
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/uberall/jesque-admin")
+            credentials {
+                username = System.getenv("GITHUB_USER") ?: project.findProperty("gpr.user")
+                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key")
+            }
+        }
     }
-    title = "Jesque Admin"
-    desc = "Admin UI for the Grails Jesque Plugin"
-    developers = [peh: "Philipp Eschenbach",
-                  fln: "Florian Langenhahn"]
-    portalUser = "peschenbach"
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 bootRun {
